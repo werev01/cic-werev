@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tráfego · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* ====== FILTROS ====== */
+    .filters-bar { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; align-items: flex-end; }
+    .filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .filter-label { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.55; }
+    .filter-select { padding: 8px 14px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid; min-width: 160px; }
+    .cic.light .filter-select { background: #FFF; color: #0c263b; border-color: rgba(12,38,59,0.12); }
+    .cic.dark .filter-select { background: rgba(226,227,222,0.06); color: #e2e3de; border-color: rgba(226,227,222,0.15); }
+    .filter-select:focus { outline: 2px solid #c58a30; border-color: #c58a30; }
+
+    /* ====== TABS ====== */
+    .tabs-bar { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid; padding-bottom: 0; }
+    .cic.light .tabs-bar { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .tabs-bar { border-color: rgba(226,227,222,0.1); }
+    .tab-btn { background: transparent; border: 0; padding: 10px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; color: inherit; opacity: 0.55; border-bottom: 2px solid transparent; transition: all 0.15s; }
+    .tab-btn:hover { opacity: 0.85; }
+    .tab-btn.active { opacity: 1; color: #c58a30; border-bottom-color: #c58a30; font-weight: 600; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ====== VERBA HERO ====== */
+    .verba-hero { padding: 22px 26px; border-radius: 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 22px; background: linear-gradient(135deg, rgba(8,53,144,0.08), rgba(197,138,48,0.08)); border: 1px solid rgba(197,138,48,0.3); }
+    .cic.dark .verba-hero { background: linear-gradient(135deg, rgba(8,53,144,0.18), rgba(197,138,48,0.12)); }
+    .verba-icon { width: 54px; height: 54px; border-radius: 14px; background: linear-gradient(135deg, #083590, #c58a30); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; font-weight: 700; }
+    .verba-body { flex: 1; }
+    .verba-label { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; color: #c58a30; text-transform: uppercase; margin-bottom: 4px; }
+    .verba-value { font-size: 36px; font-weight: 600; line-height: 1; letter-spacing: -1.2px; }
+    .verba-meta { font-size: 11px; opacity: 0.65; margin-top: 4px; }
+    .verba-trend { font-size: 12px; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+    .trend-down { background: rgba(0,160,80,0.15); color: #00a050; }
+    .trend-up { background: rgba(217,32,32,0.13); color: #d92020; }
+
+    /* ====== BLOCO 1 · CUSTO × PASSAGEM ====== */
+    .funil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    @media (max-width: 900px) { .funil-grid { grid-template-columns: 1fr; } }
+    .funil-col { padding: 22px; border-radius: 14px; }
+    .cic.light .funil-col { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .funil-col { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .funil-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 4px; }
+    .funil-sub { font-size: 11px; opacity: 0.55; margin-bottom: 16px; }
+    .funil-list { display: flex; flex-direction: column; gap: 8px; }
+    .funil-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 8px; transition: all 0.15s; }
+    .cic.light .funil-row { background: rgba(12,38,59,0.03); }
+    .cic.dark .funil-row { background: rgba(226,227,222,0.04); }
+    .funil-row.good { border-left: 3px solid #00a050; }
+    .funil-row.warn { border-left: 3px solid #c58a30; }
+    .funil-row.bad { border-left: 3px solid #d92020; }
+    .funil-row-label { font-size: 12px; font-weight: 500; }
+    .funil-row-value { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+    .funil-row-value.good { color: #00a050; }
+    .funil-row-value.warn { color: #c58a30; }
+    .funil-row-value.bad { color: #d92020; }
+    .funil-row-bench { font-size: 9px; opacity: 0.55; letter-spacing: 0.3px; }
+
+    /* ====== BLOCO 2 · COMPARATIVO ====== */
+    .compare-table { width: 100%; border-collapse: collapse; }
+    .compare-table th { font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; opacity: 0.55; text-align: left; padding: 10px 14px; border-bottom: 1px solid; }
+    .cic.light .compare-table th { border-color: rgba(12,38,59,0.1); }
+    .cic.dark .compare-table th { border-color: rgba(226,227,222,0.12); }
+    .compare-table th.num { text-align: right; }
+    .compare-table td { padding: 12px 14px; border-bottom: 1px solid; font-size: 13px; }
+    .cic.light .compare-table td { border-color: rgba(12,38,59,0.04); }
+    .cic.dark .compare-table td { border-color: rgba(226,227,222,0.05); }
+    .compare-table td.num { text-align: right; font-weight: 600; letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
+    .compare-table tr:last-child td { border-bottom: 0; }
+    .compare-table tr:hover td { background: rgba(197,138,48,0.04); }
+    .delta-up { color: #00a050; font-weight: 600; }
+    .delta-down { color: #d92020; font-weight: 600; }
+    .delta-neutral { opacity: 0.5; }
+
+    /* ====== BLOCO 3 · METAS ====== */
+    .metas-placeholder { padding: 40px 24px; border-radius: 14px; text-align: center; border: 2px dashed; }
+    .cic.light .metas-placeholder { background: rgba(12,38,59,0.02); border-color: rgba(12,38,59,0.15); }
+    .cic.dark .metas-placeholder { background: rgba(226,227,222,0.03); border-color: rgba(226,227,222,0.15); }
+    .metas-icon { width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 12px; background: rgba(197,138,48,0.15); color: #c58a30; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; }
+    .metas-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .metas-desc { font-size: 12px; opacity: 0.65; margin-bottom: 16px; line-height: 1.5; max-width: 460px; margin-left: auto; margin-right: auto; }
+    .metas-btn { padding: 9px 20px; border-radius: 8px; border: 0; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; background: #c58a30; color: #FFF; transition: all 0.15s; }
+    .metas-btn:hover { background: #b07728; transform: translateY(-1px); }
+
+    /* ====== BLOCO 4 · INSIGHTS ====== */
+    .insights-list { display: flex; flex-direction: column; gap: 10px; }
+    .insight-card { padding: 16px 18px; border-radius: 10px; border-left: 3px solid; display: flex; gap: 14px; align-items: flex-start; }
+    .insight-card.bad { background: rgba(217,32,32,0.08); border-color: #d92020; }
+    .insight-card.warn { background: rgba(197,138,48,0.08); border-color: #c58a30; }
+    .insight-card.good { background: rgba(0,160,80,0.08); border-color: #00a050; }
+    .cic.dark .insight-card.bad { background: rgba(217,32,32,0.15); }
+    .cic.dark .insight-card.warn { background: rgba(197,138,48,0.15); }
+    .cic.dark .insight-card.good { background: rgba(0,160,80,0.15); }
+    .insight-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #FFF; font-size: 13px; font-weight: 700; }
+    .insight-card.bad .insight-icon { background: #d92020; }
+    .insight-card.warn .insight-icon { background: #c58a30; }
+    .insight-card.good .insight-icon { background: #00a050; }
+    .insight-content { flex: 1; }
+    .insight-title { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+    .insight-desc { font-size: 11px; opacity: 0.75; line-height: 1.5; margin-bottom: 8px; }
+    .insight-action { font-size: 11px; font-weight: 500; padding: 6px 10px; border-radius: 6px; background: rgba(12,38,59,0.05); display: inline-block; }
+    .cic.dark .insight-action { background: rgba(226,227,222,0.08); }
+    .insight-action b { color: #c58a30; font-weight: 700; }
+
+    /* ====== TABELA DETALHADA ====== */
+    .table-wrapper { overflow-x: auto; border-radius: 14px; border: 1px solid; }
+    .cic.light .table-wrapper { background: #FFF; border-color: rgba(12,38,59,0.07); }
+    .cic.dark .table-wrapper { background: rgba(226,227,222,0.04); border-color: rgba(226,227,222,0.08); }
+    .data-table { border-collapse: collapse; width: 100%; min-width: 1400px; font-size: 10px; font-variant-numeric: tabular-nums; }
+    .data-table th, .data-table td { padding: 6px 8px; text-align: right; border-bottom: 1px solid; border-right: 1px solid; white-space: nowrap; }
+    .cic.light .data-table th, .cic.light .data-table td { border-color: rgba(12,38,59,0.05); }
+    .cic.dark .data-table th, .cic.dark .data-table td { border-color: rgba(226,227,222,0.06); }
+    .data-table thead th { font-size: 8.5px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; opacity: 0.7; padding: 8px 6px; position: sticky; top: 0; z-index: 2; }
+    .cic.light .data-table thead th { background: #f5f5f0; }
+    .cic.dark .data-table thead th { background: rgba(0,0,0,0.3); }
+    .data-table thead th.col-data { font-size: 9px; line-height: 1.1; }
+    .data-table thead th.col-data span { display: block; font-size: 7.5px; opacity: 0.6; font-weight: 500; }
+    .data-table th.col-label, .data-table td.col-label { text-align: left; position: sticky; left: 0; z-index: 1; min-width: 200px; font-weight: 500; font-size: 11px; }
+    .cic.light .data-table td.col-label { background: #FFF; }
+    .cic.dark .data-table td.col-label { background: rgb(20,42,60); }
+    .cic.light .data-table th.col-label { background: #f5f5f0; }
+    .cic.dark .data-table th.col-label { background: rgba(0,0,0,0.4); }
+    .data-table td.col-total, .data-table th.col-total { font-weight: 700; }
+    .cic.light .data-table td.col-total { background: rgba(12,38,59,0.04); }
+    .cic.dark .data-table td.col-total { background: rgba(226,227,222,0.06); }
+    .data-table td.col-sem, .data-table th.col-sem { font-weight: 600; }
+    .cic.light .data-table td.col-sem { background: rgba(197,138,48,0.08); }
+    .cic.dark .data-table td.col-sem { background: rgba(197,138,48,0.12); }
+    .data-table tr.section-header td { background: rgba(12,38,59,0.06); font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #c58a30; padding: 10px 12px; text-align: left; }
+    .cic.dark .data-table tr.section-header td { background: rgba(197,138,48,0.15); }
+    .data-table tr.highlight td { background: rgba(255,217,0,0.18); font-weight: 700; }
+    .cic.dark .data-table tr.highlight td { background: rgba(255,217,0,0.15); }
+    .data-table tr.highlight td.col-sem { background: rgba(255,217,0,0.28); }
+    .data-table tr.highlight td.col-total { background: rgba(255,217,0,0.32); }
+
+    .table-info { padding: 10px 16px; font-size: 11px; opacity: 0.65; }
+
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Pilares · Demanda · Tráfego</div>
+        <div class="h-title">Tráfego</div>
+        <div class="h-meta">Análise de funil Meta Ads · operação Pós Med Reg</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <div class="filters-bar">
+      <div class="filter-group">
+        <div class="filter-label">Funil</div>
+        <select class="filter-select" id="f-funil">
+          <option value="pos-med-reg">Pós Med Reg</option>
+          <option value="isca-pep" disabled>Isca PEP (em breve)</option>
+          <option value="curso-pep" disabled>Curso PEP (em breve)</option>
+          <option value="congresso" disabled>Congresso (em breve)</option>
+          <option value="cbr-quiz" disabled>CBR Quiz (em breve)</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Período</div>
+        <select class="filter-select" id="f-periodo">
+          <option value="abr" selected>ABR/26</option>
+          <option value="mar">MAR/26</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tabs-bar">
+      <button class="tab-btn active" data-tab="overview">Visão Geral</button>
+      <button class="tab-btn" data-tab="table">Tabela Detalhada</button>
+    </div>
+
+    <!-- ============ ABA 1 · VISÃO GERAL ============ -->
+    <div class="tab-content active" id="tab-overview">
+
+      <!-- VERBA HERO -->
+      <div class="verba-hero">
+        <div class="verba-icon">R$</div>
+        <div class="verba-body">
+          <div class="verba-label">▌ Verba investida no período</div>
+          <div class="verba-value" id="verba-value">R$ 55.493</div>
+          <div class="verba-meta" id="verba-meta">Abril/2026 · 30 dias · funil Pós Med Reg</div>
+        </div>
+        <div class="verba-trend trend-down" id="verba-trend">↓ -8% vs mês anterior</div>
+      </div>
+
+      <!-- BLOCO 1 · CUSTO × PASSAGEM -->
+      <div class="funil-grid">
+        <div class="funil-col">
+          <div class="funil-title">▌ Coluna 1 · Custo por etapa</div>
+          <div class="funil-sub">Quanto custou cada lead em cada estágio do funil</div>
+          <div class="funil-list" id="lista-custos"></div>
+        </div>
+        <div class="funil-col">
+          <div class="funil-title">▌ Coluna 2 · Taxa de Passagem</div>
+          <div class="funil-sub">% de conversão entre cada etapa do funil</div>
+          <div class="funil-list" id="lista-passagem"></div>
+        </div>
+      </div>
+
+      <!-- BLOCO 2 · COMPARATIVO -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">▌ Comparativo dinâmico · Abril vs Março</div>
+          <div class="card-sub">Mês atual selecionado vs mês anterior</div>
+        </div>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Indicador</th>
+              <th class="num">MAR/26</th>
+              <th class="num">ABR/26</th>
+              <th class="num">Δ</th>
+            </tr>
+          </thead>
+          <tbody id="compare-body"></tbody>
+        </table>
+      </div>
+
+      <!-- BLOCO 3 · METAS PLACEHOLDER -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">▌ Performance vs Meta</div>
+          <div class="card-sub">Como a operação se compara aos objetivos definidos</div>
+        </div>
+        <div class="metas-placeholder">
+          <div class="metas-icon">🎯</div>
+          <div class="metas-title">Configurar metas do período</div>
+          <div class="metas-desc">Defina os objetivos de verba, CPL, taxa de conversão e ROAS pra ver o nível de atingimento por indicador. Pode importar do planejamento mensal ou configurar manualmente.</div>
+          <button class="metas-btn">Configurar metas →</button>
+        </div>
+      </div>
+
+      <!-- BLOCO 4 · INSIGHTS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">▌ Pontos de atenção e direcionamentos</div>
+          <div class="card-sub">Insights baseados no comparativo · ABR vs MAR</div>
+        </div>
+        <div class="insights-list" id="insights-list"></div>
+      </div>
+
+    </div>
+
+    <!-- ============ ABA 2 · TABELA ============ -->
+    <div class="tab-content" id="tab-table">
+      <div class="table-wrapper">
+        <table class="data-table" id="data-table"></table>
+      </div>
+      <div class="table-info">
+        💡 Tabela dinâmica · agrupada por semana (segunda → domingo) · linhas <span style="background:rgba(255,217,0,0.4); padding:1px 4px; border-radius:3px;">amarelas</span> = destaque (VENDAS · FATURAMENTO)
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- DADOS EMBUTIDOS -->
+<script>
+const TRAFEGO_DATA = {"abr": {"colunas": [{"tipo": "dia", "data": "01/04", "dia_sem": "Qua"}, {"tipo": "dia", "data": "02/04", "dia_sem": "Qui"}, {"tipo": "dia", "data": "03/04", "dia_sem": "Sex"}, {"tipo": "dia", "data": "04/04", "dia_sem": "Sáb"}, {"tipo": "dia", "data": "05/04", "dia_sem": "Dom"}, {"tipo": "sem", "nome": "Semana 14"}, {"tipo": "dia", "data": "06/04", "dia_sem": "Seg"}, {"tipo": "dia", "data": "07/04", "dia_sem": "Ter"}, {"tipo": "dia", "data": "08/04", "dia_sem": "Qua"}, {"tipo": "dia", "data": "09/04", "dia_sem": "Qui"}, {"tipo": "dia", "data": "10/04", "dia_sem": "Sex"}, {"tipo": "dia", "data": "11/04", "dia_sem": "Sáb"}, {"tipo": "dia", "data": "12/04", "dia_sem": "Dom"}, {"tipo": "sem", "nome": "Semana 15"}, {"tipo": "dia", "data": "13/04", "dia_sem": "Seg"}, {"tipo": "dia", "data": "14/04", "dia_sem": "Ter"}, {"tipo": "dia", "data": "15/04", "dia_sem": "Qua"}, {"tipo": "dia", "data": "16/04", "dia_sem": "Qui"}, {"tipo": "dia", "data": "17/04", "dia_sem": "Sex"}, {"tipo": "dia", "data": "18/04", "dia_sem": "Sáb"}, {"tipo": "dia", "data": "19/04", "dia_sem": "Dom"}, {"tipo": "sem", "nome": "Semana 16"}, {"tipo": "dia", "data": "20/04", "dia_sem": "Seg"}, {"tipo": "dia", "data": "21/04", "dia_sem": "Ter"}, {"tipo": "dia", "data": "22/04", "dia_sem": "Qua"}, {"tipo": "dia", "data": "23/04", "dia_sem": "Qui"}, {"tipo": "dia", "data": "24/04", "dia_sem": "Sex"}, {"tipo": "dia", "data": "25/04", "dia_sem": "Sáb"}, {"tipo": "dia", "data": "26/04", "dia_sem": "Dom"}, {"tipo": "sem", "nome": "Semana 17"}, {"tipo": "dia", "data": "27/04", "dia_sem": "Seg"}, {"tipo": "dia", "data": "28/04", "dia_sem": "Ter"}, {"tipo": "dia", "data": "29/04", "dia_sem": "Qua"}, {"tipo": "dia", "data": "30/04", "dia_sem": "Qui"}, {"tipo": "sem", "nome": "Semana 18"}], "secoes": {"Indicadores": [{"label": "Verba", "tipo": "currency", "total": "R$ 55.493", "valores": ["R$ 1.869", "R$ 1.705", "R$ 1.727", "R$ 1.411", "R$ 1.872", "R$ 8.584", "R$ 1.502", "R$ 1.343", "R$ 1.333", "R$ 1.283", "R$ 1.260", "R$ 1.496", "R$ 2.162", "R$ 10.378", "R$ 1.863", "R$ 1.623", "R$ 1.454", "R$ 1.610", "R$ 1.671", "R$ 1.616", "R$ 2.117", "R$ 11.954", "R$ 1.796", "R$ 2.084", "R$ 1.767", "R$ 1.752", "R$ 1.834", "R$ 2.019", "R$ 3.140", "R$ 14.393", "R$ 2.545", "R$ 2.597", "R$ 2.576", "R$ 2.466", "R$ 10.184"]}, {"label": "Impressões", "tipo": "number", "total": "373.891", "valores": ["11.359", "10.407", "10.608", "9.038", "12.540", "53.952", "10.345", "10.619", "10.544", "10.212", "10.794", "12.634", "14.339", "79.487", "12.996", "11.211", "9.281", "9.824", "10.291", "11.196", "12.518", "77.317", "14.035", "11.776", "11.873", "11.920", "11.919", "14.260", "20.580", "96.363", "17.648", "16.703", "16.409", "16.012", "66.772"]}, {"label": "Cliques", "tipo": "number", "total": "8.137", "valores": ["195", "173", "182", "146", "204", "900", "176", "182", "192", "186", "207", "224", "289", "1.456", "234", "242", "195", "231", "237", "261", "324", "1.724", "346", "287", "294", "278", "270", "357", "535", "2.367", "466", "415", "440", "369", "1.690"]}, {"label": "Page Views", "tipo": "number", "total": "4.899", "valores": ["158", "132", "139", "115", "157", "701", "134", "147", "147", "136", "162", "176", "235", "1.137", "176", "182", "143", "174", "163", "211", "256", "1.305", "262", "220", "227", "201", "194", "254", "398", "1.756", "358", "305", "330", "271", "1.264"]}, {"label": "Optin", "tipo": "number", "total": "511", "valores": ["12", "9", "13", "6", "18", "58", "12", "6", "19", "7", "9", "16", "26", "95", "15", "11", "11", "11", "11", "16", "25", "100", "18", "23", "21", "13", "17", "28", "40", "160", "29", "18", "24", "27", "98"]}, {"label": "Médico", "tipo": "number", "total": "413", "valores": ["12", "9", "13", "6", "18", "58", "12", "6", "19", "7", "9", "16", "26", "95", "15", "11", "11", "11", "11", "16", "25", "100", "18", "23", "21", "13", "17", "28", "40", "160", "29", "18", "24", "27", "98"]}, {"label": "Forms Finalizados", "tipo": "number", "total": "0", "valores": ["—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "0"]}, {"label": "MQL", "tipo": "number", "total": "25", "valores": ["5", "2", "4", "1", "6", "18", "3", "2", "2", "0", "0", "0", "0", "7", "0", "0", "0", "0", "0", "0", "0", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "0"]}, {"label": "SQL", "tipo": "number", "total": "172", "valores": ["5", "4", "2", "1", "3", "15", "6", "3", "7", "6", "2", "0", "8", "32", "4", "11", "4", "2", "1", "3", "5", "30", "14", "8", "8", "7", "8", "7", "8", "60", "13", "7", "11", "4", "35"]}, {"label": "Call Agendada", "tipo": "number", "total": "225", "valores": ["8", "11", "0", "0", "0", "19", "11", "8", "11", "8", "9", "0", "0", "47", "12", "10", "13", "12", "17", "0", "0", "64", "16", "15", "16", "20", "17", "5", "6", "95", "12", "19", "22", "28", "81"]}, {"label": "Call Realizada", "tipo": "number", "total": "212", "valores": ["6", "7", "0", "0", "0", "13", "10", "8", "6", "2", "7", "0", "0", "33", "10", "9", "8", "7", "11", "0", "0", "45", "14", "12", "13", "12", "10", "4", "3", "68", "11", "14", "10", "18", "53"]}, {"label": "Call com Pitch", "tipo": "number", "total": "0", "valores": ["—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "0"]}, {"label": "VENDAS", "tipo": "number_highlight", "total": "45", "valores": ["1", "3", "0", "0", "0", "4", "2", "0", "0", "1", "1", "0", "0", "4", "1", "0", "0", "1", "2", "0", "4", "8", "1", "0", "1", "1", "2", "2", "5", "12", "1", "3", "6", "7", "17"]}, {"label": "FATURAMENTO TOTAL", "tipo": "currency_highlight", "total": "R$ 1.32M", "valores": ["R$ 37k", "R$ 79k", "R$ 0", "R$ 0", "R$ 0", "R$ 116k", "R$ 50k", "R$ 0", "R$ 0", "R$ 37k", "R$ 36k", "R$ 0", "R$ 0", "R$ 123k", "R$ 25k", "R$ 0", "R$ 25k", "R$ 38k", "R$ 53k", "R$ 0", "R$ 0", "R$ 141k", "R$ 105k", "R$ 0", "R$ 33k", "R$ 24k", "R$ 44k", "R$ 0", "R$ 224k", "R$ 430k", "R$ 39k", "R$ 114k", "R$ 125k", "R$ 233k", "R$ 511k"]}], "% de Passagem": [{"label": "CTR", "tipo": "pct", "total": "2.2%", "valores": ["1.7%", "1.7%", "1.7%", "1.6%", "1.6%", "1.7%", "1.7%", "1.7%", "1.8%", "1.8%", "1.9%", "1.8%", "2.0%", "1.8%", "1.8%", "2.2%", "2.1%", "2.4%", "2.3%", "2.3%", "2.6%", "2.2%", "2.5%", "2.4%", "2.5%", "2.3%", "2.3%", "2.5%", "2.6%", "2.5%", "2.6%", "2.5%", "2.7%", "2.3%", "2.5%"]}, {"label": "Conect Rate", "tipo": "pct", "total": "60.2%", "valores": ["81.0%", "76.3%", "76.4%", "78.8%", "77.0%", "77.9%", "76.1%", "80.8%", "76.6%", "73.1%", "78.3%", "78.6%", "81.3%", "78.1%", "75.2%", "75.2%", "73.3%", "75.3%", "68.8%", "80.8%", "79.0%", "75.7%", "75.7%", "76.7%", "77.2%", "72.3%", "71.9%", "71.1%", "74.4%", "74.2%", "76.8%", "73.5%", "75.0%", "73.4%", "74.8%"]}, {"label": "Conversão Pg", "tipo": "pct", "total": "10.4%", "valores": ["7.6%", "6.8%", "9.4%", "5.2%", "11.5%", "8.3%", "9.0%", "4.1%", "12.9%", "5.1%", "5.6%", "9.1%", "11.1%", "8.4%", "8.5%", "6.0%", "7.7%", "6.3%", "6.7%", "7.6%", "9.8%", "7.7%", "6.9%", "10.5%", "9.3%", "6.5%", "8.8%", "11.0%", "10.1%", "9.1%", "8.1%", "5.9%", "7.3%", "10.0%", "7.8%"]}, {"label": "Médico / Optin", "tipo": "pct", "total": "80.8%", "valores": ["100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%"]}, {"label": "MQL / Optin", "tipo": "pct", "total": "4.9%", "valores": ["41.7%", "22.2%", "30.8%", "16.7%", "33.3%", "31.0%", "25.0%", "33.3%", "10.5%", "0.0%", "0.0%", "0.0%", "0.0%", "7.4%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%"]}, {"label": "SQL / Optin", "tipo": "pct", "total": "—", "valores": ["—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—"]}, {"label": "Agendamentos / MQL", "tipo": "multiplier", "total": "9.00", "valores": ["1.60", "5.50", "0.00", "0.00", "0.00", "1.06", "3.67", "4.00", "3.00", "—", "—", "—", "—", "6.71", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—"]}, {"label": "Show Up", "tipo": "pct", "total": "94.2%", "valores": ["75.0%", "63.6%", "—", "—", "—", "68.4%", "90.9%", "100.0%", "—", "25.0%", "77.8%", "—", "—", "70.2%", "83.3%", "90.0%", "—", "58.3%", "64.7%", "—", "—", "70.3%", "87.5%", "80.0%", "81.2%", "60.0%", "58.8%", "80.0%", "50.0%", "71.6%", "91.7%", "73.7%", "45.5%", "64.3%", "65.4%"]}, {"label": "Call com Pitch / Call Realizada", "tipo": "pct", "total": "0.0%", "valores": ["0.0%", "0.0%", "—", "—", "—", "0.0%", "0.0%", "0.0%", "—", "0.0%", "0.0%", "—", "—", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "—", "—", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%"]}, {"label": "Taxa de Conversão Venda", "tipo": "pct", "total": "21.2%", "valores": ["16.7%", "42.9%", "—", "—", "—", "30.8%", "20.0%", "0.0%", "—", "50.0%", "14.3%", "—", "—", "12.1%", "10.0%", "0.0%", "0.0%", "14.3%", "18.2%", "—", "—", "17.8%", "7.1%", "0.0%", "7.7%", "8.3%", "20.0%", "50.0%", "166.7%", "17.6%", "9.1%", "21.4%", "60.0%", "38.9%", "32.1%"]}], "Custos": [{"label": "CPC", "tipo": "currency", "total": "R$ 7", "valores": ["R$ 10", "R$ 10", "R$ 9", "R$ 10", "R$ 9", "R$ 10", "R$ 9", "R$ 7", "R$ 7", "R$ 7", "R$ 6", "R$ 7", "R$ 7", "R$ 7", "R$ 8", "R$ 7", "R$ 7", "R$ 7", "R$ 7", "R$ 6", "R$ 7", "R$ 7", "R$ 5", "R$ 7", "R$ 6", "R$ 6", "R$ 7", "R$ 6", "R$ 6", "R$ 6", "R$ 5", "R$ 6", "R$ 6", "R$ 7", "R$ 6"]}, {"label": "CPL", "tipo": "currency", "total": "R$ 109", "valores": ["R$ 156", "R$ 189", "R$ 133", "R$ 235", "R$ 104", "R$ 148", "R$ 125", "R$ 224", "R$ 70", "R$ 183", "R$ 140", "R$ 93", "R$ 83", "R$ 109", "R$ 124", "R$ 148", "R$ 132", "R$ 146", "R$ 152", "R$ 101", "R$ 85", "R$ 120", "R$ 100", "R$ 91", "R$ 84", "R$ 135", "R$ 108", "R$ 72", "R$ 78", "R$ 90", "R$ 88", "R$ 144", "R$ 107", "R$ 91", "R$ 104"]}, {"label": "Custo por Médico", "tipo": "currency", "total": "R$ 134", "valores": ["R$ 156", "R$ 189", "R$ 133", "R$ 235", "R$ 104", "R$ 148", "R$ 125", "R$ 224", "R$ 70", "R$ 183", "R$ 140", "R$ 93", "R$ 83", "R$ 109", "R$ 124", "R$ 148", "R$ 132", "R$ 146", "R$ 152", "R$ 101", "R$ 85", "R$ 120", "R$ 100", "R$ 91", "R$ 84", "R$ 135", "R$ 108", "R$ 72", "R$ 78", "R$ 90", "R$ 88", "R$ 144", "R$ 107", "R$ 91", "R$ 104"]}, {"label": "Custo por MQL", "tipo": "currency", "total": "R$ 2.220", "valores": ["R$ 374", "R$ 853", "R$ 432", "R$ 1.411", "R$ 312", "R$ 477", "R$ 501", "R$ 671", "R$ 666", "—", "—", "—", "—", "R$ 1.483", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—"]}, {"label": "Custo por SQL", "tipo": "currency", "total": "R$ 323", "valores": ["R$ 374", "R$ 426", "R$ 863", "R$ 1.411", "R$ 624", "R$ 572", "R$ 250", "R$ 448", "R$ 190", "R$ 214", "R$ 630", "—", "R$ 270", "R$ 324", "R$ 466", "R$ 148", "R$ 363", "R$ 805", "R$ 1.671", "R$ 539", "R$ 423", "R$ 398", "R$ 128", "R$ 260", "R$ 221", "R$ 250", "R$ 229", "R$ 288", "R$ 392", "R$ 240", "R$ 196", "R$ 371", "R$ 234", "R$ 617", "R$ 291"]}, {"label": "Custo por Call Agendada", "tipo": "currency", "total": "R$ 247", "valores": ["R$ 234", "R$ 155", "—", "—", "—", "R$ 452", "R$ 137", "R$ 168", "R$ 222", "R$ 160", "R$ 140", "—", "—", "R$ 221", "R$ 155", "R$ 162", "R$ 112", "—", "R$ 98", "—", "—", "R$ 187", "R$ 112", "R$ 139", "R$ 110", "R$ 88", "R$ 108", "R$ 404", "R$ 523", "R$ 152", "R$ 212", "R$ 137", "R$ 117", "R$ 88", "R$ 126"]}, {"label": "Custo por Call Realizada", "tipo": "currency", "total": "R$ 262", "valores": ["R$ 311", "R$ 244", "—", "—", "—", "R$ 660", "R$ 150", "R$ 168", "—", "R$ 641", "R$ 180", "—", "—", "R$ 314", "R$ 186", "R$ 180", "R$ 182", "—", "R$ 152", "—", "—", "R$ 266", "R$ 128", "R$ 174", "R$ 136", "R$ 146", "R$ 183", "R$ 505", "R$ 1.047", "R$ 212", "R$ 231", "R$ 185", "R$ 258", "R$ 137", "R$ 192"]}, {"label": "CAC Ads", "tipo": "currency", "total": "R$ 1.233", "valores": ["R$ 1.869", "R$ 568", "—", "—", "—", "R$ 2.146", "R$ 751", "—", "—", "R$ 1.283", "R$ 1.260", "—", "—", "R$ 2.594", "R$ 1.863", "—", "—", "—", "R$ 835", "—", "R$ 529", "R$ 1.494", "R$ 1.796", "—", "R$ 1.767", "R$ 1.752", "R$ 917", "R$ 1.010", "R$ 628", "R$ 1.199", "R$ 2.545", "R$ 866", "R$ 429", "R$ 352", "R$ 599"]}, {"label": "Ticket Médio", "tipo": "currency", "total": "R$ 29.359", "valores": ["R$ 37.000", "R$ 26.333", "—", "—", "—", "R$ 29.000", "R$ 25.000", "—", "—", "R$ 37.000", "R$ 36.250", "—", "—", "R$ 30.812", "R$ 25.000", "—", "—", "R$ 37.900", "R$ 26.450", "—", "R$ 0", "R$ 17.600", "R$ 105.400", "—", "R$ 33.300", "R$ 24.200", "R$ 21.750", "R$ 0", "R$ 44.733", "R$ 35.839", "R$ 39.282", "R$ 37.895", "R$ 20.850", "R$ 33.283", "R$ 30.062"]}, {"label": "ROAS", "tipo": "roas", "total": "23.81x", "valores": ["19.80x", "46.33x", "0.00x", "0.00x", "—", "13.51x", "33.28x", "0.00x", "0.00x", "28.85x", "28.77x", "0.00x", "0.00x", "11.88x", "13.42x", "0.00x", "17.20x", "—", "31.66x", "0.00x", "0.00x", "11.78x", "58.68x", "0.00x", "18.85x", "13.81x", "23.71x", "0.00x", "71.24x", "29.88x", "15.43x", "43.78x", "48.57x", "94.47x", "50.18x"]}]}}, "mar": {"colunas": [{"tipo": "dia", "data": "01/03", "dia_sem": "Dom"}, {"tipo": "dia", "data": "02/03", "dia_sem": "Seg"}, {"tipo": "dia", "data": "03/03", "dia_sem": "Ter"}, {"tipo": "dia", "data": "04/03", "dia_sem": "Qua"}, {"tipo": "dia", "data": "05/03", "dia_sem": "Qui"}, {"tipo": "dia", "data": "06/03", "dia_sem": "Sex"}, {"tipo": "dia", "data": "07/03", "dia_sem": "Sáb"}, {"tipo": "dia", "data": "08/03", "dia_sem": "Dom"}, {"tipo": "sem", "nome": "Semana 10"}, {"tipo": "dia", "data": "09/03", "dia_sem": "Seg"}, {"tipo": "dia", "data": "10/03", "dia_sem": "Ter"}, {"tipo": "dia", "data": "11/03", "dia_sem": "Qua"}, {"tipo": "dia", "data": "12/03", "dia_sem": "Qui"}, {"tipo": "dia", "data": "13/03", "dia_sem": "Sex"}, {"tipo": "dia", "data": "14/03", "dia_sem": "Sáb"}, {"tipo": "dia", "data": "15/03", "dia_sem": "Dom"}, {"tipo": "sem", "nome": "Semana 11"}, {"tipo": "dia", "data": "16/03", "dia_sem": "Seg"}, {"tipo": "dia", "data": "17/03", "dia_sem": "Ter"}, {"tipo": "dia", "data": "18/03", "dia_sem": "Qua"}, {"tipo": "dia", "data": "19/03", "dia_sem": "Qui"}, {"tipo": "dia", "data": "20/03", "dia_sem": "Sex"}, {"tipo": "dia", "data": "21/03", "dia_sem": "Sáb"}, {"tipo": "dia", "data": "22/03", "dia_sem": "Dom"}, {"tipo": "sem", "nome": "Semana 12"}, {"tipo": "dia", "data": "23/03", "dia_sem": "Seg"}, {"tipo": "dia", "data": "24/03", "dia_sem": "Ter"}, {"tipo": "dia", "data": "25/03", "dia_sem": "Qua"}, {"tipo": "dia", "data": "26/03", "dia_sem": "Qui"}, {"tipo": "dia", "data": "27/03", "dia_sem": "Sex"}, {"tipo": "dia", "data": "28/03", "dia_sem": "Sáb"}, {"tipo": "dia", "data": "29/03", "dia_sem": "Dom"}, {"tipo": "dia", "data": "30/03", "dia_sem": "Seg"}, {"tipo": "dia", "data": "31/03", "dia_sem": "Ter"}, {"tipo": "sem", "nome": "Semana 13"}], "secoes": {"Indicadores": [{"label": "Verba", "tipo": "currency", "total": "R$ 60.158", "valores": ["R$ 1.867", "R$ 1.604", "R$ 1.823", "R$ 1.695", "R$ 369", "R$ 2.367", "R$ 2.239", "R$ 2.214", "R$ 14.178", "R$ 1.830", "R$ 1.936", "R$ 2.037", "R$ 2.386", "R$ 1.760", "R$ 1.304", "R$ 1.756", "R$ 13.009", "R$ 1.756", "R$ 2.068", "R$ 1.888", "R$ 1.840", "R$ 1.725", "R$ 1.641", "R$ 2.357", "R$ 13.274", "R$ 1.862", "R$ 1.787", "R$ 2.126", "R$ 2.256", "R$ 2.386", "R$ 2.133", "R$ 2.723", "R$ 2.309", "R$ 2.114", "R$ 19.696"]}, {"label": "Impressões", "tipo": "number", "total": "579.016", "valores": ["17.780", "15.567", "15.948", "15.410", "3.226", "21.983", "20.757", "19.669", "130.340", "16.527", "17.048", "19.024", "25.943", "15.908", "11.248", "18.356", "124.054", "18.360", "24.766", "24.071", "24.183", "19.606", "15.641", "21.783", "148.410", "18.346", "18.129", "22.056", "20.585", "19.628", "20.354", "25.273", "19.700", "12.141", "176.212"]}, {"label": "Cliques", "tipo": "number", "total": "10.092", "valores": ["302", "299", "303", "282", "75", "363", "443", "424", "2.491", "323", "313", "354", "462", "286", "152", "367", "2.257", "367", "444", "407", "398", "291", "236", "316", "2.459", "315", "268", "307", "329", "347", "319", "453", "324", "223", "2.885"]}, {"label": "Page Views", "tipo": "number", "total": "6.561", "valores": ["190", "192", "197", "147", "9", "246", "283", "181", "1.445", "222", "213", "278", "322", "199", "116", "248", "1.598", "248", "275", "247", "225", "206", "173", "236", "1.610", "246", "181", "228", "216", "217", "180", "269", "193", "178", "1.908"]}, {"label": "Optin", "tipo": "number", "total": "402", "valores": ["23", "20", "12", "9", "0", "17", "21", "11", "113", "16", "22", "14", "10", "11", "3", "15", "91", "15", "20", "16", "11", "12", "12", "3", "89", "9", "6", "15", "13", "14", "6", "27", "4", "15", "109"]}, {"label": "Médico", "tipo": "number", "total": "402", "valores": ["23", "20", "12", "9", "0", "17", "21", "11", "113", "16", "22", "14", "10", "11", "3", "15", "91", "15", "20", "16", "11", "12", "12", "3", "89", "9", "6", "15", "13", "14", "6", "27", "4", "15", "109"]}, {"label": "Forms Finalizados", "tipo": "number", "total": "0", "valores": ["—", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "—", "—", "0"]}, {"label": "MQL", "tipo": "number", "total": "91", "valores": ["3", "4", "2", "4", "0", "3", "5", "5", "26", "3", "5", "3", "2", "4", "1", "3", "21", "3", "4", "6", "1", "3", "1", "2", "20", "1", "1", "6", "3", "5", "1", "1", "4", "2", "24"]}, {"label": "SQL", "tipo": "number", "total": "109", "valores": ["3", "4", "3", "9", "3", "1", "0", "4", "27", "6", "7", "6", "4", "4", "1", "2", "30", "2", "4", "10", "0", "1", "1", "1", "19", "6", "3", "4", "7", "6", "0", "0", "5", "2", "33"]}, {"label": "Call Agendada", "tipo": "number", "total": "256", "valores": ["0", "8", "8", "11", "12", "10", "2", "0", "51", "12", "15", "11", "14", "10", "2", "0", "64", "12", "16", "15", "11", "10", "0", "0", "64", "16", "11", "6", "10", "9", "0", "0", "10", "15", "77"]}, {"label": "Call Realizada", "tipo": "number", "total": "187", "valores": ["0", "6", "8", "9", "8", "6", "1", "0", "38", "9", "9", "8", "12", "7", "1", "0", "46", "9", "13", "8", "8", "8", "0", "0", "46", "11", "8", "4", "8", "7", "0", "0", "8", "11", "57"]}, {"label": "Call com Pitch", "tipo": "number", "total": "0", "valores": ["—", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "0", "—", "—", "—", "—", "—", "—", "—", "—", "—", "0"]}, {"label": "VENDAS", "tipo": "number_highlight", "total": "42", "valores": ["0", "0", "2", "0", "0", "1", "1", "0", "4", "1", "0", "1", "0", "2", "1", "0", "5", "3", "2", "3", "2", "0", "0", "0", "10", "1", "2", "1", "2", "0", "4", "0", "8", "5", "23"]}, {"label": "FATURAMENTO TOTAL", "tipo": "currency_highlight", "total": "R$ 1.42M", "valores": ["R$ 0", "R$ 0", "R$ 55k", "R$ 0", "R$ 0", "R$ 37k", "R$ 35k", "R$ 0", "R$ 127k", "R$ 0", "R$ 0", "R$ 25k", "R$ 15k", "R$ 67k", "R$ 33k", "R$ 0", "R$ 140k", "R$ 108k", "R$ 68k", "R$ 101k", "R$ 42k", "R$ 0", "R$ 0", "R$ 0", "R$ 319k", "R$ 33k", "R$ 77k", "R$ 34k", "R$ 62k", "R$ 0", "R$ 153k", "R$ 0", "R$ 306k", "R$ 170k", "R$ 835k"]}], "% de Passagem": [{"label": "CTR", "tipo": "pct", "total": "1.7%", "valores": ["1.7%", "1.9%", "1.9%", "1.8%", "2.3%", "1.7%", "2.1%", "2.2%", "1.9%", "2.0%", "1.8%", "1.9%", "1.8%", "1.8%", "1.4%", "2.0%", "1.8%", "2.0%", "1.8%", "1.7%", "1.6%", "1.5%", "1.5%", "1.5%", "1.7%", "1.7%", "1.5%", "1.4%", "1.6%", "1.8%", "1.6%", "1.8%", "1.6%", "1.8%", "1.6%"]}, {"label": "Conect Rate", "tipo": "pct", "total": "65.0%", "valores": ["62.9%", "64.2%", "65.0%", "52.1%", "12.0%", "67.8%", "63.9%", "42.7%", "58.0%", "68.7%", "68.1%", "78.5%", "69.7%", "69.6%", "76.3%", "67.6%", "70.8%", "67.6%", "61.9%", "60.7%", "56.5%", "70.8%", "73.3%", "74.7%", "65.5%", "78.1%", "67.5%", "74.3%", "65.7%", "62.5%", "56.4%", "59.4%", "59.6%", "79.8%", "66.1%"]}, {"label": "Conversão Pg", "tipo": "pct", "total": "6.1%", "valores": ["12.1%", "10.4%", "6.1%", "6.1%", "0.0%", "6.9%", "7.4%", "6.1%", "7.8%", "7.2%", "10.3%", "5.0%", "3.1%", "5.5%", "2.6%", "6.0%", "5.7%", "6.0%", "7.3%", "6.5%", "4.9%", "5.8%", "6.9%", "1.3%", "5.5%", "3.7%", "3.3%", "6.6%", "6.0%", "6.5%", "3.3%", "10.0%", "2.1%", "8.4%", "5.7%"]}, {"label": "Médico / Optin", "tipo": "pct", "total": "100.0%", "valores": ["100.0%", "100.0%", "100.0%", "100.0%", "—", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%", "100.0%"]}, {"label": "MQL / Optin", "tipo": "pct", "total": "22.6%", "valores": ["13.0%", "20.0%", "16.7%", "44.4%", "—", "17.6%", "23.8%", "45.5%", "23.0%", "18.8%", "22.7%", "21.4%", "20.0%", "36.4%", "33.3%", "20.0%", "23.1%", "20.0%", "20.0%", "37.5%", "9.1%", "25.0%", "8.3%", "66.7%", "22.5%", "11.1%", "16.7%", "40.0%", "23.1%", "35.7%", "16.7%", "3.7%", "100.0%", "13.3%", "22.0%"]}, {"label": "SQL / Optin", "tipo": "pct", "total": "—", "valores": ["—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—", "—"]}, {"label": "Agendamentos / MQL", "tipo": "multiplier", "total": "2.81", "valores": ["0.00", "2.00", "4.00", "2.75", "—", "3.33", "0.40", "0.00", "1.96", "4.00", "3.00", "2.67", "7.00", "2.50", "2.00", "0.00", "3.05", "4.00", "4.00", "2.50", "11.00", "3.33", "0.00", "0.00", "3.20", "16.00", "11.00", "1.00", "3.33", "1.80", "0.00", "0.00", "2.50", "7.50", "3.21"]}, {"label": "Show Up", "tipo": "pct", "total": "73.0%", "valores": ["—", "75.0%", "100.0%", "81.8%", "66.7%", "60.0%", "50.0%", "—", "74.5%", "75.0%", "60.0%", "—", "85.7%", "70.0%", "50.0%", "—", "71.9%", "75.0%", "81.2%", "250.0%", "72.7%", "80.0%", "—", "—", "71.9%", "68.8%", "72.7%", "66.7%", "80.0%", "77.8%", "—", "—", "80.0%", "73.3%", "74.0%"]}, {"label": "Call com Pitch / Call Realizada", "tipo": "pct", "total": "0.0%", "valores": ["—", "0.0%", "0.0%", "0.0%", "—", "—", "—", "—", "0.0%", "0.0%", "0.0%", "—", "0.0%", "0.0%", "0.0%", "—", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "—", "—", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "0.0%", "—", "—", "0.0%", "0.0%", "0.0%"]}, {"label": "Taxa de Conversão Venda", "tipo": "pct", "total": "22.5%", "valores": ["—", "0.0%", "25.0%", "0.0%", "0.0%", "16.7%", "100.0%", "—", "10.5%", "11.1%", "0.0%", "—", "0.0%", "28.6%", "100.0%", "—", "10.9%", "33.3%", "15.4%", "37.5%", "25.0%", "0.0%", "—", "—", "21.7%", "9.1%", "25.0%", "25.0%", "25.0%", "0.0%", "—", "—", "100.0%", "45.5%", "40.4%"]}], "Custos": [{"label": "CPC", "tipo": "currency", "total": "R$ 6", "valores": ["R$ 6", "R$ 5", "R$ 6", "R$ 6", "R$ 5", "R$ 7", "R$ 5", "R$ 5", "R$ 6", "R$ 6", "R$ 6", "R$ 6", "R$ 5", "R$ 6", "R$ 9", "R$ 5", "R$ 6", "R$ 5", "R$ 5", "R$ 5", "R$ 5", "R$ 6", "R$ 7", "R$ 7", "R$ 5", "R$ 6", "R$ 7", "R$ 7", "R$ 7", "R$ 7", "R$ 7", "R$ 6", "R$ 7", "R$ 9", "R$ 7"]}, {"label": "CPL", "tipo": "currency", "total": "R$ 150", "valores": ["R$ 81", "R$ 80", "R$ 152", "R$ 188", "—", "R$ 139", "R$ 107", "R$ 201", "R$ 125", "R$ 114", "R$ 88", "R$ 145", "R$ 239", "R$ 160", "R$ 435", "R$ 117", "R$ 143", "R$ 117", "R$ 103", "R$ 118", "R$ 167", "R$ 144", "R$ 137", "R$ 786", "R$ 149", "R$ 207", "R$ 298", "R$ 142", "R$ 174", "R$ 170", "R$ 356", "R$ 101", "R$ 577", "R$ 141", "R$ 181"]}, {"label": "Custo por Médico", "tipo": "currency", "total": "R$ 150", "valores": ["R$ 81", "R$ 80", "R$ 152", "R$ 188", "—", "R$ 139", "R$ 107", "R$ 201", "R$ 125", "R$ 114", "R$ 88", "R$ 145", "R$ 239", "R$ 160", "R$ 435", "R$ 117", "R$ 143", "R$ 117", "R$ 103", "R$ 118", "R$ 167", "R$ 144", "R$ 137", "R$ 786", "R$ 149", "R$ 207", "R$ 298", "R$ 142", "R$ 174", "R$ 170", "R$ 356", "R$ 101", "R$ 577", "R$ 141", "R$ 181"]}, {"label": "Custo por MQL", "tipo": "currency", "total": "R$ 661", "valores": ["R$ 622", "R$ 401", "R$ 911", "R$ 424", "—", "R$ 789", "R$ 448", "R$ 443", "R$ 545", "R$ 610", "R$ 387", "R$ 679", "R$ 1.193", "R$ 440", "R$ 1.304", "R$ 585", "R$ 619", "R$ 585", "R$ 517", "R$ 315", "R$ 1.840", "R$ 575", "R$ 1.641", "R$ 1.178", "R$ 664", "R$ 1.862", "R$ 1.787", "R$ 354", "R$ 752", "R$ 477", "R$ 2.133", "R$ 2.723", "R$ 577", "R$ 1.057", "R$ 821"]}, {"label": "Custo por SQL", "tipo": "currency", "total": "R$ 552", "valores": ["R$ 622", "R$ 401", "R$ 608", "R$ 188", "R$ 123", "R$ 2.367", "—", "R$ 554", "R$ 525", "R$ 305", "R$ 277", "R$ 339", "R$ 597", "R$ 440", "R$ 1.304", "R$ 878", "R$ 434", "R$ 878", "R$ 517", "R$ 189", "—", "R$ 1.725", "R$ 1.641", "R$ 2.357", "R$ 699", "R$ 310", "R$ 596", "R$ 531", "R$ 322", "R$ 398", "—", "—", "R$ 462", "R$ 1.057", "R$ 597"]}, {"label": "Custo por Call Agendada", "tipo": "currency", "total": "R$ 235", "valores": ["—", "R$ 200", "R$ 228", "R$ 154", "R$ 31", "R$ 237", "R$ 1.120", "—", "R$ 278", "R$ 153", "R$ 129", "R$ 255", "R$ 170", "R$ 176", "R$ 652", "—", "R$ 203", "R$ 146", "R$ 129", "R$ 126", "—", "R$ 173", "—", "—", "R$ 207", "R$ 116", "R$ 162", "R$ 354", "R$ 226", "R$ 265", "—", "—", "R$ 231", "R$ 141", "R$ 256"]}, {"label": "Custo por Call Realizada", "tipo": "currency", "total": "R$ 322", "valores": ["—", "R$ 267", "R$ 228", "R$ 188", "R$ 46", "R$ 394", "R$ 2.239", "—", "R$ 373", "R$ 203", "R$ 215", "—", "R$ 199", "R$ 251", "R$ 1.304", "—", "R$ 283", "R$ 195", "R$ 159", "R$ 236", "—", "R$ 216", "—", "—", "R$ 289", "R$ 169", "R$ 223", "R$ 531", "R$ 282", "R$ 341", "—", "—", "R$ 289", "R$ 192", "R$ 346"]}, {"label": "CAC Ads", "tipo": "currency", "total": "R$ 1.432", "valores": ["—", "—", "R$ 911", "—", "—", "R$ 2.367", "R$ 2.239", "—", "R$ 3.545", "R$ 1.830", "—", "R$ 2.037", "—", "R$ 880", "R$ 1.304", "—", "R$ 2.602", "R$ 585", "R$ 1.034", "R$ 629", "—", "—", "—", "—", "R$ 1.327", "R$ 1.862", "R$ 894", "R$ 2.126", "R$ 1.128", "—", "R$ 533", "—", "R$ 289", "R$ 423", "R$ 856"]}, {"label": "Ticket Médio", "tipo": "currency", "total": "R$ 33.822", "valores": ["—", "—", "R$ 27.500", "—", "—", "R$ 37.000", "R$ 34.800", "—", "R$ 31.700", "R$ 0", "—", "R$ 25.000", "—", "R$ 33.500", "R$ 33.300", "—", "R$ 28.060", "R$ 35.833", "R$ 34.000", "R$ 33.742", "R$ 21.000", "—", "—", "—", "R$ 31.872", "R$ 33.251", "R$ 38.500", "R$ 33.500", "R$ 31.000", "—", "R$ 38.366", "—", "R$ 38.245", "R$ 33.906", "R$ 36.292"]}, {"label": "ROAS", "tipo": "roas", "total": "23.61x", "valores": ["0.00x", "0.00x", "30.17x", "0.00x", "—", "15.63x", "15.54x", "0.00x", "8.94x", "0.00x", "0.00x", "12.28x", "6.29x", "38.07x", "25.53x", "0.00x", "10.78x", "61.21x", "32.88x", "53.62x", "—", "0.00x", "0.00x", "0.00x", "24.01x", "17.85x", "43.09x", "15.76x", "27.48x", "0.00x", "71.94x", "0.00x", "132.50x", "80.20x", "42.38x"]}]}}};
+
+const BENCHMARKS = {
+  custo: {
+    'CPL': { bom: 150, ok: 300 },
+    'Custo por MQL': { bom: 500, ok: 800 },
+    'Custo por SQL': { bom: 600, ok: 1000 },
+    'Custo por Call Realizada': { bom: 500, ok: 800 },
+    'CAC Ads': { bom: 2000, ok: 4000 }
+  },
+  passagem: {
+    'CTR': { bom: 0.015, ok: 0.01 },
+    'Conversão Pg': { bom: 0.05, ok: 0.03 },
+    'MQL / Optin': { bom: 0.20, ok: 0.10 },
+    'Show Up': { bom: 0.70, ok: 0.50 },
+    'Taxa de Conversão Venda': { bom: 0.20, ok: 0.10 }
+  }
+};
+
+// Helper pra extrair número de strings formatadas tipo "R$ 149"
+function parseValor(str, tipo) {
+  if (!str || str === '—') return null;
+  if (tipo === 'pct') {
+    return parseFloat(String(str).replace('%', '').replace(',', '.')) / 100;
+  }
+  // Remove R$, pontos, vírgulas como milhar
+  const limpo = String(str).replace(/R\$|\s|%|x/g, '').replace(/\./g, '').replace(',', '.');
+  return parseFloat(limpo);
+}
+
+function statusCusto(label, valor) {
+  const b = BENCHMARKS.custo[label];
+  if (!b || valor == null) return 'neutral';
+  if (valor <= b.bom) return 'good';
+  if (valor <= b.ok) return 'warn';
+  return 'bad';
+}
+
+function statusPassagem(label, valor) {
+  const b = BENCHMARKS.passagem[label];
+  if (!b || valor == null) return 'neutral';
+  if (valor >= b.bom) return 'good';
+  if (valor >= b.ok) return 'warn';
+  return 'bad';
+}
+
+function renderCustos(dados) {
+  const target = document.getElementById('lista-custos');
+  const linhas = [
+    { label: 'CPL', bench: '< R$ 150' },
+    { label: 'Custo por MQL', bench: '< R$ 500' },
+    { label: 'Custo por SQL', bench: '< R$ 600' },
+    { label: 'Custo por Call Realizada', bench: '< R$ 500' },
+    { label: 'CAC Ads', bench: '< R$ 2.000' }
+  ];
+  target.innerHTML = '';
+  linhas.forEach(l => {
+    const item = dados.secoes['Custos'].find(x => x.label === l.label);
+    if (!item) return;
+    const v = parseValor(item.total, 'currency');
+    const st = statusCusto(l.label, v);
+    target.innerHTML += `
+      <div class="funil-row ${st}">
+        <div>
+          <div class="funil-row-label">${l.label}</div>
+          <div class="funil-row-bench">Meta: ${l.bench}</div>
+        </div>
+        <div class="funil-row-value ${st}">${item.total}</div>
+      </div>
+    `;
+  });
+}
+
+function renderPassagem(dados) {
+  const target = document.getElementById('lista-passagem');
+  const linhas = [
+    { label: 'CTR', bench: '> 1,5%' },
+    { label: 'Conversão Pg', bench: '> 5,0%' },
+    { label: 'MQL / Optin', bench: '> 20%' },
+    { label: 'Show Up', bench: '> 70%' },
+    { label: 'Taxa de Conversão Venda', bench: '> 20%' }
+  ];
+  target.innerHTML = '';
+  linhas.forEach(l => {
+    const item = dados.secoes['% de Passagem'].find(x => x.label === l.label);
+    if (!item) return;
+    const v = parseValor(item.total, 'pct');
+    const st = statusPassagem(l.label, v);
+    target.innerHTML += `
+      <div class="funil-row ${st}">
+        <div>
+          <div class="funil-row-label">${l.label}</div>
+          <div class="funil-row-bench">Meta: ${l.bench}</div>
+        </div>
+        <div class="funil-row-value ${st}">${item.total}</div>
+      </div>
+    `;
+  });
+}
+
+function renderComparativo() {
+  const target = document.getElementById('compare-body');
+  const linhas = [
+    { secao: 'Indicadores', label: 'Verba', positivoEhAlta: false },
+    { secao: 'Indicadores', label: 'Optin', positivoEhAlta: true },
+    { secao: 'Indicadores', label: 'MQL', positivoEhAlta: true },
+    { secao: 'Indicadores', label: 'SQL', positivoEhAlta: true },
+    { secao: 'Indicadores', label: 'Call Realizada', positivoEhAlta: true },
+    { secao: 'Indicadores', label: 'VENDAS', positivoEhAlta: true },
+    { secao: 'Indicadores', label: 'FATURAMENTO TOTAL', positivoEhAlta: true },
+    { secao: '% de Passagem', label: 'Show Up', positivoEhAlta: true },
+    { secao: '% de Passagem', label: 'Taxa de Conversão Venda', positivoEhAlta: true },
+    { secao: 'Custos', label: 'CPL', positivoEhAlta: false },
+    { secao: 'Custos', label: 'CAC Ads', positivoEhAlta: false },
+    { secao: 'Custos', label: 'ROAS', positivoEhAlta: true }
+  ];
+
+  target.innerHTML = '';
+  linhas.forEach(l => {
+    const mar = TRAFEGO_DATA.mar.secoes[l.secao].find(x => x.label === l.label);
+    const abr = TRAFEGO_DATA.abr.secoes[l.secao].find(x => x.label === l.label);
+    if (!mar || !abr) return;
+
+    const tipoVal = mar.tipo;
+    const vMar = parseValor(mar.total, tipoVal);
+    const vAbr = parseValor(abr.total, tipoVal);
+
+    let deltaClass = 'delta-neutral';
+    let deltaStr = '—';
+    if (vMar != null && vAbr != null && vMar !== 0) {
+      const pct = (vAbr - vMar) / vMar * 100;
+      const sinal = pct >= 0 ? '↑' : '↓';
+      deltaStr = `${sinal} ${Math.abs(pct).toFixed(1)}%`;
+      const subiu = pct >= 0;
+      // se positivo é alta, subir = good; se positivo é baixa, descer = good
+      const good = (subiu && l.positivoEhAlta) || (!subiu && !l.positivoEhAlta);
+      if (Math.abs(pct) < 3) deltaClass = 'delta-neutral';
+      else deltaClass = good ? 'delta-up' : 'delta-down';
+    }
+    target.innerHTML += `
+      <tr>
+        <td>${l.label}</td>
+        <td class="num">${mar.total}</td>
+        <td class="num">${abr.total}</td>
+        <td class="num ${deltaClass}">${deltaStr}</td>
+      </tr>
+    `;
+  });
+}
+
+function renderInsights() {
+  const target = document.getElementById('insights-list');
+  // Calcular insights dinâmicos
+  const mqlMar = parseValor(TRAFEGO_DATA.mar.secoes['Indicadores'].find(x=>x.label==='MQL').total, 'number');
+  const mqlAbr = parseValor(TRAFEGO_DATA.abr.secoes['Indicadores'].find(x=>x.label==='MQL').total, 'number');
+  const mqlVar = ((mqlAbr - mqlMar) / mqlMar * 100).toFixed(0);
+
+  const sqlMar = parseValor(TRAFEGO_DATA.mar.secoes['Indicadores'].find(x=>x.label==='SQL').total, 'number');
+  const sqlAbr = parseValor(TRAFEGO_DATA.abr.secoes['Indicadores'].find(x=>x.label==='SQL').total, 'number');
+  const sqlVar = ((sqlAbr - sqlMar) / sqlMar * 100).toFixed(0);
+
+  const showupAbr = parseValor(TRAFEGO_DATA.abr.secoes['% de Passagem'].find(x=>x.label==='Show Up').total, 'pct');
+
+  const insights = [
+    {
+      tipo: 'bad',
+      icon: '!',
+      title: `MQL caiu ${mqlVar}% em abril (${mqlMar} → ${mqlAbr})`,
+      desc: 'Queda significativa no número de leads qualificados como MQL. Pode indicar mudança no critério de qualificação, problema na régua de pontuação ou queda na qualidade do tráfego.',
+      action: '<b>Investigar:</b> revisar critérios de pontuação MQL · validar com pré-vendas · checar campanhas que mudaram CPL'
+    },
+    {
+      tipo: 'good',
+      icon: '✓',
+      title: `SQL subiu +${sqlVar}% mesmo com queda de MQL`,
+      desc: 'O time conseguiu qualificar mais leads diretamente como SQL, possivelmente pulando a etapa de MQL. Pode ser sinal de evolução do pré-vendas ou ajuste de funil.',
+      action: '<b>Direcionar:</b> mapear o que mudou no processo · documentar como case · replicar para outros funis'
+    },
+    {
+      tipo: 'good',
+      icon: '✓',
+      title: `Show Up de ${(showupAbr*100).toFixed(0)}% em abril — operação saudável`,
+      desc: 'A taxa de comparecimento às calls está acima da meta de 70%. Indica boa qualidade na qualificação e no processo de agendamento.',
+      action: '<b>Manter:</b> seguir cadência de confirmação · monitorar por SDR individualmente'
+    },
+    {
+      tipo: 'good',
+      icon: '✓',
+      title: 'Vendas subiram +7% com -8% de verba — eficiência ↑',
+      desc: 'Operação ficou mais eficiente: gastando menos, gerando mais resultado. CAC caiu de R$ 1.432 (MAR) para R$ 1.233 (ABR), uma redução de 14%.',
+      action: '<b>Capitalizar:</b> escalar verba nos criativos top performers · revisar mix de campanhas que reduziu custo'
+    },
+    {
+      tipo: 'warn',
+      icon: '!',
+      title: 'Custo por MQL subiu 3x (R$ 661 → R$ 2.220)',
+      desc: 'Como o volume de MQL caiu drasticamente, o custo unitário disparou. Reflexo direto do alerta de MQL acima — não é um problema independente.',
+      action: '<b>Atrelar:</b> tratar junto com investigação do critério MQL · não escalar verba antes de entender'
+    }
+  ];
+
+  target.innerHTML = '';
+  insights.forEach(i => {
+    target.innerHTML += `
+      <div class="insight-card ${i.tipo}">
+        <div class="insight-icon">${i.icon}</div>
+        <div class="insight-content">
+          <div class="insight-title">${i.title}</div>
+          <div class="insight-desc">${i.desc}</div>
+          <div class="insight-action">${i.action}</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function renderTabela() {
+  const periodo = document.getElementById('f-periodo').value;
+  const dados = TRAFEGO_DATA[periodo];
+  const target = document.getElementById('data-table');
+
+  // Header
+  let thead = '<thead><tr>';
+  thead += '<th class="col-label">Indicador</th>';
+  thead += '<th class="col-total">Total<br><span style="font-size:7px;opacity:0.6;font-weight:500;">REALIZADO</span></th>';
+  dados.colunas.forEach(c => {
+    if (c.tipo === 'dia') {
+      thead += `<th class="col-data">${c.data}<span>${c.dia_sem}</span></th>`;
+    } else {
+      thead += `<th class="col-sem">${c.nome}</th>`;
+    }
+  });
+  thead += '</tr></thead>';
+
+  // Body
+  let tbody = '<tbody>';
+  Object.entries(dados.secoes).forEach(([secao, linhas]) => {
+    // Calcular o número total de colunas pra colspan
+    const totalCols = 2 + dados.colunas.length;
+    tbody += `<tr class="section-header"><td colspan="${totalCols}">${secao}</td></tr>`;
+    linhas.forEach(l => {
+      const highlight = (l.label === 'VENDAS' || l.label === 'FATURAMENTO TOTAL') ? 'highlight' : '';
+      tbody += `<tr class="${highlight}">`;
+      tbody += `<td class="col-label">${l.label}</td>`;
+      tbody += `<td class="col-total">${l.total}</td>`;
+      l.valores.forEach((v, i) => {
+        const col = dados.colunas[i];
+        const cls = col.tipo === 'sem' ? 'col-sem' : '';
+        tbody += `<td class="${cls}">${v}</td>`;
+      });
+      tbody += '</tr>';
+    });
+  });
+  tbody += '</tbody>';
+  target.innerHTML = thead + tbody;
+}
+
+function aplicarFiltros() {
+  const periodo = document.getElementById('f-periodo').value;
+  const dados = TRAFEGO_DATA[periodo];
+
+  // Verba hero
+  const verba = dados.secoes['Indicadores'].find(x => x.label === 'Verba');
+  document.getElementById('verba-value').textContent = verba.total;
+  document.getElementById('verba-meta').textContent = periodo === 'abr'
+    ? 'Abril/2026 · 30 dias · funil Pós Med Reg'
+    : 'Março/2026 · 31 dias · funil Pós Med Reg';
+
+  // Trend
+  const trendEl = document.getElementById('verba-trend');
+  if (periodo === 'abr') {
+    trendEl.className = 'verba-trend trend-down';
+    trendEl.textContent = '↓ -8% vs mês anterior';
+  } else {
+    trendEl.className = 'verba-trend trend-down';
+    trendEl.textContent = 'Mês de referência';
+  }
+
+  renderCustos(dados);
+  renderPassagem(dados);
+  renderComparativo();
+  renderInsights();
+  renderTabela();
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', () => {
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tab}`));
+    });
+  });
+
+  // Filtros
+  document.getElementById('f-periodo').addEventListener('change', aplicarFiltros);
+  document.getElementById('f-funil').addEventListener('change', aplicarFiltros);
+
+  // Sidebar
+  fetch('sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('[data-page="trafego"]');
+    if (active) active.classList.add('active');
+    const parent = document.querySelector('[data-page="demanda-parent"]');
+    if (parent) parent.classList.add('active');
+  });
+
+  aplicarFiltros();
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

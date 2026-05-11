@@ -20,9 +20,10 @@ Este repositório contém o protótipo HTML/CSS/JS estático das telas hero da a
 .
 ├── index.html              # Landing page com cards das telas
 ├── dashboard.html          # Tela 1 · Dashboard inicial
-├── mapa-saude.html         # Tela 2 · Mapa de Saúde dos Pilares
+├── mapa-saude.html         # Tela 2 · Painel Estratégico (Pilares × Engrenagens)
 ├── daily-werev.html        # Tela 3 · Daily WeRev (6 passos)
 ├── motivos-perda.html      # Tela 4 · Motivos de Perda (vista por pessoa)
+├── trafego.html            # Tela 5 · Tráfego (Meta Ads · Pós Med Reg)
 ├── sidebar.html            # Componente sidebar (carregado via fetch)
 ├── shared.css              # Estilos compartilhados (tema, layout)
 ├── shared.js               # Toggle de tema com localStorage
@@ -88,11 +89,12 @@ Toggle Claro/Escuro funcional em todas as telas (persiste via `localStorage`).
 
 | # | Tela | Status | Descrição |
 |---|------|--------|-----------|
-| 1 | Dashboard | ✅ | 6 blocos: pacing, mapa saúde, ML², engrenagens, volumetria, sinais |
-| 2 | Mapa de Saúde | ✅ | 4 Pilares × 5 Engrenagens · pilar mais quebrado em destaque · score 6.8/10 |
+| 1 | Dashboard | ✅ | 6 blocos: pacing, painel estratégico, ML², engrenagens, volumetria, sinais |
+| 2 | Painel Estratégico | ✅ | 4 Pilares × 5 Engrenagens · pilar mais quebrado em destaque · score 6.8/10 |
 | 3 | Daily WeRev | ✅ | 6 passos colapsáveis · Inversão Estratégica com destaque gráfico |
 | 4 | Motivos de Perda | ✅ | Top 10 + vista individual por pessoa (Arielma/Gabriel/Samantha) |
-| 5 | FollowUp Infinito | ⏳ | Em desenvolvimento |
+| 5 | Tráfego | ✅ | Meta Ads · custo + passagem · comparativo · tabela detalhada (MAR/ABR/26) |
+| 6 | FollowUp Infinito | ⏳ | Em desenvolvimento |
 
 ---
 
