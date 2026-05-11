@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* HERO PACING */
+    .hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; align-items: end; }
+    @media (max-width: 760px) { .hero-grid { grid-template-columns: 1fr; gap: 20px; } }
+    .hero-value { font-size: 48px; font-weight: 600; letter-spacing: -2px; line-height: 1; }
+    .hero-meta { font-size: 13px; opacity: 0.6; margin-top: 6px; }
+    .hero-progress { margin-top: 16px; height: 6px; border-radius: 3px; overflow: hidden; }
+    .cic.light .hero-progress { background: rgba(12,38,59,0.08); }
+    .cic.dark .hero-progress { background: rgba(226,227,222,0.1); }
+    .hero-fill { height: 100%; background: linear-gradient(90deg, #083590, #c58a30); width: 41%; }
+    .hero-bottom { display: flex; gap: 22px; margin-top: 14px; flex-wrap: wrap; }
+    .hb-label { font-size: 10px; opacity: 0.55; letter-spacing: 0.3px; }
+    .hb-value { font-size: 14px; font-weight: 600; margin-top: 2px; }
+    .triang { display: grid; grid-template-rows: repeat(3, 1fr); gap: 6px; }
+    .triang-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 9px; }
+    .cic.light .triang-item { background: #e2e3de; }
+    .cic.dark .triang-item { background: rgba(226,227,222,0.08); }
+    .triang-label { font-size: 11px; font-weight: 500; opacity: 0.7; }
+    .triang-value { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
+    .triang-item.accent { background: rgba(197,138,48,0.15); }
+    .triang-item.accent .triang-label { color: #c58a30; opacity: 1; }
+
+    .card-arrow { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; opacity: 0.4; transition: all 0.2s; float: right; }
+    .cic.light .card-arrow { background: rgba(12,38,59,0.06); color: #0c263b; }
+    .cic.dark .card-arrow { background: rgba(226,227,222,0.08); color: #e2e3de; }
+    .card.nav:hover .card-arrow { opacity: 1; background: #c58a30; color: #FFF; transform: translateX(2px); }
+
+    .saude-grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 900px) { .saude-grid-2col { grid-template-columns: 1fr; } }
+    .saude-area { padding: 12px 14px; border-radius: 10px; }
+    .cic.light .saude-area { background: rgba(12,38,59,0.03); }
+    .cic.dark .saude-area { background: rgba(226,227,222,0.04); }
+    .saude-area-title { font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; opacity: 0.5; margin-bottom: 10px; }
+    .saude-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid; }
+    .cic.light .saude-row { border-color: rgba(12,38,59,0.05); }
+    .cic.dark .saude-row { border-color: rgba(226,227,222,0.06); }
+    .saude-row:last-child { border-bottom: none; }
+    .saude-icon-wrap { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .saude-icon-wrap svg { width: 16px; height: 16px; }
+    .saude-name { font-size: 12px; font-weight: 500; flex: 1; }
+    .saude-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .s-good { background: #00a050; box-shadow: 0 0 0 3px rgba(0,160,80,0.15); }
+    .s-warn { background: #c58a30; box-shadow: 0 0 0 3px rgba(197,138,48,0.2); }
+    .s-bad { background: #d92020; box-shadow: 0 0 0 3px rgba(217,32,32,0.18); }
+    .saude-info { font-size: 10px; opacity: 0.55; min-width: 70px; text-align: right; }
+
+    /* ML² */
+    .ml2-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 22px; }
+    @media (max-width: 760px) { .ml2-grid { grid-template-columns: 1fr; gap: 16px; } }
+    .ml2-big-num { font-size: 38px; font-weight: 600; letter-spacing: -1.2px; color: #c58a30; line-height: 1; }
+    .ml2-big-label { font-size: 12px; font-weight: 500; opacity: 0.7; margin-top: 6px; }
+    .ml2-stats { margin-top: 16px; display: flex; gap: 18px; flex-wrap: wrap; }
+    .ml2-stat-label { font-size: 9px; opacity: 0.55; letter-spacing: 0.3px; }
+    .ml2-stat-val { font-size: 14px; font-weight: 600; margin-top: 2px; }
+    .ml2-alavanca { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; transition: background 0.15s; cursor: pointer; }
+    .cic.light .ml2-alavanca { background: rgba(12,38,59,0.03); }
+    .cic.dark .ml2-alavanca { background: rgba(226,227,222,0.04); }
+    .ml2-alavanca:hover { background: rgba(197,138,48,0.1); }
+    .ml2-al-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(197,138,48,0.2); color: #c58a30; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .ml2-al-name { font-size: 12px; font-weight: 500; flex: 1; }
+    .ml2-al-impact { font-size: 10px; font-weight: 600; color: #00a050; }
+
+    /* Engrenagens */
+    .engs-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    @media (max-width: 900px) { .engs-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .engs-grid { grid-template-columns: 1fr; } }
+    .eng-card { padding: 14px 12px; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.15s; }
+    .cic.light .eng-card { background: rgba(12,38,59,0.04); }
+    .cic.dark .eng-card { background: rgba(226,227,222,0.05); }
+    .eng-card:hover { background: rgba(197,138,48,0.12); transform: translateY(-1px); }
+    .eng-card-icon { width: 28px; height: 28px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; }
+    .eng-card-icon svg { width: 24px; height: 24px; opacity: 0.85; }
+    .eng-card-name { font-size: 11px; font-weight: 600; line-height: 1.2; }
+    .eng-card-status { font-size: 9px; opacity: 0.6; margin-top: 4px; letter-spacing: 0.3px; }
+    .eng-card-tick { display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; margin-top: 6px; }
+    .eng-tick-good { background: rgba(0,160,80,0.12); color: #00a050; }
+    .eng-tick-pending { background: rgba(197,138,48,0.15); color: #c58a30; }
+
+    /* Volumetria */
+    .vol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    @media (max-width: 760px) { .vol-grid { grid-template-columns: 1fr; gap: 16px; } }
+    .vol-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .vol-stat { padding: 14px 16px; border-radius: 10px; }
+    .cic.light .vol-stat { background: rgba(12,38,59,0.04); }
+    .cic.dark .vol-stat { background: rgba(226,227,222,0.05); }
+    .vol-stat-label { font-size: 10px; opacity: 0.6; letter-spacing: 0.3px; }
+    .vol-stat-val { font-size: 22px; font-weight: 600; margin-top: 5px; letter-spacing: -0.5px; }
+    .vol-stat-trend { font-size: 10px; margin-top: 3px; font-weight: 500; }
+
+    .matriz-2x2 { display: grid; grid-template-columns: auto 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 0; font-size: 10px; }
+    .matriz-corner { padding: 4px; opacity: 0.5; font-size: 9px; }
+    .matriz-th { padding: 6px 4px; text-align: center; font-weight: 600; opacity: 0.6; letter-spacing: 0.3px; font-size: 9px; text-transform: uppercase; }
+    .matriz-th-row { padding: 8px 6px; writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); font-weight: 600; opacity: 0.6; letter-spacing: 0.3px; font-size: 9px; text-transform: uppercase; }
+    .matriz-cell { padding: 14px 12px; border-radius: 8px; margin: 3px; min-height: 60px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; transition: transform 0.15s; }
+    .matriz-cell:hover { transform: scale(1.02); }
+    .matriz-cell.q1 { background: rgba(0,160,80,0.18); color: #00a050; border: 1px solid rgba(0,160,80,0.3); }
+    .matriz-cell.q2 { background: rgba(197,138,48,0.15); color: #c58a30; border: 1px solid rgba(197,138,48,0.25); }
+    .matriz-cell.q3 { background: rgba(197,138,48,0.12); color: #c58a30; border: 1px solid rgba(197,138,48,0.2); }
+    .matriz-cell.q4 { background: rgba(217,32,32,0.13); color: #d92020; border: 1px solid rgba(217,32,32,0.25); }
+    .matriz-cell-label { font-size: 11px; font-weight: 600; line-height: 1.2; }
+    .matriz-cell-sub { font-size: 9px; opacity: 0.7; margin-top: 3px; }
+
+    /* Sinais */
+    .signals-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media (max-width: 760px) { .signals-grid { grid-template-columns: 1fr; } }
+    .signal { padding: 12px 14px; border-radius: 10px; display: flex; gap: 12px; align-items: flex-start; border-left: 3px solid; cursor: pointer; transition: transform 0.15s; }
+    .signal:hover { transform: translateX(2px); }
+    .signal.bad { background: rgba(217,32,32,0.1); border-color: #d92020; }
+    .signal.warn { background: rgba(197,138,48,0.1); border-color: #c58a30; }
+    .signal.good { background: rgba(0,160,80,0.1); border-color: #00a050; }
+    .cic.dark .signal.bad { background: rgba(217,32,32,0.18); }
+    .cic.dark .signal.warn { background: rgba(197,138,48,0.18); }
+    .cic.dark .signal.good { background: rgba(0,160,80,0.18); }
+    .signal-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #FFF; font-size: 11px; font-weight: 700; margin-top: 1px; }
+    .signal.bad .signal-icon { background: #d92020; }
+    .signal.warn .signal-icon { background: #c58a30; }
+    .signal.good .signal-icon { background: #00a050; }
+    .signal-title { font-size: 12px; font-weight: 600; line-height: 1.3; }
+    .signal-sub { font-size: 11px; opacity: 0.75; margin-top: 3px; line-height: 1.4; }
+    .signal-action { font-size: 10px; font-weight: 600; color: #c58a30; margin-top: 6px; letter-spacing: 0.3px; }
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+
+  <!-- SIDEBAR (incluída via JS) -->
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Início · Dashboard</div>
+        <div class="h-title">Bom dia, Matheus</div>
+        <div class="h-meta">Sábado, 10 de maio · Dia 10 de 31 · MAIO/26</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <!-- BLOCO 1 · PACING -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Pacing do mês · Faturamento</div>
+        <div class="card-sub">Onde você está vs onde deveria estar</div>
+      </div>
+      <div class="hero-grid">
+        <div>
+          <div class="hero-value">R$ 612k</div>
+          <div class="hero-meta">41% da meta de R$ 1,5M · projetando 95% até dia 31</div>
+          <div class="hero-progress"><div class="hero-fill"></div></div>
+          <div class="hero-bottom">
+            <div><div class="hb-label">Gap to go</div><div class="hb-value" style="color:#d92020;">R$ 888k</div></div>
+            <div><div class="hb-label">vs Abril</div><div class="hb-value" style="color:#00a050;">+12%</div></div>
+            <div><div class="hb-label">ROAS</div><div class="hb-value">5,8x</div></div>
+            <div><div class="hb-label">Ticket médio</div><div class="hb-value">R$ 32k</div></div>
+          </div>
+        </div>
+        <div class="triang">
+          <div class="triang-item"><div class="triang-label">Realizado</div><div class="triang-value">R$ 612k</div></div>
+          <div class="triang-item"><div class="triang-label">Forecast equipe</div><div class="triang-value">R$ 1,42M</div></div>
+          <div class="triang-item accent"><div class="triang-label">Projeção IA</div><div class="triang-value">R$ 1,28M</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCO 2 · MAPA SAÚDE -->
+    <a href="mapa-saude.html" style="text-decoration:none; color:inherit;"><div class="card nav">
+      <div class="card-header">
+        <div class="card-arrow">→</div>
+        <div class="card-title">Mapa de Saúde · Pilares × Engrenagens</div>
+        <div class="card-sub">Onde está quebrado HOJE — clique pra abrir cada área</div>
+      </div>
+      <div class="saude-grid-2col">
+        <div class="saude-area">
+          <div class="saude-area-title">▣ 4 Pilares</div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-demanda"/></svg></div><div class="saude-name">Demanda</div><div class="saude-info">ML² ativo</div><div class="saude-status s-warn"></div></div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-pessoas"/></svg></div><div class="saude-name">Pessoas</div><div class="saude-info">2 RCFs vazios</div><div class="saude-status s-bad"></div></div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-fer"/></svg></div><div class="saude-name">Ferramentas</div><div class="saude-info">Stack OK</div><div class="saude-status s-good"></div></div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-dados"/></svg></div><div class="saude-name">Dados</div><div class="saude-info">Motivos parciais</div><div class="saude-status s-bad"></div></div>
+        </div>
+        <div class="saude-area">
+          <div class="saude-area-title">⚙ 5 Engrenagens</div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-rotina"/></svg></div><div class="saude-name">Rotina</div><div class="saude-info">Daily ✓ semana</div><div class="saude-status s-good"></div></div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-fer-eng"/></svg></div><div class="saude-name">Ferramentas</div><div class="saude-info">Operada</div><div class="saude-status s-good"></div></div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-campo"/></svg></div><div class="saude-name">Campo de Batalha</div><div class="saude-info">847 parados</div><div class="saude-status s-warn"></div></div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-dados-eng"/></svg></div><div class="saude-name">Dados</div><div class="saude-info">Taxa em queda</div><div class="saude-status s-warn"></div></div>
+          <div class="saude-row"><div class="saude-icon-wrap"><svg><use href="icons.svg#ic-melhoria"/></svg></div><div class="saude-name">Melhoria</div><div class="saude-info">FCA semanal</div><div class="saude-status s-good"></div></div>
+        </div>
+      </div>
+    </div></a>
+
+    <!-- BLOCO 3 · ML² -->
+    <div class="card nav">
+      <div class="card-header">
+        <div class="card-arrow">→</div>
+        <div class="card-title">ML² · Reativação disponível</div>
+        <div class="card-sub">FollowUp Infinito — leads esperando alavanca</div>
+      </div>
+      <div class="ml2-grid">
+        <div>
+          <div class="ml2-big-num">847</div>
+          <div class="ml2-big-label">leads na base · ticket médio R$ 32k</div>
+          <div class="ml2-stats">
+            <div><div class="ml2-stat-label">VALOR LATENTE</div><div class="ml2-stat-val">R$ 27,1M</div></div>
+            <div><div class="ml2-stat-label">REATIVADOS · MAI</div><div class="ml2-stat-val">19</div></div>
+            <div><div class="ml2-stat-label">CONVERSÃO ML²</div><div class="ml2-stat-val" style="color:#00a050;">2,2%</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px; opacity:0.55; letter-spacing:0.4px; margin-bottom:8px; text-transform:uppercase;">Alavancas sugeridas (IA)</div>
+          <div class="ml2-alavanca"><div class="ml2-al-num">1</div><div class="ml2-al-name">WhatsApp 1:1 · Nível 4 (Frustrados)</div><div class="ml2-al-impact">+R$ 480k</div></div>
+          <div class="ml2-alavanca"><div class="ml2-al-num">2</div><div class="ml2-al-name">Ligação segmentada · No-show</div><div class="ml2-al-impact">+R$ 320k</div></div>
+          <div class="ml2-alavanca"><div class="ml2-al-num">3</div><div class="ml2-al-name">E-mail massa · Curiosos</div><div class="ml2-al-impact">+R$ 180k</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCO 4 · ENGRENAGENS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Engrenagens · Status de hoje</div>
+        <div class="card-sub">O que rodou (e o que ainda precisa rodar)</div>
+      </div>
+      <div class="engs-grid">
+        <div class="eng-card"><div class="eng-card-icon"><svg><use href="icons.svg#ic-rotina"/></svg></div><div class="eng-card-name">Rotina</div><div class="eng-card-status">Daily 09:00</div><div class="eng-card-tick eng-tick-good">✓ feita</div></div>
+        <div class="eng-card"><div class="eng-card-icon"><svg><use href="icons.svg#ic-fer-eng"/></svg></div><div class="eng-card-name">Ferramentas</div><div class="eng-card-status">Stack ativa</div><div class="eng-card-tick eng-tick-good">✓ ok</div></div>
+        <div class="eng-card"><div class="eng-card-icon"><svg><use href="icons.svg#ic-campo"/></svg></div><div class="eng-card-name">Campo</div><div class="eng-card-status">12 atrasadas</div><div class="eng-card-tick eng-tick-pending">⚠ atenção</div></div>
+        <div class="eng-card"><div class="eng-card-icon"><svg><use href="icons.svg#ic-dados-eng"/></svg></div><div class="eng-card-name">Dados</div><div class="eng-card-status">CRM atualizado</div><div class="eng-card-tick eng-tick-good">✓ ok</div></div>
+        <div class="eng-card"><div class="eng-card-icon"><svg><use href="icons.svg#ic-melhoria"/></svg></div><div class="eng-card-name">Melhoria</div><div class="eng-card-status">Role play sex</div><div class="eng-card-tick eng-tick-pending">⊕ marcar</div></div>
+      </div>
+    </div>
+
+    <!-- BLOCO 5 · VOLUMETRIA -->
+    <div class="card nav">
+      <div class="card-header">
+        <div class="card-arrow">→</div>
+        <div class="card-title">Volumetria do time · Matriz Taxa × Volume</div>
+        <div class="card-sub">80/20 do comercial — onde o time está</div>
+      </div>
+      <div class="vol-grid">
+        <div class="vol-stats">
+          <div class="vol-stat"><div class="vol-stat-label">Pessoas trabalhadas · 7d</div><div class="vol-stat-val">312</div><div class="vol-stat-trend" style="color:#00a050;">↑ 18% vs sem. anterior</div></div>
+          <div class="vol-stat"><div class="vol-stat-label">Atividades · hoje</div><div class="vol-stat-val">142</div><div class="vol-stat-trend" style="color:#c58a30;">próx meta: 180</div></div>
+          <div class="vol-stat"><div class="vol-stat-label">Taxa show up</div><div class="vol-stat-val">73%</div><div class="vol-stat-trend" style="color:#00a050;">↑ +8% vs abr</div></div>
+          <div class="vol-stat"><div class="vol-stat-label">Conv. lead → venda</div><div class="vol-stat-val">7,1%</div><div class="vol-stat-trend" style="color:#c58a30;">meta 8%</div></div>
+        </div>
+        <div class="matriz-2x2">
+          <div class="matriz-corner"></div>
+          <div class="matriz-th">Taxa Alta</div>
+          <div class="matriz-th">Taxa Baixa</div>
+          <div class="matriz-th-row" style="grid-row: 2 / 4;">VOL ALTA · BAIXA</div>
+          <div class="matriz-cell q1"><div class="matriz-cell-label">Saudável</div><div class="matriz-cell-sub">Closer A · 18% time</div></div>
+          <div class="matriz-cell q2"><div class="matriz-cell-label">Esforço sem resultado</div><div class="matriz-cell-sub">SDR B · 24%</div></div>
+          <div class="matriz-cell q3"><div class="matriz-cell-label">Falta combustível</div><div class="matriz-cell-sub">Closer C · 12%</div></div>
+          <div class="matriz-cell q4"><div class="matriz-cell-label">Emergência</div><div class="matriz-cell-sub">SDR D · 6%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCO 6 · SINAIS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Sinais do dia · Atenção</div>
+        <div class="card-sub">O que precisa da sua decisão hoje</div>
+      </div>
+      <div class="signals-grid">
+        <div class="signal bad"><div class="signal-icon">!</div><div><div class="signal-title">Pipeline em risco</div><div class="signal-sub">R$ 287k em deals sem contato há 7+ dias</div><div class="signal-action">REVISAR PIPELINE →</div></div></div>
+        <div class="signal warn"><div class="signal-icon">!</div><div><div class="signal-title">Conv. de página caiu</div><div class="signal-sub">6,1% vs meta 8% — gargalo no topo do funil</div><div class="signal-action">VER FUNIL →</div></div></div>
+        <div class="signal good"><div class="signal-icon">✓</div><div><div class="signal-title">Show up subiu</div><div class="signal-sub">73% (+8% vs abril) · pré-venda performando</div><div class="signal-action">CASE DA SEMANA →</div></div></div>
+        <div class="signal good"><div class="signal-icon">✓</div><div><div class="signal-title">ML² recorde</div><div class="signal-sub">19 reativações em 10 dias · base saudável</div><div class="signal-action">VER ALAVANCAS →</div></div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Inject sidebar
+  fetch('sidebar.html').then(r=>r.text()).then(html=>{
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('.sb-item[data-page="dashboard"]');
+    if (active) active.classList.add('active');
+  });
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

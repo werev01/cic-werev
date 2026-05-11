@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa de Saúde · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .pilar-alert { padding: 18px 24px; border-radius: 14px; margin-bottom: 20px; display: flex; align-items: center; gap: 18px; background: linear-gradient(90deg, rgba(217,32,32,0.12), rgba(217,32,32,0.04)); border: 1px solid rgba(217,32,32,0.25); }
+    .cic.dark .pilar-alert { background: linear-gradient(90deg, rgba(217,32,32,0.18), rgba(217,32,32,0.06)); }
+    .pilar-alert-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(217,32,32,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pilar-alert-icon svg { width: 28px; height: 28px; color: #d92020; }
+    .pilar-alert-content { flex: 1; }
+    .pilar-alert-tag { font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: #d92020; margin-bottom: 4px; }
+    .pilar-alert-title { font-size: 18px; font-weight: 600; line-height: 1.3; letter-spacing: -0.3px; }
+    .pilar-alert-desc { font-size: 12px; opacity: 0.7; margin-top: 4px; line-height: 1.4; }
+    .pilar-alert-btn { padding: 10px 18px; background: #d92020; color: #FFF; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 0; font-family: inherit; transition: all 0.15s; flex-shrink: 0; }
+    .pilar-alert-btn:hover { background: #b51818; transform: translateY(-1px); }
+
+    .score-grid { display: grid; grid-template-columns: 280px 1fr; gap: 18px; margin-bottom: 24px; }
+    @media (max-width: 760px) { .score-grid { grid-template-columns: 1fr; } }
+    .score-card { padding: 20px 22px; border-radius: 14px; display: flex; gap: 18px; align-items: center; }
+    .cic.light .score-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .score-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .score-circle { width: 90px; height: 90px; flex-shrink: 0; position: relative; }
+    .score-label { font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 4px; }
+    .score-desc { font-size: 12px; opacity: 0.7; line-height: 1.4; }
+    .score-trend { font-size: 11px; margin-top: 6px; font-weight: 500; color: #00a050; }
+
+    .breakdown { padding: 20px 22px; border-radius: 14px; }
+    .cic.light .breakdown { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .breakdown { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .breakdown-title { font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 12px; }
+    .bd-rows { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    @media (max-width: 700px) { .bd-rows { grid-template-columns: repeat(2, 1fr); } }
+    .bd-row { padding: 12px; border-radius: 8px; }
+    .cic.light .bd-row { background: rgba(12,38,59,0.03); }
+    .cic.dark .bd-row { background: rgba(226,227,222,0.04); }
+    .bd-name { font-size: 11px; font-weight: 600; opacity: 0.7; }
+    .bd-bar { height: 4px; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+    .cic.light .bd-bar { background: rgba(12,38,59,0.08); }
+    .cic.dark .bd-bar { background: rgba(226,227,222,0.1); }
+    .bd-fill { height: 100%; border-radius: 2px; }
+    .bd-score { font-size: 14px; font-weight: 600; margin-top: 6px; letter-spacing: -0.3px; }
+
+    .pilares-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 24px; }
+    @media (max-width: 900px) { .pilares-grid { grid-template-columns: 1fr; } }
+    .pilar-card { padding: 20px 22px; border-radius: 14px; cursor: pointer; transition: all 0.2s; }
+    .cic.light .pilar-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .pilar-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .pilar-card:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(12,38,59,0.06); border-color: rgba(197,138,48,0.4); }
+    .pilar-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid; }
+    .cic.light .pilar-head { border-color: rgba(12,38,59,0.06); }
+    .cic.dark .pilar-head { border-color: rgba(226,227,222,0.08); }
+    .pilar-icon-wrap { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pilar-icon-wrap svg { width: 24px; height: 24px; }
+    .pilar-icon-wrap.health-good { background: rgba(0,160,80,0.12); color: #00a050; }
+    .pilar-icon-wrap.health-warn { background: rgba(197,138,48,0.15); color: #c58a30; }
+    .pilar-icon-wrap.health-bad { background: rgba(217,32,32,0.13); color: #d92020; }
+    .pilar-info { flex: 1; min-width: 0; }
+    .pilar-num { font-size: 9px; font-weight: 700; letter-spacing: 1.4px; opacity: 0.5; text-transform: uppercase; }
+    .pilar-name { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; line-height: 1.2; }
+    .pilar-desc { font-size: 11px; opacity: 0.6; margin-top: 3px; line-height: 1.3; }
+    .pilar-status-tag { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; flex-shrink: 0; }
+    .status-good { background: rgba(0,160,80,0.15); color: #00a050; }
+    .status-warn { background: rgba(197,138,48,0.18); color: #c58a30; }
+    .status-bad { background: rgba(217,32,32,0.15); color: #d92020; }
+
+    .sub-list { display: flex; flex-direction: column; gap: 8px; }
+    .sub-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 8px 12px; border-radius: 8px; }
+    .cic.light .sub-row { background: rgba(12,38,59,0.03); }
+    .cic.dark .sub-row { background: rgba(226,227,222,0.04); }
+    .sub-name { font-size: 12px; font-weight: 500; line-height: 1.3; }
+    .sub-name-detail { font-size: 10px; opacity: 0.55; margin-top: 2px; }
+    .sub-value { font-size: 13px; font-weight: 600; letter-spacing: -0.2px; text-align: right; }
+    .sub-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sub-good { background: #00a050; box-shadow: 0 0 0 3px rgba(0,160,80,0.15); }
+    .sub-warn { background: #c58a30; box-shadow: 0 0 0 3px rgba(197,138,48,0.2); }
+    .sub-bad { background: #d92020; box-shadow: 0 0 0 3px rgba(217,32,32,0.18); }
+
+    .engs-section { padding: 20px 22px; border-radius: 14px; }
+    .cic.light .engs-section { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .engs-section { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .engs-header { margin-bottom: 14px; }
+    .engs-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; }
+    .engs-sub { font-size: 11px; opacity: 0.6; margin-top: 4px; }
+    .engs-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    @media (max-width: 760px) { .engs-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .engs-grid { grid-template-columns: 1fr; } }
+    .eng-card { padding: 16px 14px; border-radius: 10px; cursor: pointer; transition: all 0.15s; }
+    .cic.light .eng-card { background: rgba(12,38,59,0.04); }
+    .cic.dark .eng-card { background: rgba(226,227,222,0.05); }
+    .eng-card:hover { background: rgba(197,138,48,0.12); transform: translateY(-1px); }
+    .eng-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .eng-card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .eng-card-icon svg { width: 22px; height: 22px; }
+    .eng-card-icon.good { background: rgba(0,160,80,0.12); color: #00a050; }
+    .eng-card-icon.warn { background: rgba(197,138,48,0.15); color: #c58a30; }
+    .eng-card-icon.bad { background: rgba(217,32,32,0.13); color: #d92020; }
+    .eng-card-pill { padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .eng-card-pill.good { background: rgba(0,160,80,0.15); color: #00a050; }
+    .eng-card-pill.warn { background: rgba(197,138,48,0.18); color: #c58a30; }
+    .eng-card-name { font-size: 13px; font-weight: 600; line-height: 1.2; margin-bottom: 4px; }
+    .eng-card-detail { font-size: 10px; opacity: 0.6; line-height: 1.3; }
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Início · Mapa de Saúde</div>
+        <div class="h-title">Mapa de Saúde</div>
+        <div class="h-meta">Diagnóstico dos 4 Pilares × 5 Engrenagens · atualizado em 09:42</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <div class="pilar-alert">
+      <div class="pilar-alert-icon"><svg><use href="icons.svg#ic-pessoas"/></svg></div>
+      <div class="pilar-alert-content">
+        <div class="pilar-alert-tag">▌ Pilar mais quebrado essa semana</div>
+        <div class="pilar-alert-title">Pessoas · 2 RCFs vazios e 1 cadeira sem Pipeline Review</div>
+        <div class="pilar-alert-desc">Cargo sem RCF é cobrança sem combinado. 2 cadeiras (SDR e Closer) operam sem documentação — risco de conflito e turnover.</div>
+      </div>
+      <button class="pilar-alert-btn">Resolver agora →</button>
+    </div>
+
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="score-circle">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(12,38,59,0.08)" stroke-width="8"/>
+            <circle cx="45" cy="45" r="38" fill="none" stroke="#c58a30" stroke-width="8" stroke-dasharray="238" stroke-dashoffset="76" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <text x="45" y="50" text-anchor="middle" font-size="24" font-weight="700" fill="currentColor" font-family="Poppins">6.8</text>
+            <text x="45" y="64" text-anchor="middle" font-size="9" font-weight="500" fill="currentColor" opacity="0.5" font-family="Poppins">/ 10</text>
+          </svg>
+        </div>
+        <div>
+          <div class="score-label">Score geral</div>
+          <div class="score-desc">Operação saudável com 2 pontos críticos · acima de 7 considerado pleno</div>
+          <div class="score-trend">↑ 0,4 vs abril</div>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <div class="breakdown-title">Breakdown por Pilar</div>
+        <div class="bd-rows">
+          <div class="bd-row"><div class="bd-name">Demanda</div><div class="bd-bar"><div class="bd-fill" style="width:72%; background:#c58a30;"></div></div><div class="bd-score" style="color:#c58a30;">7,2</div></div>
+          <div class="bd-row"><div class="bd-name">Pessoas</div><div class="bd-bar"><div class="bd-fill" style="width:48%; background:#d92020;"></div></div><div class="bd-score" style="color:#d92020;">4,8</div></div>
+          <div class="bd-row"><div class="bd-name">Ferramentas</div><div class="bd-bar"><div class="bd-fill" style="width:85%; background:#00a050;"></div></div><div class="bd-score" style="color:#00a050;">8,5</div></div>
+          <div class="bd-row"><div class="bd-name">Dados</div><div class="bd-bar"><div class="bd-fill" style="width:65%; background:#c58a30;"></div></div><div class="bd-score" style="color:#c58a30;">6,5</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pilares-grid">
+      <div class="pilar-card">
+        <div class="pilar-head">
+          <div class="pilar-icon-wrap health-warn"><svg><use href="icons.svg#ic-demanda"/></svg></div>
+          <div class="pilar-info"><div class="pilar-num">Pilar 1</div><div class="pilar-name">Demanda</div><div class="pilar-desc">De onde vem o lead · geração + aproveitamento</div></div>
+          <div class="pilar-status-tag status-warn">Atenção</div>
+        </div>
+        <div class="sub-list">
+          <div class="sub-row"><div><div class="sub-name">Geração inbound</div><div class="sub-name-detail">Verba R$ 162k · ROAS 5,8x</div></div><div class="sub-value">7,8</div><div class="sub-status sub-good"></div></div>
+          <div class="sub-row"><div><div class="sub-name">ML² · base reativável</div><div class="sub-name-detail">847 leads · R$ 27,1M latente</div></div><div class="sub-value">8,2</div><div class="sub-status sub-good"></div></div>
+          <div class="sub-row"><div><div class="sub-name">4 Níveis de Consciência</div><div class="sub-name-detail">52% qualificados (níveis 3-4)</div></div><div class="sub-value">6,5</div><div class="sub-status sub-warn"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Pessoas trabalhadas (volume)</div><div class="sub-name-detail">312 únicas em 7 dias · meta 400</div></div><div class="sub-value">6,1</div><div class="sub-status sub-warn"></div></div>
+        </div>
+      </div>
+
+      <div class="pilar-card">
+        <div class="pilar-head">
+          <div class="pilar-icon-wrap health-bad"><svg><use href="icons.svg#ic-pessoas"/></svg></div>
+          <div class="pilar-info"><div class="pilar-num">Pilar 2</div><div class="pilar-name">Pessoas</div><div class="pilar-desc">Quem trabalha o lead · time + estrutura</div></div>
+          <div class="pilar-status-tag status-bad">Crítico</div>
+        </div>
+        <div class="sub-list">
+          <div class="sub-row"><div><div class="sub-name">Atração e Seleção</div><div class="sub-name-detail">1 vaga aberta há 18 dias</div></div><div class="sub-value">5,5</div><div class="sub-status sub-warn"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Rampagem (60 dias)</div><div class="sub-name-detail">2 em onboarding · semana 3-5</div></div><div class="sub-value">7,2</div><div class="sub-status sub-good"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Desempenho e Feedback</div><div class="sub-name-detail">3/5 1:1s da semana · PDI parado</div></div><div class="sub-value">5,2</div><div class="sub-status sub-warn"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Estrutura · RCFs</div><div class="sub-name-detail">7/9 cadeiras documentadas</div></div><div class="sub-value">3,1</div><div class="sub-status sub-bad"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Liderança · Pipeline Review</div><div class="sub-name-detail">Última review: há 12 dias</div></div><div class="sub-value">3,8</div><div class="sub-status sub-bad"></div></div>
+        </div>
+      </div>
+
+      <div class="pilar-card">
+        <div class="pilar-head">
+          <div class="pilar-icon-wrap health-good"><svg><use href="icons.svg#ic-fer"/></svg></div>
+          <div class="pilar-info"><div class="pilar-num">Pilar 3</div><div class="pilar-name">Ferramentas</div><div class="pilar-desc">Com o que trabalham · stack + frameworks</div></div>
+          <div class="pilar-status-tag status-good">Saudável</div>
+        </div>
+        <div class="sub-list">
+          <div class="sub-row"><div><div class="sub-name">Stack mínimo operacional</div><div class="sub-name-detail">CRM · VoIP · WhatsApp · Email</div></div><div class="sub-value">9,1</div><div class="sub-status sub-good"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Frameworks (BANT/SPIN/NEPQ)</div><div class="sub-name-detail">Aplicados · revisão mensal ok</div></div><div class="sub-value">8,4</div><div class="sub-status sub-good"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Método CRM (5 módulos)</div><div class="sub-name-detail">5/5 ativos no Pipedrive</div></div><div class="sub-value">8,8</div><div class="sub-status sub-good"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Clickofobia · cliques/atividade</div><div class="sub-name-detail">3,2 cliques médios · meta &lt;5</div></div><div class="sub-value">7,9</div><div class="sub-status sub-good"></div></div>
+        </div>
+      </div>
+
+      <div class="pilar-card">
+        <div class="pilar-head">
+          <div class="pilar-icon-wrap health-warn"><svg><use href="icons.svg#ic-dados"/></svg></div>
+          <div class="pilar-info"><div class="pilar-num">Pilar 4</div><div class="pilar-name">Dados</div><div class="pilar-desc">O que resulta · taxa + volumetria + perda</div></div>
+          <div class="pilar-status-tag status-warn">Atenção</div>
+        </div>
+        <div class="sub-list">
+          <div class="sub-row"><div><div class="sub-name">Taxa de Passagem (funil)</div><div class="sub-name-detail">7,1% lead → venda · meta 8%</div></div><div class="sub-value">7,3</div><div class="sub-status sub-good"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Volumetria de Atividades</div><div class="sub-name-detail">142 hoje · 80% da meta diária</div></div><div class="sub-value">6,8</div><div class="sub-status sub-warn"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Motivos de Perda · taxonomia</div><div class="sub-name-detail">14/22 motivos sendo registrados</div></div><div class="sub-value">5,4</div><div class="sub-status sub-warn"></div></div>
+          <div class="sub-row"><div><div class="sub-name">Campos de Ouro preenchidos</div><div class="sub-name-detail">62% (Dor · Sonho · Consciência · Persona)</div></div><div class="sub-value">4,2</div><div class="sub-status sub-bad"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="engs-section">
+      <div class="engs-header">
+        <div class="engs-title">5 Engrenagens · ações contínuas</div>
+        <div class="engs-sub">Engrenagens são o que roda no dia a dia · pilares são o que diagnosticamos</div>
+      </div>
+      <div class="engs-grid">
+        <div class="eng-card"><div class="eng-card-top"><div class="eng-card-icon good"><svg><use href="icons.svg#ic-rotina"/></svg></div><div class="eng-card-pill good">Rodando</div></div><div class="eng-card-name">Rotina</div><div class="eng-card-detail">Daily ✓ · Pipeline Review pendente</div></div>
+        <div class="eng-card"><div class="eng-card-top"><div class="eng-card-icon good"><svg><use href="icons.svg#ic-fer-eng"/></svg></div><div class="eng-card-pill good">Operada</div></div><div class="eng-card-name">Ferramentas</div><div class="eng-card-detail">Stack ativo · 0 erros 24h</div></div>
+        <div class="eng-card"><div class="eng-card-top"><div class="eng-card-icon warn"><svg><use href="icons.svg#ic-campo"/></svg></div><div class="eng-card-pill warn">Atenção</div></div><div class="eng-card-name">Campo de Batalha</div><div class="eng-card-detail">847 em FollowUp · clickofobia ok</div></div>
+        <div class="eng-card"><div class="eng-card-top"><div class="eng-card-icon warn"><svg><use href="icons.svg#ic-dados-eng"/></svg></div><div class="eng-card-pill warn">Parcial</div></div><div class="eng-card-name">Dados</div><div class="eng-card-detail">Taxa caindo · revisar com FCA</div></div>
+        <div class="eng-card"><div class="eng-card-top"><div class="eng-card-icon good"><svg><use href="icons.svg#ic-melhoria"/></svg></div><div class="eng-card-pill good">Ativa</div></div><div class="eng-card-name">Melhoria Contínua</div><div class="eng-card-detail">FCA semanal · role play 6ª</div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  fetch('sidebar.html').then(r=>r.text()).then(html=>{
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('.sb-item[data-page="mapa-saude"]');
+    if (active) active.classList.add('active');
+  });
+</script>
+<script src="shared.js"></script>
+</body>
+</html>
