@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RCF · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* ===== LISTA DE CADEIRAS ===== */
+    .rcf-intro { padding: 18px 22px; border-radius: 14px; margin-bottom: 22px; background: linear-gradient(135deg, rgba(8,53,144,0.08), rgba(197,138,48,0.06)); border: 1px solid rgba(197,138,48,0.25); }
+    .cic.dark .rcf-intro { background: linear-gradient(135deg, rgba(8,53,144,0.18), rgba(197,138,48,0.1)); }
+    .rcf-intro-title { font-size: 13px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 6px; }
+    .rcf-intro-text { font-size: 12px; line-height: 1.6; opacity: 0.8; }
+
+    .cadeiras-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+
+    .cadeira-card {
+      background: var(--cad-cor);
+      color: #FFF;
+      border-radius: 14px;
+      padding: 22px 22px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      min-height: 168px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .cadeira-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+    .cadeira-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+    .cadeira-icon { font-size: 32px; line-height: 1; margin-bottom: 8px; position: relative; z-index: 1; }
+    .cadeira-nivel { font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; opacity: 0.85; margin-bottom: 6px; position: relative; z-index: 1; }
+    .cadeira-titulo { font-size: 17px; font-weight: 600; line-height: 1.2; margin-bottom: 6px; position: relative; z-index: 1; }
+    .cadeira-sub { font-size: 11px; opacity: 0.85; line-height: 1.4; position: relative; z-index: 1; margin-bottom: 12px; }
+    .cadeira-stats { display: flex; gap: 16px; font-size: 10px; opacity: 0.9; position: relative; z-index: 1; }
+    .cadeira-stat b { font-size: 14px; font-weight: 700; display: block; margin-bottom: 0; }
+    .cadeira-cta { font-size: 11px; font-weight: 600; margin-top: 10px; opacity: 0.95; position: relative; z-index: 1; }
+
+    /* ===== FICHA DETALHADA ===== */
+    .ficha { display: none; }
+    .ficha.active { display: block; }
+    .cadeiras-view.hidden { display: none; }
+
+    .ficha-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      color: inherit;
+      margin-bottom: 16px;
+      transition: all 0.15s;
+    }
+    .cic.light .ficha-back { border-color: rgba(12,38,59,0.15); }
+    .cic.dark .ficha-back { border-color: rgba(226,227,222,0.2); }
+    .ficha-back:hover { background: rgba(197,138,48,0.15); border-color: #c58a30; }
+
+    .ficha-header {
+      padding: 22px 26px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      background: var(--cad-cor);
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ficha-header::before {
+      content: '';
+      position: absolute;
+      top: -50px; right: -50px;
+      width: 180px; height: 180px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+    .ficha-icon { font-size: 48px; line-height: 1; position: relative; z-index: 1; }
+    .ficha-info { position: relative; z-index: 1; }
+    .ficha-nivel { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.9; margin-bottom: 4px; }
+    .ficha-titulo { font-size: 26px; font-weight: 600; line-height: 1.1; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .ficha-sub { font-size: 12px; opacity: 0.9; }
+
+    /* Seções da ficha */
+    .ficha-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 900px) { .ficha-grid { grid-template-columns: 1fr; } }
+    .ficha-secao { padding: 22px 24px; border-radius: 14px; }
+    .cic.light .ficha-secao { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .ficha-secao { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .ficha-secao.full { grid-column: 1 / -1; }
+    .ficha-secao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 12px; flex-wrap: wrap; }
+    .ficha-secao-titulo { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; }
+    .ficha-secao-titulo .ico { font-size: 14px; margin-right: 6px; }
+    .ficha-secao-meta { font-size: 11px; opacity: 0.55; }
+    .ficha-secao-meta b { color: #c58a30; font-weight: 600; }
+
+    /* Rotina */
+    .rotina-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .rotina-table th { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; opacity: 0.55; text-align: left; padding: 8px 10px; border-bottom: 1px solid; }
+    .cic.light .rotina-table th { border-color: rgba(12,38,59,0.1); }
+    .cic.dark .rotina-table th { border-color: rgba(226,227,222,0.12); }
+    .rotina-table th.num { text-align: right; }
+    .rotina-table td { padding: 10px 10px; border-bottom: 1px solid; font-size: 12px; line-height: 1.4; }
+    .cic.light .rotina-table td { border-color: rgba(12,38,59,0.04); }
+    .cic.dark .rotina-table td { border-color: rgba(226,227,222,0.05); }
+    .rotina-table td.num { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .rotina-table tr:last-child td { border-bottom: 0; }
+    .freq-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .freq-diario { background: rgba(217,32,32,0.13); color: #d92020; }
+    .freq-semanal { background: rgba(197,138,48,0.15); color: #c58a30; }
+    .freq-mensal { background: rgba(0,160,80,0.13); color: #00a050; }
+    .freq-outro { background: rgba(108,92,231,0.13); color: #6c5ce7; }
+
+    /* Lista genérica */
+    .lista-itens { display: flex; flex-direction: column; gap: 8px; }
+    .lista-item { padding: 10px 14px; border-radius: 8px; font-size: 12px; line-height: 1.45; display: flex; gap: 10px; align-items: flex-start; }
+    .cic.light .lista-item { background: rgba(12,38,59,0.03); }
+    .cic.dark .lista-item { background: rgba(226,227,222,0.04); }
+    .lista-item-num { width: 20px; height: 20px; border-radius: 50%; background: var(--cad-cor); color: #FFF; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* Responsabilidades agrupadas */
+    .resp-grupo { margin-bottom: 14px; }
+    .resp-grupo:last-child { margin-bottom: 0; }
+    .resp-grupo-titulo { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #c58a30; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(197,138,48,0.2); }
+    .resp-grupo-lista { display: flex; flex-direction: column; gap: 6px; }
+    .resp-item { padding: 8px 12px; border-radius: 6px; font-size: 11.5px; line-height: 1.5; }
+    .cic.light .resp-item { background: rgba(12,38,59,0.025); }
+    .cic.dark .resp-item { background: rgba(226,227,222,0.035); }
+
+    /* Indicadores */
+    .indic-grupo { margin-bottom: 14px; }
+    .indic-grupo:last-child { margin-bottom: 0; }
+    .indic-grupo-titulo { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #c58a30; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(197,138,48,0.2); }
+    .indic-item {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      line-height: 1.45;
+      margin-bottom: 6px;
+      border-left: 3px solid #c58a30;
+    }
+    .cic.light .indic-item { background: rgba(197,138,48,0.06); }
+    .cic.dark .indic-item { background: rgba(197,138,48,0.1); }
+    .indic-item:last-child { margin-bottom: 0; }
+
+    /* Skills */
+    .skills-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-tag {
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    .skill-hard {
+      background: rgba(8,53,144,0.1);
+      color: #083590;
+      border: 1px solid rgba(8,53,144,0.2);
+    }
+    .skill-soft {
+      background: rgba(197,138,48,0.1);
+      color: #c58a30;
+      border: 1px solid rgba(197,138,48,0.25);
+    }
+    .cic.dark .skill-hard { background: rgba(8,53,144,0.25); color: #92a8d8; border-color: rgba(8,53,144,0.4); }
+    .cic.dark .skill-soft { background: rgba(197,138,48,0.2); color: #e0b97e; border-color: rgba(197,138,48,0.4); }
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Pilares · Pessoas · RCF</div>
+        <div class="h-title">RCF · Roda do Crescimento da Função</div>
+        <div class="h-meta">9 cadeiras × 6 dimensões · diagnóstico estrutural por papel</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <!-- VIEW 1 · LISTA DE CADEIRAS -->
+    <div class="cadeiras-view" id="cadeiras-view">
+      <div class="rcf-intro">
+        <div class="rcf-intro-title">▌ O que é o RCF</div>
+        <div class="rcf-intro-text">Toda função comercial precisa estar mapeada em 6 dimensões: <b>Rotina, Responsabilidades, Hábitos, Hard Skills, Soft Skills e Indicadores</b>. O RCF é a ficha completa de cada cadeira da operação — clique em uma cadeira pra ver sua ficha detalhada.</div>
+      </div>
+
+      <div class="cadeiras-grid" id="cadeiras-grid"></div>
+    </div>
+
+    <!-- VIEW 2 · FICHA DA CADEIRA -->
+    <div class="ficha" id="ficha-view"></div>
+
+  </main>
+</div>
+
+<!-- DADOS REAIS DO ARQUIVO RCF -->
+<script>
+const RCF_DATA = {"Gerente": {"titulo": "Gerente / Coordenador", "subtitulo": "Liderança e gestão estratégica do time comercial", "icone": "👔", "cor": "#083590", "nivel": "Liderança", "key": "Gerente", "nome": "Gerente/Coordenador - Vendas", "rotina": [{"atividade": "Daily", "frequencia": "Diário", "tempo_min": 20.0}, {"atividade": "Supervisão Chat Guru", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Análise Indicadores no PipeDrive (Volume de Leads, Taxa de Passagem e Conversão)", "frequencia": "Diário", "tempo_min": 60.0}, {"atividade": "Análise das vendas ganhas no PipeDrive", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Fechamento do Dia", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Análise de Call", "frequencia": "Semanal", "tempo_min": 120.0}, {"atividade": "Escutar ligações da equipe de Pré Venda", "frequencia": "Semanal", "tempo_min": 50.0}, {"atividade": "Sala de Guerra", "frequencia": "Semanal", "tempo_min": 120.0}, {"atividade": "Weekly Marketing", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Weekly Comercial", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Programação de Estudos com Equipe Comercial", "frequencia": "Semanal", "tempo_min": 120.0}, {"atividade": "Analisar Indicadores do Mês Anterior (Volume de Lead, Taxa de passagem, Conversão)", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Fechamento do mês e conferência das vendas.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "E-mail para o financeiro formalizando fechamento das vendas do mês anterior e recebimento comercial", "frequencia": "Mensal", "tempo_min": 20.0}, {"atividade": "Enviar NF's para toda equipe comercial no privado.", "frequencia": "Mensal", "tempo_min": 15.0}, {"atividade": "Subir recebimento de toda equipe comercial na planilha controle de pagamentos.", "frequencia": "Mensal", "tempo_min": 15.0}, {"atividade": "1:1 com liderados", "frequencia": "Mensal", "tempo_min": 150.0}], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Gestão e Estratégia": ["Desdobrar metas mensais/trimestrais em objetivos e indicadores individuais.", "Acompanhar resultados diários e garantir a execução das rotinas comerciais.", "Conduzir reuniões de alinhamento, war rooms e 1:1 com o time.", "Gerar relatórios de performance e apresentar resultados à gerência/diretoria.", "Garantir previsibilidade através de forecast de vendas realista e baseado em dados."], "Processos e Operações": ["Monitorar e otimizar o funil de vendas (conversão, follow-up, ciclo de venda).", "Garantir o uso correto do CRM (Sprint)", "Construir e revisar cadências, scripts e playbooks de abordagem e negociação. (Compra e Recompra)"], "Gestão de Pessoas": ["Aplicar feedbacks regulares e planos de desenvolvimento individual (PDIs).", "Promover treinamentos técnicos e comportamentais.", "Manter o clima de equipe, a cultura de alta performance e o alinhamento com os valores da empresa."], "Análise e Melhoria Contínua": ["Analisar métricas de funil e identificar gargalos ou oportunidades de otimização.", "Implementar melhorias nos processos, ferramentas e rituais comerciais.", "Acompanhar indicadores de eficiência (Volume de entrada, taxa de passagem, motivos de loss)"]}, "habitos": ["Consistência (CRM)", "Organização (Executar Rotina, Garantir funcionamento)", "Executor (Fazer o que tem que ser feito)", "Disciplinado", "Vender", "Saber operar o CRM (Sala de Guerra, Área de Membros, Reunião com Matta, Pontos de gargalos)", "Gerencia do time (Dinâmica do dia, feedback FCA)", "Gestão Rotina do time", "Garantir as metas de iniciativas"], "hard_skills": ["Experiência prévia como supervisor, coordenador ou líder de time comercial.", "Domínio de CRM de vendas", "Conhecimento em metodologias de vendas consultivas (SPIN, NEPQ, BANT).", "Capacidade analítica para leitura de indicadores e construção de dashboards.", "Domínio intermediário ou avançado de Excel/Sheets para análise de dados comerciais."], "soft_skills": ["Liderança empática e inspiradora.", "Comunicação simples, clara, objetiva e colaborativa.", "Capacidade de tomada de decisão sob pressão.", "Organização e disciplina operacional.", "Inteligência emocional e senso de responsabilidade.", "Proatividade e mentalidade de melhoria contínua."], "indicadores": {"Vendas": ["Taxa de Passagem/Taxa de Conversão = (20% minímo, por closer)", "Nº de Vendas = 18 (Minímo, por closer)", "Faturamento Bruto = R$350k (Minímo, por closer)", "Faturamento Cash Collected (Receita Nova) = R$280k (Minímo, por closer)", "Show up (70% minímo) /No Show (máximo 30%)", "Nº de Follow ups concluídas no CRM = 20 por dia (Minímo, por closer)", "Nº de Pessoas Ativadas = (220 pessoas meses anteriores, no mês, por closer)", "Pre-Vendas: (Por SDR)", "Taxa de Passagem - MQL / Taxa de Conversão - Agendada = (20% mínimo)", "Nº de Agendamentos = 150 (Minímo)", "Nº de Realizadas = 105 (Minímo)", "Show up (70% minímo) /No Show (máximo 30%)", "Tempo Falado = ??h??m??seg", "Nº Leads Trabalhados por dia 100 no mínimo", "Nº de Atividades concluídas no CRM = 250 no mínimo", "Nº de Follow ups concluídas no CRM = 50 por dia (Minímo)", "LRT acima de 80% dentro do seu horário de escala", "Reuniões qualificadas (OPP, etapa 5, acima de 70?%)", "Pre-Vendas: (Por SS)"]}}, "Closer": {"titulo": "Closer", "subtitulo": "Fechamento de vendas e relacionamento", "icone": "🎯", "cor": "#00a050", "nivel": "Vendas", "key": "Closer", "nome": "Closer ", "rotina": [{"atividade": "Daily", "frequencia": "Diário", "tempo_min": 20.0}, {"atividade": "Realizar Sessão Estratégica (Minímo, 4x dia)", "frequencia": "Diário", "tempo_min": 240}, {"atividade": "Preencher CRM", "frequencia": "Diário", "tempo_min": 60.0}, {"atividade": "Follow Up", "frequencia": "Diário", "tempo_min": 60.0}, {"atividade": "Pré-call briefing: estudo do lead, histórico, contexto e hipótese de dor.", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Buscar indicações em Call/Alunos", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Analisar agenda do dia", "frequencia": "Diário", "tempo_min": 20.0}, {"atividade": "Report", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Análise de Call com líder.", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Revisão crítica do pipeline (probabilidade real x forecast).", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Análise de deals travados e definição de plano de destrave.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Análise de taxa de passagem do funil.", "frequencia": "Semanal", "tempo_min": 15.0}, {"atividade": "Roleplay focado em objeções reais da semana.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Rotina de estudos com líder", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "1:1 com líder", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Planejamento de metas individuais e melhoria de performance.", "frequencia": "Mensal", "tempo_min": 30.0}], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Geral": ["Resultados Comerciais", "Bater meta individual de faturamento mensal.", "Garantir taxa de conversão mínima definida pela operação.", "Manter ticket médio alinhado à estratégia.", "Reduzir ciclo de vendas e aumentar previsibilidade.", "Processos e Operações", "Executar rigorosamente o processo comercial e cadências.", "Atualizar CRM de forma consistente e em tempo real.", "Seguir scripts, playbooks e políticas comerciais.", "Garantir qualidade no handoff entre SDR → Closer.", "Relacionamento e Experiência do Cliente", "Conduzir diagnóstico profundo e consultivo.", "Gerenciar objeções com ética e clareza.", "Garantir alinhamento de expectativa antes do fechamento.", "Análise e Melhoria Contínua", "Analisar motivos de ganho e loss.", "Sugerir melhorias em scripts, ofertas e abordagem.", "Participar ativamente dos rituais de melhoria.", "Hábitos - O que você faz para garantir seus resultados", "Disciplina no uso do CRM.", "Organização de agenda e pipeline.", "Foco em execução e fechamento.", "Responsabilidade sobre números.", "Preparação antes de cada call.", "Follow-up estruturado e persistente.", "Autocrítica e busca constante por melhoria.", "Garantir as metas de iniciativas"]}, "habitos": [], "hard_skills": ["Domínio de CRM de vendas (PipeDrive).", "Técnicas de vendas consultivas (SPIN, NEPQ, BANT).", "Negociação e fechamento de high-ticket.", "Soft Skills - Competências Comportamentais", "Comunicação clara, persuasiva e empática, com leads e clientes. = Clareza", "Comunicação simples, clara, objetiva e colaborativa, com time. = Clareza", "Inteligência emocional em negociações. = Equilíbrio", "Senso de responsabilidade. = Comprometimento", "Não ter braço curto e fazer o que te que ser feito. = Proatividade", "Mentalidade de melhoria contínua. = Evolução", "Escuta ativa e pensamento estratégico. = Discernimento", "Capacidade de lidar com pressão e metas. = Resiliência", "Comprometimento com resultados e processo. = Consistência"], "soft_skills": [], "indicadores": {}}, "Supervisor de Closer": {"titulo": "Supervisor de Closer", "subtitulo": "Liderança operacional do time de fechamento", "icone": "⭐", "cor": "#083590", "nivel": "Liderança", "key": "Supervisor de Closer", "nome": "Supervisor de Closer", "rotina": [{"atividade": "Daily", "frequencia": "Diário", "tempo_min": 35.0}, {"atividade": "Análise de Call Individual.", "frequencia": "Diário", "tempo_min": 60.0}, {"atividade": "1:1 com líder.", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Análise de Indicadores dos Closers (Qualidade dos Leads na Call, Calls Realizadas, Oportunidades e FUP)", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Análise de negócios nas Etapas de Oportunidade e Follow Up travados.", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Garantir 20 Follow Ups diários feitos pela equipe e marcado no PipeDrive.", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Garantir 5 indicações diárias por Closer.", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Garantir clareza de meta individual e de meta da equpe;", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Garantir Pipeline atualizado e motivo de perda preenchido da forma correta.", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Monitorar para que a equipe esteja com 70% de Cash Collected.", "frequencia": "Diário", "tempo_min": 2.0}, {"atividade": "Garantir report da equipe todos os dias no grupo.", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Rotina de estudos com líder.", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Rotina de estudos com liderados", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Análise de Dados e Melhorias com Supervisor de SDR", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Roleplay com base nas objeções reais", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Análise de métricas da semana anterior individual.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "1:1 com líder.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "1:1 com liderados", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Análise de métricas do mês.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Planejamento de metas individuais e melhoria de performance.", "frequencia": "Mensal", "tempo_min": 30.0}], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Geral": ["Resultados de Pré-Vendas", "Volume de leads trabalhados.", "Número de reuniões agendadas qualificadas (SQL).", "Taxa de passagem SDR → Closer.", "Qualidade das oportunidades entregues."], "Processos e Operações": ["Seguir cadências e scripts definidos.", "Garantir preenchimento correto do CRM.", "Cumprir SLA de contato com leads.", "Respeitar critérios de qualificação (ICP)."], "Integração com Vendas": ["Garantir passagem de bastão claro e completo para o Closer.", "Atualizar informações relevantes no CRM.", "Apoiar o Closer com contexto e histórico do lead."], "Análise e Melhoria Contínua": ["Analisar objeções recorrentes.", "Propor melhorias em abordagem e copy.", "Buscar aumento contínuo da taxa de passagem."]}, "habitos": ["Consistência (CRM)", "Organização (Executar Rotina, Garantir funcionamento)", "Executor (Fazer o que tem que ser feito)", "Disciplinado", "Disciplina extrema na cadência.", "Velocidade de resposta ao lead.", "Organização e priorização de contatos.", "Registro detalhado no CRM.", "Persistência sem perder qualidade."], "hard_skills": ["Experiência como SDR / Pré-Vendas (desejável).", "Conhecimento básico de CRM de vendas.", "Conhecimento em metodologias de  qualificação (SPIN, NEPQ, BANT, AIDA).", "Comunicação escrita e verbal estruturada.", "Capacidade de lidar com volume."], "soft_skills": ["Proatividade e energia comercial.", "Boa comunicação e escuta ativa.", "Organização e disciplina.", "Resiliência a rejeição.", "Vontade de aprender e evoluir para vendas."], "indicadores": {"Geral": ["1. KPIs de Volume (Atividade)", "Nº de Atividades concluídas no CRM = 250 no mínimo", "Nº de Follow ups concluídas no CRM = 50 por dia (Minímo)", "Interações ativas\nRespostas a stories, comentários e reacts convertidos em conversa.", "Nº Leads Trabalhados por dia 100 no mínimo", "Tempo Falado = ??h??m??seg", "Nº de Agendamentos = 150 (Minímo)", "Nº de Realizadas = 105 (Minímo)", "2. KPIs de Velocidade", "LRT acima de 80% dentro do seu horário de escala", "3. KPIs de Conversão", "Taxa de Passagem - MQL / Taxa de Conversão - Agendada = (20% mínimo)", "Motivos de perda", "4. KPIs de Performance", "Reuniões qualificadas (OPP, etapa 5, acima de 70?%)", "Show up (70% minímo) /No Show (máximo 30%)", "Vontade de aprender e evoluir para vendas."]}}, "Supervisor de Pré-Vendas": {"titulo": "Supervisor de Pré-Vendas", "subtitulo": "Liderança do time de qualificação", "icone": "⭐", "cor": "#083590", "nivel": "Liderança", "key": "Supervisor de Pré-Vendas", "nome": "Supervisor de Pré-Vendas", "rotina": [{"atividade": "Daily", "frequencia": "Diário", "tempo_min": 20.0}, {"atividade": "Supervisão Chat Guru", "frequencia": "Diário", "tempo_min": 60.0}, {"atividade": "Análise de Confirmação das Calls do dia.", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Análise de Indicadores do Pré-Venda (Volume de Leads, Taxa de Passagem e Conversão pra call)", "frequencia": "Diário", "tempo_min": 15.0}, {"atividade": "Verficiar se a Etapa zero está zerada.", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Garantir que o LRT está sendo feito pela equipe.", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Criação de lista eficiente para Cállix.", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "1·1 com lider", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Report de Leads para o lider", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Garantir que a equipe esteja colocando nota nos leads no PipeDrive", "frequencia": "Diário", "tempo_min": 2.0}, {"atividade": "Garantir report da equipe todos os dias no grupo", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Rotina de estudos com líder.", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Rotina de estudos com liderados", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Roleplay com base nas objeções reais (Análise de Ligações)", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Aula com Dourado nas Sextas-feiras, de 15 em 15 dias.", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Análise de métricas da semana anterior individual.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Análise de dados e melhorias com Supervisor de Closer", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "1:1 com líder.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "1:1 com liderados", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Análise de métricas do mês.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Planejamento de metas individuais e melhoria de performance.", "frequencia": "Mensal", "tempo_min": 30.0}], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Geral": ["Resultados de Pré-Vendas", "Volume de leads trabalhados.", "Número de reuniões agendadas qualificadas (SQL).", "Taxa de passagem SDR → Closer.", "Qualidade das oportunidades entregues."], "Processos e Operações": ["Seguir cadências e scripts definidos.", "Garantir preenchimento correto do CRM.", "Cumprir SLA de contato com leads.", "Respeitar critérios de qualificação (ICP)."], "Integração com Vendas": ["Garantir passagem de bastão claro e completo para o Closer.", "Atualizar informações relevantes no CRM.", "Apoiar o Closer com contexto e histórico do lead."], "Análise e Melhoria Contínua": ["Analisar objeções recorrentes.", "Propor melhorias em abordagem e copy.", "Buscar aumento contínuo da taxa de passagem."]}, "habitos": ["Consistência (CRM)", "Organização (Executar Rotina, Garantir funcionamento)", "Executor (Fazer o que tem que ser feito)", "Disciplinado", "Disciplina extrema na cadência.", "Velocidade de resposta ao lead.", "Organização e priorização de contatos.", "Registro detalhado no CRM.", "Persistência sem perder qualidade."], "hard_skills": ["Experiência como SDR / Pré-Vendas (desejável).", "Conhecimento básico de CRM de vendas.", "Conhecimento em metodologias de  qualificação (SPIN, NEPQ, BANT, AIDA).", "Comunicação escrita e verbal estruturada.", "Capacidade de lidar com volume."], "soft_skills": ["Proatividade e energia comercial.", "Boa comunicação e escuta ativa.", "Organização e disciplina.", "Resiliência a rejeição.", "Vontade de aprender e evoluir para vendas."], "indicadores": {"Geral": ["1. KPIs de Volume (Atividade)", "Nº de Atividades concluídas no CRM = 250 no mínimo", "Nº de Follow ups concluídas no CRM = 50 por dia (Minímo)", "Interações ativas\nRespostas a stories, comentários e reacts convertidos em conversa.", "Nº Leads Trabalhados por dia 100 no mínimo", "Tempo Falado = ??h??m??seg", "Nº de Agendamentos = 150 (Minímo)", "Nº de Realizadas = 105 (Minímo)", "2. KPIs de Velocidade", "LRT acima de 80% dentro do seu horário de escala", "3. KPIs de Conversão", "Taxa de Passagem - MQL / Taxa de Conversão - Agendada = (20% mínimo)", "Motivos de perda", "4. KPIs de Performance", "Reuniões qualificadas (OPP, etapa 5, acima de 70?%)", "Show up (70% minímo) /No Show (máximo 30%)", "Vontade de aprender e evoluir para vendas."]}}, "Pré-VendasSDR": {"titulo": "Pré-Vendas · SDR", "subtitulo": "Qualificação inbound de leads", "icone": "📞", "cor": "#c58a30", "nivel": "Pré-Vendas", "key": "Pré-VendasSDR", "nome": "Pré-Vendas - SDR ", "rotina": [{"atividade": "Daily", "frequencia": "Diário", "tempo_min": 20.0}, {"atividade": "Atendimento via Cállix.", "frequencia": "Diário", "tempo_min": 120.0}, {"atividade": "Confirmação das Calls", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Verificar leads do dia anterior para ver com quem fez LRT e preencher os que foram FHC..", "frequencia": "Diário", "tempo_min": 15.0}, {"atividade": "Zerar Leads Etapa 0", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Programar mensagens de conteúdo de nutrição", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Reativação de Base de acordo com a segmentação.", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "LRT", "frequencia": "Diário", "tempo_min": 300.0}, {"atividade": "Whatsapp / Leads Novos", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Follow Up / Cadência", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Ligação via API4COM(Voip)", "frequencia": "Diário", "tempo_min": 60.0}, {"atividade": "Report No Grupo/Slack", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Colocar nota em cada lead que for agendado no PipeDrive.", "frequencia": "Diário", "tempo_min": 2.0}, {"atividade": "Rotina de estudos com líder.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Roleplay com base nas objeções reais", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Aula com Cavedon nas Sextas-feiras, de 15 em 15 dias.", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Análise de métricas da semana anterior", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "1:1 com líder.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Análise de métricas do mês.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Planejamento de metas individuais e melhoria de performance.", "frequencia": "Mensal", "tempo_min": 30.0}], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Geral": ["Resultados de Pré-Vendas", "Volume de leads trabalhados.", "Número de reuniões agendadas qualificadas (SQL).", "Taxa de passagem SDR → Closer.", "Qualidade das oportunidades entregues."], "Processos e Operações": ["Seguir cadências e scripts definidos.", "Garantir preenchimento correto do CRM.", "Cumprir SLA de contato com leads.", "Respeitar critérios de qualificação (ICP)."], "Integração com Vendas": ["Garantir passagem de bastão claro e completo para o Closer.", "Atualizar informações relevantes no CRM.", "Apoiar o Closer com contexto e histórico do lead."], "Análise e Melhoria Contínua": ["Analisar objeções recorrentes.", "Propor melhorias em abordagem e copy.", "Buscar aumento contínuo da taxa de passagem."]}, "habitos": ["Consistência (CRM)", "Organização (Executar Rotina, Garantir funcionamento)", "Executor (Fazer o que tem que ser feito)", "Disciplinado", "Disciplina extrema na cadência.", "Velocidade de resposta ao lead.", "Organização e priorização de contatos.", "Registro detalhado no CRM.", "Persistência sem perder qualidade."], "hard_skills": ["Experiência como SDR / Pré-Vendas (desejável).", "Conhecimento básico de CRM de vendas.", "Conhecimento em metodologias de  qualificação (SPIN, NEPQ, BANT, AIDA).", "Comunicação escrita e verbal estruturada.", "Capacidade de lidar com volume."], "soft_skills": ["Proatividade e energia comercial.", "Boa comunicação e escuta ativa.", "Organização e disciplina.", "Resiliência a rejeição.", "Vontade de aprender e evoluir para vendas."], "indicadores": {"Geral": ["1. KPIs de Volume (Atividade)", "Nº de Atividades concluídas no CRM = 250 no mínimo", "Nº de Follow ups concluídas no CRM = 50 por dia (Minímo)", "Interações ativas\nRespostas a stories, comentários e reacts convertidos em conversa.", "Nº Leads Trabalhados por dia 100 no mínimo", "Tempo Falado = ??h??m??seg", "Nº de Agendamentos = 150 (Minímo)", "Nº de Realizadas = 105 (Minímo)", "2. KPIs de Velocidade", "LRT acima de 80% dentro do seu horário de escala", "3. KPIs de Conversão", "Taxa de Passagem - MQL / Taxa de Conversão - Agendada = (20% mínimo)", "Motivos de perda", "4. KPIs de Performance", "Reuniões qualificadas (OPP, etapa 5, acima de 70?%)", "Show up (70% minímo) /No Show (máximo 30%)", "Vontade de aprender e evoluir para vendas."]}}, "Pré-VendasBDR": {"titulo": "Pré-Vendas · BDR", "subtitulo": "Prospecção outbound de leads", "icone": "🎯", "cor": "#c58a30", "nivel": "Pré-Vendas", "key": "Pré-VendasBDR", "nome": "Pré-Vendas - BDR", "rotina": [{"atividade": "Daily", "frequencia": "Diário", "tempo_min": 20.0}, {"atividade": "Trabalhar nossa base de lead via Cállix.", "frequencia": "Diário", "tempo_min": 120.0}, {"atividade": "Confirmação das Calls", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Criação de Leads de Indicação no TypeBot.", "frequencia": "Diário", "tempo_min": 15.0}, {"atividade": "Criar Base de Leads no PipeDrive.", "frequencia": "Diário", "tempo_min": 15.0}, {"atividade": "Onboarding Novos Alunos / Alunos Antigos para pegar indicação", "frequencia": "Diário", "tempo_min": 150.0}, {"atividade": "Programar mensagens de nutrição para calls agendadas.", "frequencia": "Diário", "tempo_min": 10.0}, {"atividade": "Criação de lista para abordagem via Outbound.", "frequencia": "Diário", "tempo_min": 60.0}, {"atividade": "Trabalhar indicações dos Closers", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Trabalhar grupo da Comunidade REC, Peptídeos e Congresso.", "frequencia": "Diário", "tempo_min": 30.0}, {"atividade": "Follow Up / Cadência", "frequencia": "Diário", "tempo_min": 45.0}, {"atividade": "Colocar nota em cada lead que for agendado no PipeDrive.", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Report diário no grupo.", "frequencia": "Diário", "tempo_min": 5.0}, {"atividade": "Rotina de estudos com líder.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Roleplay com base nas objeções reais", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Aula com Dourado nas Sextas-feiras, de 15 em 15 dias.", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Análise de métricas da semana anterior", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "1:1 com líder.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Análise de métricas do mês.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Planejamento de metas individuais e melhoria de performance.", "frequencia": "Mensal", "tempo_min": 30.0}], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Geral": ["Resultados de Pré-Vendas", "Volume de leads trabalhados.", "Número de reuniões agendadas qualificadas (SQL).", "Taxa de passagem SDR → Closer.", "Qualidade das oportunidades entregues."], "Processos e Operações": ["Seguir cadências e scripts definidos.", "Garantir preenchimento correto do CRM.", "Cumprir SLA de contato com leads.", "Respeitar critérios de qualificação (ICP)."], "Integração com Vendas": ["Garantir passagem de bastão claro e completo para o Closer.", "Atualizar informações relevantes no CRM.", "Apoiar o Closer com contexto e histórico do lead."], "Análise e Melhoria Contínua": ["Analisar objeções recorrentes.", "Propor melhorias em abordagem e copy.", "Buscar aumento contínuo da taxa de passagem."]}, "habitos": ["Consistência (CRM)", "Organização (Executar Rotina, Garantir funcionamento)", "Executor (Fazer o que tem que ser feito)", "Disciplinado", "Disciplina extrema na cadência.", "Velocidade de resposta ao lead.", "Organização e priorização de contatos.", "Registro detalhado no CRM.", "Persistência sem perder qualidade."], "hard_skills": ["Experiência como SDR / Pré-Vendas (desejável).", "Conhecimento básico de CRM de vendas.", "Conhecimento em metodologias de  qualificação (SPIN, NEPQ, BANT, AIDA).", "Comunicação escrita e verbal estruturada.", "Capacidade de lidar com volume."], "soft_skills": ["Proatividade e energia comercial.", "Boa comunicação e escuta ativa.", "Organização e disciplina.", "Resiliência a rejeição.", "Vontade de aprender e evoluir para vendas."], "indicadores": {"Geral": ["1. KPIs de Volume (Atividade)", "Nº de Atividades concluídas no CRM = 250 no mínimo", "Nº de Follow ups concluídas no CRM = 50 por dia (Minímo)", "Interações ativas\nRespostas a stories, comentários e reacts convertidos em conversa.", "Nº Leads Trabalhados por dia 100 no mínimo", "Tempo Falado = ??h??m??seg", "Nº de Agendamentos = 150 (Minímo)", "Nº de Realizadas = 105 (Minímo)", "2. KPIs de Velocidade", "LRT acima de 80% dentro do seu horário de escala", "3. KPIs de Conversão", "Taxa de Passagem - MQL / Taxa de Conversão - Agendada = (20% mínimo)", "Motivos de perda", "4. KPIs de Performance", "Reuniões qualificadas (OPP, etapa 5, acima de 70?%)", "Show up (70% minímo) /No Show (máximo 30%)", "Vontade de aprender e evoluir para vendas."]}}, "Vendedor Low": {"titulo": "Vendedor Low Ticket", "subtitulo": "Vendas via WhatsApp e ligação", "icone": "💬", "cor": "#00a050", "nivel": "Vendas", "key": "Vendedor Low", "nome": "Vendedor Low Ticket (WhatsApp/Ligação)", "rotina": [{"atividade": "Daily", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Atendimento imediato de leads inbound via WhatsApp.", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Realização de ligações telefônicas curtas para ativação e retomada de interesse.", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Qualificação leve do lead (dor, interesse, urgência).", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Condução do lead até decisão via mensagem ou ligação.", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Ligação via API4COM(Voip)", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Follow-up estruturado conforme cadência definida.", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Report No Grupo/Slack", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Atualização detalhada do status do lead no CRM.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Ajustes de abordagem, mensagens e gatilhos de conversão.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Participação em treinamentos de copy, persuasão e negociação curta.", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Análise de conversas (WhatsApp) para melhoria contínua.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "1:1 com líder.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Revisão de motivos de perda e abandono de conversa.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Ajuste de scripts, mensagens e sequências de follow-up.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Planejamento de metas individuais e melhoria de performance.", "frequencia": "Mensal", "tempo_min": 15.0}], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Geral": ["Resultados de Pré-Vendas", "Número de vendas e/ou avanços gerados via WhatsApp/Ligação.", "Taxa de conversão de leads atendidos.", "Velocidade de resposta ao lead.", "Taxa de recuperação de leads frios ou perdidos. (Reativação/Follow up)"], "Processos e Operações": ["Execução rigorosa das cadências de contato.", "Uso correto e consistente do CRM.", "Cumprir SLA de contato com leads.", "Respeitar critérios de qualificação (ICP).", "Padronização de mensagens e discurso comercial + auxiliar na otimização da IA"], "Integração com Vendas": ["Garantir passagem de bastão claro e completo para o Closer.", "Atualizar informações relevantes no CRM.", "Apoiar o Closer com contexto e histórico do lead."], "Análise e Melhoria Contínua": ["Analisar objeções recorrentes.", "Propor melhorias em abordagem e copy.", "Buscar aumento contínuo da taxa de passagem."]}, "habitos": ["Consistência (CRM)", "Agilidade no atendimento.", "Executor (Fazer o que tem que ser feito)", "Disciplinado", "Organização de conversas e follow-ups.", "Velocidade de resposta ao lead.", "Organização e priorização de contatos.", "Foco em conversão e fechamento.", "Persistência sem perder qualidade."], "hard_skills": ["Experiência em vendas por WhatsApp e telefone.", "Escrita persuasiva e comunicação objetiva.", "Conhecimento em metodologias de  qualificação (SPIN, NEPQ, BANT, AIDA).", "Técnicas de vendas consultivas adaptadas ao texto.", "Capacidade de lidar com volume de conversas simultâneas.", "Domínio de CRM de vendas."], "soft_skills": ["Proatividade e energia comercial.", "Boa comunicação e escuta ativa.", "Organização e disciplina.", "Capacidade de lidar com pressão e metas. = Resiliência", "Vontade de aprender e evoluir para vendas."], "indicadores": {"Geral": ["1. KPIs de Volume (Atividade)", "Leads atendidos\nQuantidade total de leads respondidos no período.", "Conversas iniciadas\nLeads que responderam ao primeiro contato.", "Tentativas de contato\nMensagens + ligações realizadas.", "Leads reativados\nLeads frios ou inativos que voltaram a conversar.", "2. KPIs de Velocidade", "SLA de primeiro atendimento\nTempo médio para a primeira resposta ao lead. (Pos acolhimento da IA)", "Tempo médio de resposta\nVelocidade entre mensagens durante a conversa.", "Tempo de fechamento\nTempo entre primeiro contato e conversão.", "3. KPIs de Conversão", "Taxa de conversão por conversa\nVendas ou avanços ÷ conversas iniciadas.", "Conversão por canal\nWhatsApp vs. ligação telefônica.", "Taxa de recuperação\nVendas originadas de leads frios ÷ leads frios trabalhados.", "Motivos de perda", "4. KPIs de Performance", "Vendas realizadas via WhatsApp/Ligação\nQuantidade total de vendas fechadas.", "Faturamento gerado\nReceita atribuída ao vendedor.", "Vontade de aprender e evoluir para vendas."]}}, "Social Selling": {"titulo": "Social Selling", "subtitulo": "Vendas e relacionamento via Instagram", "icone": "📱", "cor": "#00a050", "nivel": "Vendas", "key": "Social Selling", "nome": "Social Selling (Instagram)", "rotina": [{"atividade": "Daily", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Monitorar e responder DMs em tempo real.", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Responder stories com abordagem consultiva e contextual.", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Interagir estrategicamente com seguidores (comentários, reacts).", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Iniciar conversas com leads engajados (curtidas, respostas, salvamentos).", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Identificar intenção de compra (dor, momento, urgência).", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Conduzir conversa para sessão estratégica, contato comercial(whatsapp) ou oferta direta(relaizar venda).", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Report No Grupo/Slack", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Registrar interações e status do lead no CRM.", "frequencia": "Diário", "tempo_min": null}, {"atividade": "Alinhamento com marketing sobre conteúdos que mais convertem.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Alinhamento com vendas sobre qualidade dos leads.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "Participação em treinamentos de copy, persuasão e negociação curta.", "frequencia": "Semanal", "tempo_min": 60.0}, {"atividade": "Análise de conversas para melhoria contínua.", "frequencia": "Semanal", "tempo_min": 30.0}, {"atividade": "1:1 com líder.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Revisão de motivos de perda e abandono de conversa.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Ajuste de scripts, mensagens e sequências de follow-up.", "frequencia": "Mensal", "tempo_min": 30.0}, {"atividade": "Sugestões de melhorias em CTA, ofertas e criativos.", "frequencia": "Mensal", "tempo_min": 15.0}, {"atividade": "Planejamento de metas individuais e melhoria de performance.", "frequencia": "Mensal", "tempo_min": 15.0}], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Geral": ["Resultados de Pré-Vendas", "Oportunidades geradas via Instagram.", "Vendas realizadas ou avançadas pelo canal.", "Taxa de conversão DM → Venda / Avanço.", "Receita atribuída ao Instagram (quando aplicável)."], "Processos e Operações": ["Execução rigorosa das cadências de contato.", "Uso correto e consistente do CRM.", "Cumprir SLA de contato com leads.", "Respeitar critérios de qualificação (ICP).", "Padronização de mensagens e discurso comercial + auxiliar na otimização da IA"], "Integração com Vendas": ["Garantir passagem de bastão claro e completo para o Closer.", "Atualizar informações relevantes no CRM.", "Apoiar o Closer com contexto e histórico do lead."], "Análise e Melhoria Contínua": ["Analisar objeções recorrentes.", "Propor melhorias em abordagem e copy.", "Buscar aumento contínuo da taxa de passagem."]}, "habitos": ["Consistência (CRM)", "Agilidade no atendimento.", "Executor (Fazer o que tem que ser feito)", "Disciplinado", "Organização de conversas e follow-ups.", "Velocidade de resposta ao lead.", "Organização e priorização de contatos.", "Foco em conversão e fechamento.", "Persistência sem perder qualidade."], "hard_skills": ["Experiência em vendas por WhatsApp e telefone.", "Escrita persuasiva e comunicação objetiva.", "Conhecimento em metodologias de  qualificação (SPIN, NEPQ, BANT, AIDA).", "Técnicas de vendas consultivas adaptadas ao texto.", "Capacidade de lidar com volume de conversas simultâneas.", "Domínio de CRM de vendas."], "soft_skills": ["Proatividade e energia comercial.", "Boa comunicação e escuta ativa.", "Organização e disciplina. = Consistência", "Capacidade de lidar com pressão e metas. = Resiliência", "Vontade de aprender e evoluir para vendas.", "Comprometimento com resultado. = Responsabilidade"], "indicadores": {"Geral": ["1. KPIs de Volume (Atividade)", "DMs recebidas\nQuantidade total de mensagens recebidas.", "Conversas iniciadas\nConversas abertas proativamente pelo Social Seller.", "Interações ativas\nRespostas a stories, comentários e reacts convertidos em conversa.", "2. KPIs de Velocidade", "SLA de resposta em DM\nTempo médio para responder uma DM.", "Tempo médio de resposta\nVelocidade entre mensagens durante a conversa.", "Tempo de fechamento\nTempo entre primeiro contato e conversão.", "3. KPIs de Conversão", "Taxa de resposta (%)\nConversas iniciadas ÷ interações totais.", "Taxa de qualificação\nLeads qualificados ÷ conversas iniciadas.", "Taxa de conversão DM → Avanço\nConversas que viram venda, agendamento ou WhatsApp ÷ conversas iniciadas.", "Taxa de conversão DM → Venda\nVendas fechadas direto no Instagram ÷ conversas iniciadas.", "Motivos de perda", "4. KPIs de Performance", "Vendas atribuídas ao Instagram\nQuantidade de vendas originadas via DM.", "Faturamento atribuído\nReceita total gerada pelo canal.", "Quantidade de levantada de mão para sessão estratégica", "Vontade de aprender e evoluir para vendas."]}}, "Sales Ops": {"titulo": "Sales Ops", "subtitulo": "Operações, processos e ferramentas", "icone": "⚙️", "cor": "#6c5ce7", "nivel": "Operação", "key": "Sales Ops", "nome": "Sales Ops ", "rotina": [], "rotina_total_min": 0, "rotina_total_h": 0, "responsabilidades": {"Geral": ["Processos e Operações", "Funcionamento contínuo e estável das ferramentas comerciais.", "Qualidade, padronização e confiabilidade dos dados.", "Fluidez no fluxo de leads (entrada → distribuição → venda).", "Aderência do time ao processo e uso correto do CRM.", "Dados e Indicadores", "Dashboards atualizados e confiáveis.", "Métricas claras de funil, conversão e produtividade.", "Suporte à tomada de decisão da liderança.", "Automação e Escala", "Redução de tarefas manuais via automação.", "Ganho de eficiência operacional do time comercial.", "Integrações estáveis e bem documentadas.", "Escopo por Ferramenta", "Pipedrive / Kommo", "Estruturação e manutenção de pipelines.", "Campos personalizados, regras e automações internas.", "Relatórios, filtros e previsibilidade de forecast.", "Calendly", "Gestão de agendas, regras de disponibilidade e SLAs.", "Integração com CRM e Google Calendar (Workspace).", "Make", "Criação e manutenção de automações e cenários.", "Webhooks, triggers e tratamento de erros.", "Typebot", "Criação de fluxos de qualificação e captura de leads.", "Integração com CRM e automações.", "Workspace (Google)", "Gestão de e-mails, calendários e permissões.", "Padronização de documentos e relatórios.", "Callix", "Monitoramento de chamadas, gravações e logs.", "Integração com CRM para histórico e métricas."]}, "habitos": ["Organização e visão sistêmica.", "Atenção extrema a detalhes e dados.", "Proatividade para prevenir erros.", "Documentação constante.", "Comunicação clara com áreas envolvidas."], "hard_skills": ["Domínio de CRMs (Pipedrive / Kommo).", "Automações com Make (nível intermediário/avançado).", "Integração de ferramentas via API e Webhooks.", "Estruturação de dashboards e KPIs comerciais.", "Conhecimento de funil de vendas e operações comerciais.", "Soft Skills – Competências Comportamentais", "Pensamento analítico. = Precisão", "Organização e disciplina. = Consistência", "Comunicação clara com áreas técnicas e comerciais. = Clareza", "Proatividade e antecipação de problemas. = Prevenção", "Comprometimento com dados e processo. = Confiabilidade"], "soft_skills": [], "indicadores": {}}};
+
+function renderCadeiras() {
+  const grid = document.getElementById('cadeiras-grid');
+  grid.innerHTML = '';
+  Object.entries(RCF_DATA).forEach(([key, c]) => {
+    const totalAtividades = c.rotina.length;
+    const totalIndic = Object.values(c.indicadores || {}).reduce((acc, arr) => acc + arr.length, 0);
+    const totalResp = Object.values(c.responsabilidades || {}).reduce((acc, arr) => acc + arr.length, 0);
+    grid.innerHTML += `
+      <div class="cadeira-card" style="--cad-cor: ${c.cor};" onclick="abrirFicha('${key}')">
+        <div>
+          <div class="cadeira-icon">${c.icone}</div>
+          <div class="cadeira-nivel">${c.nivel || ''}</div>
+          <div class="cadeira-titulo">${c.titulo}</div>
+          <div class="cadeira-sub">${c.subtitulo || ''}</div>
+        </div>
+        <div>
+          <div class="cadeira-stats">
+            <div class="cadeira-stat"><b>${totalAtividades}</b>Rotinas</div>
+            <div class="cadeira-stat"><b>${totalResp}</b>Responsab.</div>
+            <div class="cadeira-stat"><b>${totalIndic}</b>Indicadores</div>
+          </div>
+          <div class="cadeira-cta">Ver ficha completa →</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function freqClass(freq) {
+  const f = (freq || '').toLowerCase();
+  if (f.includes('diár') || f.includes('diar')) return 'freq-diario';
+  if (f.includes('seman')) return 'freq-semanal';
+  if (f.includes('mens')) return 'freq-mensal';
+  return 'freq-outro';
+}
+
+function renderFicha(key) {
+  const c = RCF_DATA[key];
+  if (!c) return;
+  const view = document.getElementById('ficha-view');
+
+  // Calcular total de minutos da rotina
+  const totalMin = c.rotina.reduce((acc, r) => acc + (r.tempo_min || 0), 0);
+  const totalH = Math.floor(totalMin / 60);
+  const restMin = totalMin % 60;
+  const tempoTotal = totalH > 0 ? `${totalH}h${restMin > 0 ? ' ' + restMin + 'min' : ''}` : `${totalMin}min`;
+
+  // ROTINA · tabela
+  let rotinaHtml = '';
+  if (c.rotina && c.rotina.length > 0) {
+    rotinaHtml = `
+      <table class="rotina-table">
+        <thead>
+          <tr><th>Atividade</th><th>Frequência</th><th class="num">Tempo</th></tr>
+        </thead>
+        <tbody>
+          ${c.rotina.map(r => `
+            <tr>
+              <td>${r.atividade}</td>
+              <td><span class="freq-badge ${freqClass(r.frequencia)}">${(r.frequencia||'').trim()}</span></td>
+              <td class="num">${r.tempo_min ? r.tempo_min + ' min' : '—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } else {
+    rotinaHtml = '<div style="opacity:0.55; font-size:12px; padding:10px;">Nenhuma rotina mapeada ainda.</div>';
+  }
+
+  // RESPONSABILIDADES · agrupadas
+  let respHtml = '';
+  if (c.responsabilidades && Object.keys(c.responsabilidades).length > 0) {
+    Object.entries(c.responsabilidades).forEach(([grupo, itens]) => {
+      if (itens.length === 0) return;
+      respHtml += `
+        <div class="resp-grupo">
+          ${grupo !== 'Geral' ? `<div class="resp-grupo-titulo">${grupo}</div>` : ''}
+          <div class="resp-grupo-lista">
+            ${itens.map(i => `<div class="resp-item">${i}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    });
+  } else {
+    respHtml = '<div style="opacity:0.55; font-size:12px; padding:10px;">—</div>';
+  }
+
+  // HÁBITOS · lista numerada
+  let habitosHtml = '';
+  if (c.habitos && c.habitos.length > 0) {
+    habitosHtml = `
+      <div class="lista-itens">
+        ${c.habitos.map((h, i) => `
+          <div class="lista-item">
+            <div class="lista-item-num">${i+1}</div>
+            <div>${h}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    habitosHtml = '<div style="opacity:0.55; font-size:12px; padding:10px;">Nenhum hábito mapeado.</div>';
+  }
+
+  // HARD + SOFT SKILLS · tags
+  let hardHtml = c.hard_skills && c.hard_skills.length > 0
+    ? `<div class="skills-grid">${c.hard_skills.map(s => `<div class="skill-tag skill-hard">${s}</div>`).join('')}</div>`
+    : '<div style="opacity:0.55; font-size:12px;">—</div>';
+
+  let softHtml = c.soft_skills && c.soft_skills.length > 0
+    ? `<div class="skills-grid">${c.soft_skills.map(s => `<div class="skill-tag skill-soft">${s}</div>`).join('')}</div>`
+    : '<div style="opacity:0.55; font-size:12px;">—</div>';
+
+  // INDICADORES · agrupados
+  let indicHtml = '';
+  if (c.indicadores && Object.keys(c.indicadores).length > 0) {
+    Object.entries(c.indicadores).forEach(([grupo, itens]) => {
+      if (itens.length === 0) return;
+      indicHtml += `
+        <div class="indic-grupo">
+          ${grupo !== 'Geral' ? `<div class="indic-grupo-titulo">${grupo}</div>` : ''}
+          ${itens.map(i => `<div class="indic-item">${i}</div>`).join('')}
+        </div>
+      `;
+    });
+  } else {
+    indicHtml = '<div style="opacity:0.55; font-size:12px; padding:10px;">Nenhum indicador mapeado ainda.</div>';
+  }
+
+  // MONTAR HTML COMPLETO
+  view.innerHTML = `
+    <button class="ficha-back" onclick="voltarLista()">← Voltar para todas as cadeiras</button>
+
+    <div class="ficha-header" style="--cad-cor: ${c.cor}; background: ${c.cor};">
+      <div class="ficha-icon">${c.icone}</div>
+      <div class="ficha-info">
+        <div class="ficha-nivel">${c.nivel || ''}</div>
+        <div class="ficha-titulo">${c.titulo}</div>
+        <div class="ficha-sub">${c.subtitulo || ''}</div>
+      </div>
+    </div>
+
+    <div class="ficha-grid">
+      <!-- ROTINA -->
+      <div class="ficha-secao full" style="--cad-cor: ${c.cor};">
+        <div class="ficha-secao-header">
+          <div class="ficha-secao-titulo"><span class="ico">🕐</span> ROTINA · Atividades rotineiras e pontuais</div>
+          <div class="ficha-secao-meta">${c.rotina.length} atividades · <b>${tempoTotal}</b> totais</div>
+        </div>
+        ${rotinaHtml}
+      </div>
+
+      <!-- RESPONSABILIDADES -->
+      <div class="ficha-secao" style="--cad-cor: ${c.cor};">
+        <div class="ficha-secao-header">
+          <div class="ficha-secao-titulo"><span class="ico">🎯</span> RESPONSABILIDADES</div>
+        </div>
+        ${respHtml}
+      </div>
+
+      <!-- INDICADORES -->
+      <div class="ficha-secao" style="--cad-cor: ${c.cor};">
+        <div class="ficha-secao-header">
+          <div class="ficha-secao-titulo"><span class="ico">📊</span> INDICADORES</div>
+        </div>
+        ${indicHtml}
+      </div>
+
+      <!-- HÁBITOS -->
+      <div class="ficha-secao full" style="--cad-cor: ${c.cor};">
+        <div class="ficha-secao-header">
+          <div class="ficha-secao-titulo"><span class="ico">🧠</span> HÁBITOS · O que faz para garantir resultado</div>
+        </div>
+        ${habitosHtml}
+      </div>
+
+      <!-- HARD SKILLS -->
+      <div class="ficha-secao">
+        <div class="ficha-secao-header">
+          <div class="ficha-secao-titulo"><span class="ico">💪</span> HARD SKILLS · Requisitos técnicos</div>
+        </div>
+        ${hardHtml}
+      </div>
+
+      <!-- SOFT SKILLS -->
+      <div class="ficha-secao">
+        <div class="ficha-secao-header">
+          <div class="ficha-secao-titulo"><span class="ico">🤝</span> SOFT SKILLS · Competências comportamentais</div>
+        </div>
+        ${softHtml}
+      </div>
+    </div>
+  `;
+}
+
+function abrirFicha(key) {
+  document.getElementById('cadeiras-view').classList.add('hidden');
+  document.getElementById('ficha-view').classList.add('active');
+  renderFicha(key);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function voltarLista() {
+  document.getElementById('cadeiras-view').classList.remove('hidden');
+  document.getElementById('ficha-view').classList.remove('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  renderCadeiras();
+
+  // Sidebar
+  fetch('sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('[data-page="rcf"]');
+    if (active) active.classList.add('active');
+    const parent = document.querySelector('[data-page="pessoas-parent"]');
+    if (parent) parent.classList.add('active');
+  });
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>
