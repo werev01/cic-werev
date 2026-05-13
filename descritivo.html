@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descritivo de Rotina · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* ===== HEADER MANIFESTO ===== */
+    .desc-intro {
+      padding: 18px 22px;
+      border-radius: 14px;
+      margin-bottom: 22px;
+      background: linear-gradient(135deg, rgba(8,53,144,0.08), rgba(197,138,48,0.06));
+      border: 1px solid rgba(197,138,48,0.25);
+    }
+    .cic.dark .desc-intro { background: linear-gradient(135deg, rgba(8,53,144,0.18), rgba(197,138,48,0.1)); }
+    .desc-intro-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 6px; }
+    .desc-intro-text { font-size: 12.5px; line-height: 1.6; opacity: 0.85; }
+    .desc-intro-text b { color: #c58a30; font-weight: 600; }
+
+    /* ===== TABS ===== */
+    .tabs-bar { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid; padding-bottom: 0; }
+    .cic.light .tabs-bar { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .tabs-bar { border-color: rgba(226,227,222,0.1); }
+    .tab-btn { background: transparent; border: 0; padding: 10px 18px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; color: inherit; opacity: 0.55; border-bottom: 2px solid transparent; transition: all 0.15s; }
+    .tab-btn:hover { opacity: 0.85; }
+    .tab-btn.active { opacity: 1; color: #c58a30; border-bottom-color: #c58a30; font-weight: 600; }
+    .tab-btn .count { font-size: 9.5px; font-weight: 700; opacity: 0.7; margin-left: 6px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ===== RONDAS (CARDS) ===== */
+    .ronda-card {
+      padding: 22px 24px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .cic.light .ronda-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .ronda-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .ronda-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .cic.light .ronda-header { border-color: rgba(12,38,59,0.06); }
+    .cic.dark .ronda-header { border-color: rgba(226,227,222,0.08); }
+    .ronda-time {
+      background: linear-gradient(135deg, #083590, #c58a30);
+      color: #FFF;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ronda-time .ic-clock { font-size: 14px; }
+    .ronda-titulo { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
+    .ronda-titulo span { font-size: 10px; opacity: 0.55; font-weight: 500; margin-left: 6px; letter-spacing: 0.4px; }
+    .ronda-tag {
+      background: rgba(197,138,48,0.12);
+      color: #c58a30;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .ronda-itens { display: flex; flex-direction: column; gap: 6px; }
+    .ronda-item {
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      line-height: 1.45;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: background 0.15s;
+    }
+    .cic.light .ronda-item { background: rgba(12,38,59,0.025); }
+    .cic.dark .ronda-item { background: rgba(226,227,222,0.04); }
+    .ronda-item:hover { background: rgba(197,138,48,0.08); }
+    .ronda-item-check {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.15s;
+    }
+    .cic.light .ronda-item-check { border-color: rgba(12,38,59,0.25); }
+    .cic.dark .ronda-item-check { border-color: rgba(226,227,222,0.3); }
+    .ronda-item:hover .ronda-item-check { border-color: #c58a30; }
+    .ronda-item-text { flex: 1; }
+    .ronda-item.subitem { padding-left: 38px; opacity: 0.85; font-size: 12px; }
+    .ronda-item.subitem .ronda-item-check { display: none; }
+    .ronda-item.subitem::before { content: '↳'; color: #c58a30; opacity: 0.7; margin-right: 8px; font-weight: 600; flex-shrink: 0; }
+
+    .ronda-bloco {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed;
+    }
+    .cic.light .ronda-bloco { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .ronda-bloco { border-color: rgba(226,227,222,0.1); }
+    .ronda-bloco-titulo {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #c58a30;
+      margin-bottom: 6px;
+    }
+
+    /* ===== RESUMO TOPO ===== */
+    .resumo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 700px) { .resumo-grid { grid-template-columns: 1fr; } }
+    .resumo-card {
+      padding: 16px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cic.light .resumo-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .resumo-card { background: rgba(226,227,222,0.05); border: 1px solid rgba(226,227,222,0.08); }
+    .resumo-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); border-color: #c58a30; }
+    .resumo-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .resumo-icon.diario { background: rgba(217,32,32,0.15); color: #d92020; }
+    .resumo-icon.semanal { background: rgba(197,138,48,0.15); color: #c58a30; }
+    .resumo-icon.mensal { background: rgba(0,160,80,0.15); color: #00a050; }
+    .resumo-body { flex: 1; }
+    .resumo-titulo { font-size: 13px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 2px; }
+    .resumo-meta { font-size: 11px; opacity: 0.6; }
+    .resumo-count {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #c58a30;
+    }
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Pilares · Pessoas · Descritivo de Rotina</div>
+        <div class="h-title">Descritivo de Rotina</div>
+        <div class="h-meta">Rotina operacional do time comercial · cadência diária, semanal e mensal</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <div class="desc-intro">
+      <div class="desc-intro-title">▌ O que é o Descritivo de Rotina</div>
+      <div class="desc-intro-text">A <b>rotina é a engrenagem que faz o motor comercial funcionar.</b> Aqui está mapeada a cadência completa do time — todas as rondas diárias, rituais semanais e fechamentos mensais. Use como guia operacional, checklist diário ou material de rampagem.</div>
+    </div>
+
+    <div class="resumo-grid">
+      <div class="resumo-card" onclick="trocaTab('diario')">
+        <div class="resumo-icon diario">📅</div>
+        <div class="resumo-body">
+          <div class="resumo-titulo">Diário</div>
+          <div class="resumo-meta">4 rondas + fechamento</div>
+        </div>
+        <div class="resumo-count">4</div>
+      </div>
+      <div class="resumo-card" onclick="trocaTab('semanal')">
+        <div class="resumo-icon semanal">📊</div>
+        <div class="resumo-body">
+          <div class="resumo-titulo">Semanal</div>
+          <div class="resumo-meta">Análise + Weeklies + Estudo</div>
+        </div>
+        <div class="resumo-count">12</div>
+      </div>
+      <div class="resumo-card" onclick="trocaTab('mensal')">
+        <div class="resumo-icon mensal">📈</div>
+        <div class="resumo-body">
+          <div class="resumo-titulo">Mensal</div>
+          <div class="resumo-meta">Fechamento + Pagamentos + 1:1</div>
+        </div>
+        <div class="resumo-count">6</div>
+      </div>
+    </div>
+
+    <div class="tabs-bar">
+      <button class="tab-btn active" data-tab="diario">Diário <span class="count">5 RONDAS</span></button>
+      <button class="tab-btn" data-tab="semanal">Semanal <span class="count">12 ATIVIDADES</span></button>
+      <button class="tab-btn" data-tab="mensal">Mensal <span class="count">6 ATIVIDADES</span></button>
+    </div>
+
+    <!-- =========== DIÁRIO =========== -->
+    <div class="tab-content active" id="tab-diario">
+
+      <div class="ronda-card">
+        <div class="ronda-header">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <span class="ronda-time">⏰ 09h00</span>
+            <span class="ronda-titulo">Ronda 1 <span>· Abertura do dia</span></span>
+          </div>
+          <span class="ronda-tag">Início</span>
+        </div>
+        <div class="ronda-itens">
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Daily</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Preencher <b>Banco de Dados</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar <b>entrada de lead</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar <b>LRT</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Callix · Preparar Lista 1</b> · Leads etapa 1</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Análise do <b>Motivo de Loss</b> do dia anterior</div></div>
+
+          <div class="ronda-bloco">
+            <div class="ronda-bloco-titulo">▌ Pipedrive MedScale · Overview do pipeline</div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Etapa zero</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Lead sem tarefa</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Lead com tarefa atrasada</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Analisar módulo Atividades</div></div>
+          </div>
+
+          <div class="ronda-item" style="margin-top:6px;"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Supervisão de conversas</b> do Chat Guru</div></div>
+        </div>
+      </div>
+
+      <div class="ronda-card">
+        <div class="ronda-header">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <span class="ronda-time">⏰ 12h00</span>
+            <span class="ronda-titulo">Ronda 2 <span>· Meio do dia</span></span>
+          </div>
+          <span class="ronda-tag">Pulso</span>
+        </div>
+        <div class="ronda-itens">
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar <b>entrada de lead</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar <b>LRT</b></div></div>
+
+          <div class="ronda-bloco">
+            <div class="ronda-bloco-titulo">▌ Overview do pipeline</div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Etapa zero</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Lead sem tarefa</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Lead com tarefa atrasada</div></div>
+          </div>
+
+          <div class="ronda-item" style="margin-top:6px;"><div class="ronda-item-check"></div><div class="ronda-item-text">Número de <b>conversas</b> do Chat Guru</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar número de <b>call agendada</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar número de <b>call realizada</b></div></div>
+        </div>
+      </div>
+
+      <div class="ronda-card">
+        <div class="ronda-header">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <span class="ronda-time">⏰ 18h00</span>
+            <span class="ronda-titulo">Ronda 3 <span>· Final do expediente</span></span>
+          </div>
+          <span class="ronda-tag">Pulso</span>
+        </div>
+        <div class="ronda-itens">
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar <b>entrada de lead</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar <b>LRT</b></div></div>
+
+          <div class="ronda-bloco">
+            <div class="ronda-bloco-titulo">▌ Overview do pipeline</div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Etapa zero</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Lead sem tarefa</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Lead com tarefa atrasada</div></div>
+          </div>
+
+          <div class="ronda-item" style="margin-top:6px;"><div class="ronda-item-check"></div><div class="ronda-item-text">Número de <b>conversas</b> do Chat Guru</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar número de <b>call agendada</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar número de <b>call realizada</b></div></div>
+        </div>
+      </div>
+
+      <div class="ronda-card">
+        <div class="ronda-header">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <span class="ronda-time">⏰ 20h00</span>
+            <span class="ronda-titulo">Ronda 4 <span>· Fechamento</span></span>
+          </div>
+          <span class="ronda-tag">Encerramento</span>
+        </div>
+        <div class="ronda-itens">
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar <b>entrada de lead</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar <b>LRT</b></div></div>
+
+          <div class="ronda-bloco">
+            <div class="ronda-bloco-titulo">▌ Overview do pipeline</div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Etapa zero</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Lead sem tarefa</div></div>
+            <div class="ronda-item subitem"><div class="ronda-item-text">Lead com tarefa atrasada</div></div>
+          </div>
+
+          <div class="ronda-item" style="margin-top:6px;"><div class="ronda-item-check"></div><div class="ronda-item-text">Número de <b>conversas</b> do Chat Guru</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar número de <b>call agendada</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar número de <b>call realizada</b></div></div>
+        </div>
+      </div>
+
+      <div class="ronda-card" style="border-left: 4px solid #c58a30;">
+        <div class="ronda-header">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <span class="ronda-time">🔒 Fim do dia</span>
+            <span class="ronda-titulo">Fechamento do dia</span>
+          </div>
+          <span class="ronda-tag" style="background: rgba(0,160,80,0.15); color:#00a050;">Crítico</span>
+        </div>
+        <div class="ronda-itens">
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Análise das vendas ganhas</b> no Pipe</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Envio da Planilha de Vendas</b> para a Denise</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =========== SEMANAL =========== -->
+    <div class="tab-content" id="tab-semanal">
+      <div class="ronda-card">
+        <div class="ronda-header">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <span class="ronda-time">📊 Ronda Semanal</span>
+            <span class="ronda-titulo">Atividades da semana</span>
+          </div>
+          <span class="ronda-tag">12 atividades</span>
+        </div>
+        <div class="ronda-itens">
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Callix · Preparar Lista 2</b> · Callix Semana/Mês do ano passado</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Callix · Preparar Lista 3</b> · Motivo de perda + etapa do pipeline + campos de qualificação</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Análise de Call</b> (Arielma e Celso) <span style="font-size:10px; opacity:0.6; margin-left:4px;">· USAR A FERRAMENTA DE ANÁLISE</span></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Escutar ligações</b> da equipe de Pré-Venda <span style="font-size:10px; opacity:0.6; margin-left:4px;">· PENSAR EM PROMPT/AGENTE DE ANÁLISE</span></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Sala de Guerra</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Weekly Comercial</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Weekly Marketing</b></div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Programação de Estudos</b> com a Equipe Comercial</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Análise de Conversas abertas</b> do Chat Guru</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar número de <b>call agendada</b> na semana anterior</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Checar número de <b>call realizada</b> na semana anterior</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Fechamento da semana</b> + preparar informações para weekly da próxima semana</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========== MENSAL =========== -->
+    <div class="tab-content" id="tab-mensal">
+      <div class="ronda-card">
+        <div class="ronda-header">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <span class="ronda-time">📈 Ronda Mensal</span>
+            <span class="ronda-titulo">Fechamento e gestão</span>
+          </div>
+          <span class="ronda-tag" style="background: rgba(0,160,80,0.15); color:#00a050;">6 atividades</span>
+        </div>
+        <div class="ronda-itens">
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Análise de Indicadores do Mês Anterior</b> · Volume de Lead, Taxa de Passagem, Conversão</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Fechamento do mês</b> + conferência das vendas</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text">Subir <b>recebimento de toda equipe</b> comercial no Controle de Pagamentos</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>E-mail para o financeiro</b> formalizando fechamento das vendas e recebimento comercial</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>Envio de NF's</b> para toda equipe comercial no privado</div></div>
+          <div class="ronda-item"><div class="ronda-item-check"></div><div class="ronda-item-text"><b>1:1 com liderados</b></div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function trocaTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tab}`));
+  window.scrollTo({ top: document.querySelector('.tabs-bar').offsetTop - 20, behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => trocaTab(btn.dataset.tab));
+  });
+
+  // Toggle de check (visual apenas)
+  document.querySelectorAll('.ronda-item-check').forEach(check => {
+    check.addEventListener('click', (e) => {
+      e.stopPropagation();
+      check.style.background = check.style.background === 'rgb(197, 138, 48)' ? '' : '#c58a30';
+      check.style.borderColor = check.style.background ? '#c58a30' : '';
+    });
+  });
+
+  // Sidebar
+  fetch('sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('[data-page="descritivo"]');
+    if (active) active.classList.add('active');
+    const parent = document.querySelector('[data-page="pessoas-parent"]');
+    if (parent) parent.classList.add('active');
+  });
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>
