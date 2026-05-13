@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rampagem · CIC (Preview)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.cic { font-family: 'Poppins', -apple-system, system-ui, sans-serif; display: grid; grid-template-columns: 1fr; min-height: 100vh; transition: all 0.3s; padding: 0; }
+.cic.light { background: #FFF; color: #0c263b; }
+.cic.dark { background: #0c263b; color: #e2e3de; }
+.cic * { box-sizing: border-box; }
+.main { padding: 20px 24px; overflow-y: auto; }
+.main-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid; flex-wrap: wrap; gap: 10px; }
+.cic.light .main-toolbar { border-color: rgba(12,38,59,0.08); }
+.cic.dark .main-toolbar { border-color: rgba(226,227,222,0.1); }
+.crumb { font-size: 11px; opacity: 0.55; letter-spacing: 0.3px; }
+.h-title { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; margin-top: 4px; }
+.h-meta { font-size: 11px; opacity: 0.55; margin-top: 4px; }
+.toggle { display: inline-flex; gap: 0; padding: 3px; border-radius: 8px; }
+.cic.light .toggle { background: rgba(12,38,59,0.06); }
+.cic.dark .toggle { background: rgba(226,227,222,0.08); }
+.toggle button { background: transparent; border: 0; padding: 5px 12px; font-family: inherit; font-size: 11px; font-weight: 500; cursor: pointer; border-radius: 6px; color: inherit; opacity: 0.5; }
+.toggle button.active { opacity: 1; }
+.cic.light .toggle button.active { background: #FFF; }
+.cic.dark .toggle button.active { background: rgba(226,227,222,0.15); }
+body { margin: 0; padding: 0; }
+
+
+    .ramp-manifesto { padding: 24px 28px; border-radius: 16px; margin-bottom: 22px; background: linear-gradient(135deg, rgba(8,53,144,0.08), rgba(197,138,48,0.07)); border: 1px solid rgba(197,138,48,0.3); position: relative; overflow: hidden; }
+    .cic.dark .ramp-manifesto { background: linear-gradient(135deg, rgba(8,53,144,0.22), rgba(197,138,48,0.12)); }
+    .ramp-manifesto::before { content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(197,138,48,0.18), transparent 70%); }
+    .ramp-quote { font-size: 17px; font-weight: 600; line-height: 1.45; letter-spacing: -0.3px; margin-bottom: 12px; position: relative; z-index: 1; }
+    .ramp-quote em { color: #c58a30; font-style: italic; font-weight: 700; }
+    .ramp-quote-author { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; opacity: 0.55; position: relative; z-index: 1; }
+
+    .curva-card { padding: 22px 26px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .curva-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .curva-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .curva-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+    .curva-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; }
+    .curva-meta { font-size: 10px; opacity: 0.55; letter-spacing: 0.4px; text-transform: uppercase; font-weight: 600; }
+    .curva-svg-wrapper { width: 100%; }
+    .curva-svg { width: 100%; height: 180px; display: block; }
+    .curva-area { fill: rgba(197,138,48,0.12); }
+    .curva-line { fill: none; stroke: #c58a30; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .curva-dot { fill: #c58a30; }
+    .curva-label-x { font-size: 9px; font-family: inherit; opacity: 0.55; font-weight: 500; }
+    .curva-label-end { font-size: 10px; font-family: inherit; font-weight: 700; letter-spacing: 1.3px; fill: #c58a30; }
+    .curva-axis-y { font-size: 8px; font-family: inherit; opacity: 0.4; letter-spacing: 1.2px; font-weight: 600; }
+
+    .fases-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+    @media (max-width: 1100px) { .fases-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .fases-grid { grid-template-columns: 1fr; } }
+    .fase-card { padding: 22px 22px; border-radius: 14px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; min-height: 320px; position: relative; }
+    .cic.light .fase-card { background: #FFF; border: 1px solid rgba(12,38,59,0.08); }
+    .cic.dark .fase-card { background: rgba(226,227,222,0.05); border: 1px solid rgba(226,227,222,0.08); }
+    .fase-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .fase-card.destaque { border: 2px solid #c58a30; }
+    .fase-card.destaque::before { content: 'DESTAQUE'; position: absolute; top: -10px; right: 16px; background: #c58a30; color: #FFF; font-size: 8.5px; font-weight: 700; letter-spacing: 1.4px; padding: 3px 8px; border-radius: 4px; }
+    .fase-num { font-size: 10px; font-weight: 700; letter-spacing: 1.6px; color: #c58a30; margin-bottom: 4px; }
+    .fase-num span { font-size: 9px; opacity: 0.7; font-weight: 600; }
+    .fase-nome { font-size: 22px; font-weight: 700; line-height: 1.05; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .fase-sub { font-size: 12px; opacity: 0.7; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid #c58a30; width: 30px; }
+    .fase-sub-text { font-size: 12px; opacity: 0.65; margin-bottom: 16px; line-height: 1.4; }
+    .fase-bullets { list-style: none; padding: 0; margin: 0 0 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .fase-bullets li { font-size: 13px; line-height: 1.45; padding-left: 14px; position: relative; }
+    .fase-bullets li::before { content: '•'; color: #c58a30; position: absolute; left: 0; font-weight: 700; font-size: 14px; }
+    .fase-cta { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #c58a30; padding-top: 10px; border-top: 1px solid; display: flex; justify-content: space-between; align-items: center; }
+    .cic.light .fase-cta { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .fase-cta { border-color: rgba(226,227,222,0.1); }
+
+    .ficha-view { display: none; }
+    .ficha-view.active { display: block; }
+    .geral-view.hidden { display: none; }
+    .ficha-back { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 1px solid; padding: 7px 14px; border-radius: 8px; font-family: inherit; font-size: 11px; font-weight: 500; cursor: pointer; color: inherit; margin-bottom: 16px; transition: all 0.15s; }
+    .cic.light .ficha-back { border-color: rgba(12,38,59,0.15); }
+    .cic.dark .ficha-back { border-color: rgba(226,227,222,0.2); }
+    .ficha-back:hover { background: rgba(197,138,48,0.15); border-color: #c58a30; }
+    .ficha-header-r { padding: 24px 28px; border-radius: 14px; margin-bottom: 16px; background: linear-gradient(135deg, rgba(8,53,144,0.85), rgba(8,53,144,0.95)); color: #FFF; position: relative; overflow: hidden; }
+    .ficha-header-r::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(197,138,48,0.2), transparent 70%); }
+    .fh-num { font-size: 10px; font-weight: 700; letter-spacing: 1.6px; color: #c58a30; margin-bottom: 4px; }
+    .fh-num span { font-size: 9.5px; opacity: 0.85; font-weight: 600; }
+    .fh-nome { font-size: 30px; font-weight: 700; line-height: 1; letter-spacing: -0.8px; margin-bottom: 6px; position: relative; z-index: 1; }
+    .fh-sub { font-size: 13px; opacity: 0.85; position: relative; z-index: 1; }
+    .ficha-secao-r { padding: 22px 24px; border-radius: 14px; margin-bottom: 14px; }
+    .cic.light .ficha-secao-r { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .ficha-secao-r { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .fs-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .fs-title { font-size: 12px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; }
+    .fs-meta { font-size: 10px; opacity: 0.55; margin-left: auto; }
+    .fs-list { display: flex; flex-direction: column; gap: 8px; }
+    .fs-item { padding: 10px 14px; border-radius: 8px; font-size: 12.5px; line-height: 1.5; display: flex; gap: 12px; align-items: flex-start; }
+    .cic.light .fs-item { background: rgba(12,38,59,0.03); }
+    .cic.dark .fs-item { background: rgba(226,227,222,0.04); }
+    .fs-item-bullet { color: #c58a30; font-weight: 700; flex-shrink: 0; font-size: 14px; line-height: 1.2; }
+    .fs-item b { color: #c58a30; font-weight: 600; }
+
+    .semana-card { padding: 14px 16px; border-radius: 10px; margin-bottom: 8px; border-left: 3px solid #c58a30; }
+    .cic.light .semana-card { background: rgba(197,138,48,0.05); }
+    .cic.dark .semana-card { background: rgba(197,138,48,0.08); }
+    .semana-titulo { font-size: 12px; font-weight: 700; color: #c58a30; margin-bottom: 6px; letter-spacing: 0.3px; }
+    .semana-titulo span { font-size: 10px; opacity: 0.7; font-weight: 500; margin-left: 6px; }
+    .semana-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+    .semana-bullets li { font-size: 12px; line-height: 1.45; padding-left: 12px; position: relative; opacity: 0.85; }
+    .semana-bullets li::before { content: '·'; position: absolute; left: 4px; color: #c58a30; font-weight: 700; }
+    .semana-meta { margin-top: 8px; padding: 8px 10px; background: rgba(197,138,48,0.1); border-radius: 6px; font-size: 11.5px; font-weight: 500; line-height: 1.4; }
+    .semana-meta b { color: #c58a30; }
+
+    .ml-highlight { padding: 18px 22px; border-radius: 12px; background: linear-gradient(135deg, rgba(197,138,48,0.15), rgba(197,138,48,0.08)); border: 2px solid rgba(197,138,48,0.3); margin-bottom: 14px; }
+    .cic.dark .ml-highlight { background: linear-gradient(135deg, rgba(197,138,48,0.2), rgba(197,138,48,0.1)); }
+    .ml-highlight-quote { font-size: 16px; font-weight: 700; line-height: 1.3; color: #c58a30; letter-spacing: -0.3px; margin-bottom: 4px; }
+    .ml-highlight-sub { font-size: 11px; opacity: 0.7; line-height: 1.4; }
+
+    .cross-link { padding: 12px 16px; border-radius: 10px; background: rgba(8,53,144,0.08); border: 1px dashed rgba(8,53,144,0.3); font-size: 12px; display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+    .cic.dark .cross-link { background: rgba(8,53,144,0.18); border-color: rgba(8,53,144,0.5); }
+    .cross-link b { color: #083590; font-weight: 700; }
+    .cic.dark .cross-link b { color: #92a8d8; }
+  
+</style>
+</head>
+<body>
+
+<div class="cic light" id="cic">
+  
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Pilares · Pessoas · Rampagem</div>
+        <div class="h-title">Rampagem · 4 Fases</div>
+        <div class="h-meta">Do candidato selecionado ao vendedor produtivo · ~60 dias</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <div class="geral-view" id="geral-view">
+      <div class="ramp-manifesto">
+        <div class="ramp-quote">"Onboarding apresenta a empresa pro vendedor. <em>Rampagem ensina o vendedor a vender pra empresa.</em>"</div>
+        <div class="ramp-quote-author">▌ Manifesto WeRev · framework próprio</div>
+      </div>
+
+      <div class="curva-card">
+        <div class="curva-header">
+          <div class="curva-title">▌ Curva de produtividade</div>
+          <div class="curva-meta">D-7 → D60 · do estudo à operação plena</div>
+        </div>
+        <div class="curva-svg-wrapper">
+          <svg class="curva-svg" viewBox="0 0 900 180" preserveAspectRatio="xMidYMid meet">
+            <text x="10" y="22" class="curva-axis-y" fill="currentColor" transform="rotate(-90, 14, 90)">PRODUTIVIDADE</text>
+            <line x1="40" y1="148" x2="870" y2="148" stroke="currentColor" stroke-width="0.5" opacity="0.15"/>
+            <path d="M 50 142 C 130 140, 180 135, 240 110 C 320 78, 430 50, 580 38 C 700 28, 800 22, 860 20 L 860 148 L 50 148 Z" class="curva-area"/>
+            <path d="M 50 142 C 130 140, 180 135, 240 110 C 320 78, 430 50, 580 38 C 700 28, 800 22, 860 20" class="curva-line"/>
+            <circle cx="50" cy="142" r="4" class="curva-dot"/>
+            <circle cx="190" cy="135" r="4" class="curva-dot"/>
+            <circle cx="340" cy="92" r="4" class="curva-dot"/>
+            <circle cx="600" cy="38" r="4" class="curva-dot"/>
+            <circle cx="860" cy="20" r="6" class="curva-dot"/>
+            <text x="50" y="168" text-anchor="middle" class="curva-label-x" fill="currentColor">D-7</text>
+            <text x="190" y="168" text-anchor="middle" class="curva-label-x" fill="currentColor">D7</text>
+            <text x="340" y="168" text-anchor="middle" class="curva-label-x" fill="currentColor">D14</text>
+            <text x="600" y="168" text-anchor="middle" class="curva-label-x" fill="currentColor">D30</text>
+            <text x="860" y="168" text-anchor="middle" class="curva-label-x" fill="currentColor">D60</text>
+            <text x="860" y="10" text-anchor="end" class="curva-label-end">PRODUTIVO</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="fases-grid">
+        <div class="fase-card" onclick="abrirFase('fase1')">
+          <div class="fase-num">FASE 1</div>
+          <div class="fase-nome">MATERIAIS</div>
+          <div class="fase-sub"></div>
+          <div class="fase-sub-text">Antes da chegada</div>
+          <ul class="fase-bullets">
+            <li>Docs do produto + ICP</li>
+            <li>Acessos do stack</li>
+            <li>PDI + scripts</li>
+          </ul>
+          <div class="fase-cta">VER DETALHE <span>→</span></div>
+        </div>
+
+        <div class="fase-card" onclick="abrirFase('fase2')">
+          <div class="fase-num">FASE 2</div>
+          <div class="fase-nome">INTEGRAÇÃO</div>
+          <div class="fase-sub"></div>
+          <div class="fase-sub-text">Primeiros dias</div>
+          <ul class="fase-bullets">
+            <li>Apresentação ao time</li>
+            <li>Histórico do Slack</li>
+            <li>Início da rotina</li>
+          </ul>
+          <div class="fase-cta">VER DETALHE <span>→</span></div>
+        </div>
+
+        <div class="fase-card" onclick="abrirFase('fase3')">
+          <div class="fase-num">FASE 3</div>
+          <div class="fase-nome">ONBOARDING</div>
+          <div class="fase-sub"></div>
+          <div class="fase-sub-text">Imersão na casa</div>
+          <ul class="fase-bullets">
+            <li>Empresa + cultura</li>
+            <li>9 Combinados & Regras</li>
+            <li>Missão + BP</li>
+          </ul>
+          <div class="fase-cta">VER DETALHE <span>→</span></div>
+        </div>
+
+        <div class="fase-card destaque" onclick="abrirFase('fase4')">
+          <div class="fase-num">FASE 4 <span>· 8 SEMANAS</span></div>
+          <div class="fase-nome">RAMPAGEM<br>PRÁTICA</div>
+          <div class="fase-sub"></div>
+          <div class="fase-sub-text">"Aprende ML² praticando ML²"</div>
+          <ul class="fase-bullets">
+            <li>Estudo profundo (S1)</li>
+            <li>MQL frio (S2-3)</li>
+            <li>Role play + 1:1</li>
+          </ul>
+          <div class="fase-cta">VER DETALHE <span>→</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ficha-view" id="ficha-view"></div>
+  </main>
+</div>
+
+<script>
+const FASES = {
+  fase1: {
+    num: 'FASE 1', nome: 'MATERIAIS',
+    sub: 'Antes da chegada · pré-D0', duracao: 'Pré-onboarding',
+    intro: 'Tudo que precisa estar pronto antes do candidato pisar na empresa. Sem isso, perde-se o primeiro dia.',
+    secoes: [
+      { titulo: '📄 Documentos para o candidato',
+        itens: [
+          '<b>Público-alvo</b> · Personas · ICP · Principais Cases',
+          '<b>Produto</b> · Descrição da oferta + produtos da empresa',
+          '<b>Framework / Script de venda</b>',
+          '<b>Gravações de calls</b> (boas + ruins · pra estudo)',
+          '<b>Acesso à Área de Membros do Expert</b> (se aplicável)',
+          '<b>Conteúdos sobre a empresa</b> · histórico, posicionamento, narrativa',
+          '<b>Trilha Campo de Batalha</b> da WeRev',
+          '<b>Planilha de links de pagamento</b>',
+          '<b>Plano de Desenvolvimento (PDI)</b>',
+          '<b>Manual de comunicação</b> (cliente, Slack, internamente)'
+        ]
+      },
+      { titulo: '🔑 Acessos necessários',
+        itens: [
+          '<b>Google Workspace</b> · Chrome só pro uso profissional + vídeo de como adicionar agendas recorrentes',
+          '<b>Slack</b>', '<b>Notion</b>',
+          '<b>Ferramentas por cadeira</b> · CRM, VoIP, Discadora, WhatsApp Business',
+          '<b>Invites recorrentes</b> · daily, weekly, all hands'
+        ]
+      }
+    ]
+  },
+  fase2: {
+    num: 'FASE 2', nome: 'INTEGRAÇÃO',
+    sub: 'Primeiros dias · D1-D7', duracao: '~1 semana',
+    intro: 'A pessoa chegou. Como integrar de forma rápida e estruturada — sem deixar perdida nem sobrecarregada.',
+    secoes: [
+      { titulo: '🤝 Apresentação ao time',
+        itens: [
+          '<b>Call de apresentação</b> · sugestão: all hands a nível de todos os setores',
+          '<b>Weekly / Daily</b> · a nível do time comercial específico'
+        ]
+      },
+      { titulo: '💬 Imersão no Slack',
+        itens: [
+          'Ler mensagens do Slack · puxar histórico recente',
+          'Contextualizar conversas em andamento',
+          'Entender o tom e códigos da comunicação interna'
+        ]
+      },
+      { titulo: '⏰ Iniciar Rotina',
+        itens: [
+          'Encaixar na cadência diária e semanal já existente',
+          'Daily, weekly, 1:1, calls de pipeline'
+        ]
+      }
+    ]
+  },
+  fase3: {
+    num: 'FASE 3', nome: 'ONBOARDING',
+    sub: 'Imersão na casa · D7-D14', duracao: '~1 semana',
+    intro: 'A apresentação formal da empresa, da cultura, das regras e dos combinados. Aqui forma-se o entendimento profundo da operação.',
+    secoes: [
+      { titulo: '🏢 Estrutura e pessoas da empresa',
+        itens: [
+          '<b>Nosso mercado</b> · Digital · Educação · Inside Sales',
+          '<b>Nossa empresa</b> · história de como e por que começou · tamanho',
+          '<b>Sócios</b> · quem são, trajetória, complementaridade',
+          '<b>Concorrentes</b> · diretos e indiretos',
+          '<b>Organograma</b>',
+          '<b>Serviços / Produtos</b> · B2B · B2C',
+          '<b>Personas</b>',
+          '<b>Ferramentas</b> · overview do stack'
+        ]
+      },
+      { titulo: '📜 Combinados & Regras (autoral WeRev)',
+        itens: [
+          '9 regras claras de convivência e operação',
+          'Comunicação no Slack · Não discutir sem dados · Pauta em toda call',
+          'Não levar pro pessoal · Feedback estruturado · Yellow/Red Flag',
+          'Papo reto · A verdade o mais cedo possível'
+        ],
+        crossLink: { texto: 'Os 9 Combinados têm tela própria em', destino: 'Pessoas · Combinados & Regras' }
+      },
+      { titulo: '🎯 Outros componentes',
+        itens: [
+          '<b>Código de Ética</b>',
+          '<b>Rotinas</b> · cadência de reuniões e rituais',
+          '<b>Valores & Princípios</b>',
+          '<b>Missão</b>',
+          '<b>Responsabilidades</b> do colaborador e da empresa',
+          '<b>Alinhamento de expectativas</b>',
+          '<b>BP</b> · Business Plan',
+          '<b>Visão de longo prazo</b> do negócio e ecossistema'
+        ]
+      }
+    ]
+  },
+  fase4: {
+    num: 'FASE 4 · 8 SEMANAS', nome: 'RAMPAGEM PRÁTICA',
+    sub: 'Os 60 dias decisivos · D14-D60', duracao: '~8 semanas',
+    intro: 'Onde o vendedor sai de "onboardeado" pra "produtivo de verdade". Não é checklist — é cronograma vivo com metas semanais.',
+    highlight: {
+      quote: '"Aprende ML² praticando ML²"',
+      sub: 'O vendedor não é apresentado ao ML² em aula teórica. Já na Semana 2 ele liga pra base de leads perdidos — MQLs antigos, motivos de loss "não prioridade" e "budget". A metodologia se ensina sozinha.'
+    },
+    secoes: [
+      { titulo: '🎓 Treinamentos contínuos',
+        itens: [
+          '<b>Para Closers · Criação do framework próprio</b>',
+          '↳ Análise das calls de vendas',
+          '↳ Conteúdos importantes da Fase 1',
+          '↳ Conteúdos da Área de Membros WeRev',
+          '<b>Role Play</b> · diário e semanal',
+          '<b>Análise de call</b> · 3 camadas (ao vivo, gravação, ferramenta)',
+          '<b>Hotseat do Closer</b> · prática intensiva sob escrutínio',
+          '<b>Campo de Batalha WeRev</b>'
+        ]
+      },
+      { titulo: '⏰ Rotina durante a rampagem',
+        itens: [
+          '<b>Diário</b> · ordinário (atividades do dia)',
+          '<b>Semanal</b> · weekly',
+          '<b>Mensal</b> · 1:1 (gestor ↔ vendedor)'
+        ]
+      }
+    ],
+    cronograma: true
+  }
+};
+
+const CRONOGRAMA = {
+  titulo: '📅 Cronograma — Mês 1',
+  semanas: [
+    { titulo: 'Semana 1', tag: 'Estudo profundo',
+      itens: ['Foco total em estudo · conhecer tudo: produto, ICP, empresa, expert', 'Conseguir ter base pra iniciar'],
+      meta: '<b>Meta:</b> apresentar doc de estudo' },
+    { titulo: 'Semana 2', tag: 'Mão na massa · primeiras ligações',
+      itens: [
+        '<b>Dia 1:</b> treinamento + role play + participar de call + refinamento diário',
+        '<b>Dias 2-5:</b> ligar leads da base · gerar a própria demanda',
+        '↳ MQL dos últimos 6 meses · nunca respondeu abordagem',
+        '↳ MQL · respondeu abordagem, mas não agendou',
+        '↳ Leads com motivo de loss · "não prioridade" · "budget"'
+      ],
+      meta: '<b>Meta:</b> análise do motivo de loss + percepção dos leads abordados' },
+    { titulo: 'Semana 3', tag: 'Aprofundamento da base fria',
+      itens: [
+        '<b>Dias 1-2:</b> ligar leads da base · gerar a própria demanda',
+        '↳ MQL dos últimos 6 meses · no show',
+        '↳ MQL · não teve interesse em agendar'
+      ],
+      meta: '<b>Meta:</b> a definir conforme evolução individual' },
+    { titulo: 'Semana 4', tag: 'Refinamento',
+      itens: ['Dias e metas definidos conforme progressão individual', 'Avaliação de critérios pra avançar pro Mês 2'],
+      meta: '<b>Meta:</b> consolidar autonomia inicial' }
+  ],
+  consolidado: {
+    titulo: '✅ Metas consolidadas do Mês 1',
+    itens: [
+      'Conhecer e iniciar o uso das ferramentas internas',
+      'Começar a ligar pra base · atender leads frios (desqualificados ou parados)',
+      'Ver o desenvolvimento da pessoa',
+      'Identificar a <b>fome</b> pra fazer acontecer e ganhar dinheiro',
+      'Capacidade de inovar e fazer diferente',
+      'Iniciar na rotina da empresa'
+    ]
+  },
+  mes2: {
+    titulo: '🚀 Mês 2 — Semanas 5, 6, 7 e 8',
+    texto: 'Autonomia crescente. Cronograma específico de cada semana definido conforme evolução individual. Foco em sair da rampagem e entrar em operação plena.'
+  }
+};
+
+function abrirFase(key) {
+  const fase = FASES[key];
+  if (!fase) return;
+  const view = document.getElementById('ficha-view');
+
+  let secoesHtml = '';
+  fase.secoes.forEach(sec => {
+    const itensHtml = sec.itens.map(item =>
+      `<div class="fs-item"><span class="fs-item-bullet">›</span><span>${item}</span></div>`
+    ).join('');
+    const crossLinkHtml = sec.crossLink ?
+      `<div class="cross-link"><span>📎</span><span>${sec.crossLink.texto} <b>${sec.crossLink.destino}</b></span></div>` : '';
+    secoesHtml += `<div class="ficha-secao-r"><div class="fs-header"><div class="fs-title">${sec.titulo}</div></div><div class="fs-list">${itensHtml}</div>${crossLinkHtml}</div>`;
+  });
+
+  let highlightHtml = '';
+  if (fase.highlight) {
+    highlightHtml = `<div class="ml-highlight"><div class="ml-highlight-quote">${fase.highlight.quote}</div><div class="ml-highlight-sub">${fase.highlight.sub}</div></div>`;
+  }
+
+  let cronoHtml = '';
+  if (fase.cronograma) {
+    let semanasHtml = '';
+    CRONOGRAMA.semanas.forEach(s => {
+      semanasHtml += `<div class="semana-card"><div class="semana-titulo">${s.titulo} <span>· ${s.tag}</span></div><ul class="semana-bullets">${s.itens.map(i => `<li>${i}</li>`).join('')}</ul><div class="semana-meta">${s.meta}</div></div>`;
+    });
+    let consolidadoHtml = `<div class="ficha-secao-r" style="margin-top: 14px;"><div class="fs-header"><div class="fs-title">${CRONOGRAMA.consolidado.titulo}</div></div><div class="fs-list">${CRONOGRAMA.consolidado.itens.map(i => `<div class="fs-item"><span class="fs-item-bullet">✓</span><span>${i}</span></div>`).join('')}</div></div>`;
+    let mes2Html = `<div class="ficha-secao-r"><div class="fs-header"><div class="fs-title">${CRONOGRAMA.mes2.titulo}</div></div><div style="font-size:12.5px; line-height:1.5; opacity:0.85;">${CRONOGRAMA.mes2.texto}</div></div>`;
+    cronoHtml = `<div class="ficha-secao-r"><div class="fs-header"><div class="fs-title">${CRONOGRAMA.titulo}</div><div class="fs-meta">4 semanas detalhadas</div></div>${semanasHtml}</div>${consolidadoHtml}${mes2Html}`;
+  }
+
+  view.innerHTML = `
+    <button class="ficha-back" onclick="voltarLista()">← Voltar para as 4 fases</button>
+    <div class="ficha-header-r">
+      <div class="fh-num">${fase.num}</div>
+      <div class="fh-nome">${fase.nome}</div>
+      <div class="fh-sub">${fase.sub} · ${fase.duracao}</div>
+    </div>
+    <div class="ficha-secao-r" style="background: rgba(197,138,48,0.06); border-left: 3px solid #c58a30;">
+      <div style="font-size: 13px; line-height: 1.5; opacity: 0.9;">${fase.intro}</div>
+    </div>
+    ${highlightHtml}
+    ${secoesHtml}
+    ${cronoHtml}
+  `;
+
+  document.getElementById('geral-view').classList.add('hidden');
+  view.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function voltarLista() {
+  document.getElementById('geral-view').classList.remove('hidden');
+  document.getElementById('ficha-view').classList.remove('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('[data-page="rampagem"]');
+    if (active) active.classList.add('active');
+    const parent = document.querySelector('[data-page="pessoas-parent"]');
+    if (parent) parent.classList.add('active');
+  });
+});
+</script>
+
+
+</body>
+</html>
