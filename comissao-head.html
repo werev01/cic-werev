@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comissão · Head · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .com-intro { padding: 18px 22px; border-radius: 14px; margin-bottom: 22px; background: linear-gradient(135deg, rgba(8,53,144,0.1), rgba(8,53,144,0.04)); border: 1px solid rgba(8,53,144,0.3); }
+    .cic.dark .com-intro { background: linear-gradient(135deg, rgba(8,53,144,0.2), rgba(8,53,144,0.08)); }
+    .com-intro-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #083590; margin-bottom: 6px; }
+    .cic.dark .com-intro-title { color: #5a89e0; }
+    .com-intro-text { font-size: 12.5px; line-height: 1.6; opacity: 0.85; }
+    .com-intro-text b { color: #083590; font-weight: 600; }
+    .cic.dark .com-intro-text b { color: #5a89e0; }
+
+    .warning-card {
+      padding: 20px 24px;
+      border-radius: 14px;
+      margin-bottom: 22px;
+      background: linear-gradient(135deg, rgba(217,32,32,0.06), rgba(197,138,48,0.04));
+      border: 2px solid rgba(217,32,32,0.4);
+    }
+    .cic.dark .warning-card { background: linear-gradient(135deg, rgba(217,32,32,0.13), rgba(197,138,48,0.08)); }
+    .warning-title { font-size: 13px; font-weight: 700; color: #d92020; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .warning-text { font-size: 12.5px; line-height: 1.55; opacity: 0.9; }
+    .warning-text b { color: #d92020; font-weight: 600; }
+    .warning-opcoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin-top: 14px; }
+    .warning-opcao { padding: 10px 14px; border-radius: 8px; font-size: 11.5px; background: rgba(255,255,255,0.6); border: 1px solid rgba(217,32,32,0.2); }
+    .cic.dark .warning-opcao { background: rgba(255,255,255,0.05); }
+    .warning-opcao b { display: block; font-size: 12px; color: #083590; margin-bottom: 3px; }
+    .cic.dark .warning-opcao b { color: #5a89e0; }
+
+    .frase-ouro {
+      padding: 18px 24px;
+      border-left: 4px solid #083590;
+      background: rgba(8,53,144,0.05);
+      border-radius: 0 12px 12px 0;
+      margin-bottom: 22px;
+      font-style: italic;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .cic.dark .frase-ouro { background: rgba(8,53,144,0.18); }
+    .frase-ouro::before { content: '"'; font-size: 36px; color: #083590; line-height: 0; margin-right: 4px; vertical-align: -8px; font-style: normal; font-weight: 700; }
+    .cic.dark .frase-ouro::before { color: #5a89e0; }
+    .frase-ouro-autor { display: block; margin-top: 8px; font-style: normal; font-size: 11px; opacity: 0.65; }
+    .frase-ouro-autor b { color: #083590; }
+    .cic.dark .frase-ouro-autor b { color: #5a89e0; }
+
+    .linhas-card { padding: 22px 24px; border-radius: 14px; margin-bottom: 22px; }
+    .cic.light .linhas-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .linhas-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .linhas-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 14px; }
+    .linhas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    @media (max-width: 700px) { .linhas-grid { grid-template-columns: 1fr; } }
+    .linha-item { padding: 14px 16px; border-radius: 10px; }
+    .cic.light .linha-item { background: rgba(12,38,59,0.03); }
+    .cic.dark .linha-item { background: rgba(226,227,222,0.05); }
+    .linha-num { font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px; color: #c58a30; }
+    .linha-nome { font-size: 14px; font-weight: 700; margin: 3px 0 6px; }
+    .linha-desc { font-size: 11.5px; line-height: 1.45; opacity: 0.75; }
+    .linha-desc b { color: #c58a30; }
+
+    .seniority-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid; flex-wrap: wrap; }
+    .cic.light .seniority-tabs { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .seniority-tabs { border-color: rgba(226,227,222,0.1); }
+    .sen-tab { background: transparent; border: 0; padding: 11px 18px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; color: inherit; opacity: 0.55; border-bottom: 2px solid transparent; transition: all 0.15s; display:flex; align-items:center; gap:8px; }
+    .sen-tab:hover { opacity: 0.85; }
+    .sen-tab.active { opacity: 1; color: #083590; border-bottom-color: #083590; font-weight: 600; }
+    .cic.dark .sen-tab.active { color: #5a89e0; border-bottom-color: #5a89e0; }
+    .sen-tab-badge { font-size: 9.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; opacity: 0.75; letter-spacing: 0.4px; }
+    .sen-tab.active .sen-tab-badge { background: rgba(8,53,144,0.15); color: #083590; opacity: 1; }
+    .cic.dark .sen-tab.active .sen-tab-badge { background: rgba(90,137,224,0.2); color: #5a89e0; }
+    .sen-content { display: none; }
+    .sen-content.active { display: block; }
+
+    .placeholder-banner {
+      padding: 12px 18px;
+      background: rgba(197,138,48,0.12);
+      border: 1px solid rgba(197,138,48,0.4);
+      border-radius: 10px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .cic.dark .placeholder-banner { background: rgba(197,138,48,0.18); }
+    .placeholder-banner b { color: #c58a30; font-weight: 700; }
+
+    .premissas-card { padding: 20px 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .premissas-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .premissas-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .premissas-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 14px; }
+    .premissas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    @media (max-width: 800px) { .premissas-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .premissas-grid { grid-template-columns: 1fr; } }
+    .premissa-item label { display: block; font-size: 10.5px; font-weight: 600; opacity: 0.65; margin-bottom: 6px; letter-spacing: 0.4px; text-transform: uppercase; }
+    .premissa-input { width: 100%; padding: 10px 14px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; border: 1px solid; color: inherit; background: transparent; font-variant-numeric: tabular-nums; }
+    .cic.light .premissa-input { border-color: rgba(12,38,59,0.15); background: rgba(12,38,59,0.025); }
+    .cic.dark .premissa-input { border-color: rgba(226,227,222,0.2); background: rgba(226,227,222,0.04); }
+
+    .niveis-card { padding: 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .niveis-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .niveis-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .niveis-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .niveis-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; }
+    .niveis-meta { font-size: 11px; opacity: 0.6; }
+    .niveis-meta b { color: #c58a30; }
+
+    .niveis-table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid; }
+    .cic.light .niveis-table-wrapper { border-color: rgba(12,38,59,0.06); }
+    .cic.dark .niveis-table-wrapper { border-color: rgba(226,227,222,0.08); }
+    .niveis-table { width: 100%; border-collapse: collapse; min-width: 720px; font-variant-numeric: tabular-nums; }
+    .niveis-table thead th { font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; opacity: 0.7; padding: 12px 10px; text-align: right; border-bottom: 2px solid; }
+    .niveis-table thead th:first-child { text-align: left; }
+    .cic.light .niveis-table thead th { border-color: rgba(12,38,59,0.1); background: rgba(12,38,59,0.025); }
+    .cic.dark .niveis-table thead th { border-color: rgba(226,227,222,0.15); background: rgba(226,227,222,0.05); }
+    .niveis-table tbody td { padding: 10px; font-size: 12px; text-align: right; border-bottom: 1px solid; }
+    .niveis-table tbody td:first-child { text-align: left; font-weight: 700; color: #083590; }
+    .cic.dark .niveis-table tbody td:first-child { color: #5a89e0; }
+    .cic.light .niveis-table tbody td { border-color: rgba(12,38,59,0.05); }
+    .cic.dark .niveis-table tbody td { border-color: rgba(226,227,222,0.07); }
+    .niveis-table tbody tr:hover { background: rgba(8,53,144,0.04); }
+    .cic.dark .niveis-table tbody tr:hover { background: rgba(8,53,144,0.13); }
+    .niveis-table tbody tr:last-child td { border-bottom: 0; }
+    .niveis-table .col-fcb { font-weight: 700; color: #c58a30; font-size: 13px; }
+
+    .ciclo-card { padding: 20px 24px; border-radius: 14px; margin-bottom: 18px; background: linear-gradient(135deg, rgba(197,138,48,0.06), rgba(197,138,48,0.02)); border: 1px solid rgba(197,138,48,0.3); }
+    .cic.dark .ciclo-card { background: linear-gradient(135deg, rgba(197,138,48,0.13), rgba(197,138,48,0.06)); }
+    .ciclo-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 12px; }
+    .ciclo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (max-width: 700px) { .ciclo-grid { grid-template-columns: 1fr; } }
+    .ciclo-item { padding: 14px 16px; background: rgba(255,255,255,0.6); border-radius: 10px; }
+    .cic.dark .ciclo-item { background: rgba(255,255,255,0.05); }
+    .ciclo-item-tag { font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px; color: #c58a30; }
+    .ciclo-item-titulo { font-size: 13px; font-weight: 700; margin: 4px 0 6px; }
+    .ciclo-item-desc { font-size: 11.5px; line-height: 1.45; opacity: 0.75; }
+    .ciclo-item-desc b { color: #c58a30; }
+
+    .anti-card { padding: 22px 24px; border-radius: 14px; margin-bottom: 18px; background: linear-gradient(135deg, rgba(217,32,32,0.06), rgba(217,32,32,0.02)); border: 1px solid rgba(217,32,32,0.25); }
+    .cic.dark .anti-card { background: linear-gradient(135deg, rgba(217,32,32,0.13), rgba(217,32,32,0.06)); border-color: rgba(217,32,32,0.4); }
+    .anti-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #d92020; margin-bottom: 14px; }
+    .anti-list { display: flex; flex-direction: column; gap: 9px; }
+    .anti-item { display: flex; gap: 12px; align-items: flex-start; padding: 11px 14px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; }
+    .cic.light .anti-item { background: rgba(217,32,32,0.03); }
+    .cic.dark .anti-item { background: rgba(217,32,32,0.06); }
+    .anti-num { font-size: 13px; font-weight: 700; color: #d92020; flex-shrink: 0; min-width: 18px; }
+    .anti-item b { color: #d92020; font-weight: 600; }
+
+    .integ-card { padding: 16px 20px; border-radius: 12px; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, rgba(197,138,48,0.08), rgba(197,138,48,0.03)); border: 1px solid rgba(197,138,48,0.3); }
+    .cic.dark .integ-card { background: linear-gradient(135deg, rgba(197,138,48,0.18), rgba(197,138,48,0.08)); }
+    .integ-icon { font-size: 24px; }
+    .integ-body { font-size: 12.5px; line-height: 1.45; flex: 1; }
+    .integ-body b { color: #c58a30; }
+    .integ-body a { color: #c58a30; font-weight: 600; text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Financeiro · Comissão · Head</div>
+        <div class="h-title">Comissão · Head</div>
+        <div class="h-meta">Estrutura de remuneração da liderança · Fixo + Override % + Bônus por meta do time</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <!-- WARNING DEFINIÇÃO -->
+    <div class="warning-card">
+      <div class="warning-title">⚠️ Definição de "Head" pendente</div>
+      <div class="warning-text">
+        O termo <b>Head</b> pode se referir a diferentes cadeiras dependendo da empresa. Esta tela trabalha com a premissa: <b>Head = liderança operacional do time comercial</b>. Confirmar com Matheus qual definição usar antes de aplicar valores reais.
+      </div>
+      <div class="warning-opcoes">
+        <div class="warning-opcao"><b>Supervisor</b>Lidera Closer ou SDR</div>
+        <div class="warning-opcao"><b>Gerente Comercial</b>Gere ambos os times</div>
+        <div class="warning-opcao"><b>Diretor Comercial</b>C-level · operação inteira</div>
+        <div class="warning-opcao"><b>Gestor Pré-Vendas</b>Cargo específico</div>
+      </div>
+    </div>
+
+    <div class="com-intro">
+      <div class="com-intro-title">▌ O que é a cadeira Head</div>
+      <div class="com-intro-text">
+        <b>Head = liderança operacional do time comercial.</b> Não vende diretamente — <b>gerencia time que vende</b>. Responde por: meta total do time · performance individual de cada vendedor (1:1 · Daily WeRev · Pipeline Review) · operação fluida · recrutamento + rampagem · cultura comercial.<br><br>
+        <b>Resultado direto que ele gera:</b> consistência operacional + meta atingida pelo time.
+      </div>
+    </div>
+
+    <div class="frase-ouro">
+      Operação que depende de pessoa tem prazo de validade. Operação que tem método é eterna.
+      <span class="frase-ouro-autor"><b>Metodologia WeRev</b> · Independência Operacional</span>
+    </div>
+
+    <div class="linhas-card">
+      <div class="linhas-title">📐 Estrutura de remuneração · 3 linhas</div>
+      <div class="linhas-grid">
+        <div class="linha-item">
+          <div class="linha-num">LINHA 1</div>
+          <div class="linha-nome">Fixo</div>
+          <div class="linha-desc">Valor de mercado pela cadeira × senioridade. <b>Maior que Closer/SDR</b> — referência: piso de Gerente Comercial.</div>
+        </div>
+        <div class="linha-item">
+          <div class="linha-num">LINHA 2</div>
+          <div class="linha-nome">Comissão (Override)</div>
+          <div class="linha-desc">% pequena sobre <b>Cash Collected do time todo</b>. Não é comissão sobre venda individual (Head não vende).</div>
+        </div>
+        <div class="linha-item">
+          <div class="linha-num">LINHA 3</div>
+          <div class="linha-nome">Bônus por Meta</div>
+          <div class="linha-desc">Por meta do <b>time</b> atingida + acumulado anual/trimestral. Escalonado por degraus.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seniority-tabs">
+      <button class="sen-tab active" data-sen="sup">
+        ⭐ Supervisor <span class="sen-tab-badge">PLACEHOLDER</span>
+      </button>
+      <button class="sen-tab" data-sen="gerente">
+        💎 Gerente <span class="sen-tab-badge">PLACEHOLDER</span>
+      </button>
+      <button class="sen-tab" data-sen="diretor">
+        🏆 Diretor <span class="sen-tab-badge">PLACEHOLDER</span>
+      </button>
+    </div>
+
+    <!-- SUPERVISOR -->
+    <div class="sen-content active" id="sen-sup">
+      <div class="placeholder-banner">⚠️ <b>Valores a validar:</b> tabela do Supervisor usa template do handoff. Confirmar Fixo, Override % e Bônus com Matheus.</div>
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item"><label>Fixo Mensal</label><input type="text" class="premissa-input" value="R$ 5.000"></div>
+          <div class="premissa-item"><label>Meta do time (Cash)</label><input type="text" class="premissa-input" value="R$ 1.000.000"></div>
+          <div class="premissa-item"><label>Tamanho do time</label><input type="text" class="premissa-input" value="8 pessoas"></div>
+          <div class="premissa-item"><label>Número de Níveis</label><input type="text" class="premissa-input" value="5"></div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · Supervisor de Closer</div>
+          <div class="niveis-meta">Override <b>sobre Cash Collected do time</b> · Bônus por meta atingida</div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr><th>Nível</th><th>Meta atingida</th><th>Override %</th><th>$$ Override</th><th>Fixo</th><th>Bônus</th><th>F+C+B</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>70%</td><td>0,3%</td><td>R$ 2.100</td><td>R$ 5.000</td><td>R$ 0</td><td class="col-fcb">R$ 7.100</td></tr>
+              <tr><td>Nível 2</td><td>85%</td><td>0,4%</td><td>R$ 3.400</td><td>R$ 5.000</td><td>R$ 1.000</td><td class="col-fcb">R$ 9.400</td></tr>
+              <tr><td>Nível 3</td><td>100%</td><td>0,5%</td><td>R$ 5.000</td><td>R$ 5.000</td><td>R$ 2.500</td><td class="col-fcb">R$ 12.500</td></tr>
+              <tr><td>Nível 4</td><td>120%</td><td>0,6%</td><td>R$ 7.200</td><td>R$ 5.000</td><td>R$ 5.000</td><td class="col-fcb">R$ 17.200</td></tr>
+              <tr><td>Nível 5</td><td>150%</td><td>0,8%</td><td>R$ 12.000</td><td>R$ 5.000</td><td>R$ 8.000</td><td class="col-fcb">R$ 25.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="ciclo-card">
+        <div class="ciclo-title">🎯 Bônus de Ciclo Longo (opcional)</div>
+        <div class="ciclo-grid">
+          <div class="ciclo-item">
+            <div class="ciclo-item-tag">▌ TRIMESTRAL</div>
+            <div class="ciclo-item-titulo">3 meses 100%+ consecutivos</div>
+            <div class="ciclo-item-desc">Bônus de <b>1× fixo</b> (R$ 5.000)</div>
+          </div>
+          <div class="ciclo-item">
+            <div class="ciclo-item-tag">▌ ANUAL</div>
+            <div class="ciclo-item-titulo">Meta superada no ano</div>
+            <div class="ciclo-item-desc">Bônus de <b>2-4× fixo</b> (R$ 10k - R$ 20k) ou variável atrelado a EBITDA do comercial</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GERENTE -->
+    <div class="sen-content" id="sen-gerente">
+      <div class="placeholder-banner">⚠️ <b>Valores a validar:</b> tabela do Gerente Comercial usa valores escalados (~1.6× do Supervisor). Confirmar com Matheus.</div>
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item"><label>Fixo Mensal</label><input type="text" class="premissa-input" value="R$ 10.000"></div>
+          <div class="premissa-item"><label>Meta do time (Cash)</label><input type="text" class="premissa-input" value="R$ 2.000.000"></div>
+          <div class="premissa-item"><label>Tamanho do time</label><input type="text" class="premissa-input" value="15 pessoas"></div>
+          <div class="premissa-item"><label>Número de Níveis</label><input type="text" class="premissa-input" value="5"></div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · Gerente Comercial</div>
+          <div class="niveis-meta">Gere ambos os times (Closer + SDR)</div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr><th>Nível</th><th>Meta atingida</th><th>Override %</th><th>$$ Override</th><th>Fixo</th><th>Bônus</th><th>F+C+B</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>70%</td><td>0,4%</td><td>R$ 5.600</td><td>R$ 10.000</td><td>R$ 0</td><td class="col-fcb">R$ 15.600</td></tr>
+              <tr><td>Nível 2</td><td>85%</td><td>0,5%</td><td>R$ 8.500</td><td>R$ 10.000</td><td>R$ 2.000</td><td class="col-fcb">R$ 20.500</td></tr>
+              <tr><td>Nível 3</td><td>100%</td><td>0,6%</td><td>R$ 12.000</td><td>R$ 10.000</td><td>R$ 5.000</td><td class="col-fcb">R$ 27.000</td></tr>
+              <tr><td>Nível 4</td><td>120%</td><td>0,7%</td><td>R$ 16.800</td><td>R$ 10.000</td><td>R$ 10.000</td><td class="col-fcb">R$ 36.800</td></tr>
+              <tr><td>Nível 5</td><td>150%</td><td>0,9%</td><td>R$ 27.000</td><td>R$ 10.000</td><td>R$ 16.000</td><td class="col-fcb">R$ 53.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRETOR -->
+    <div class="sen-content" id="sen-diretor">
+      <div class="placeholder-banner">⚠️ <b>Valores a validar:</b> Diretor Comercial é C-level. Valores variam muito por empresa e podem incluir equity.</div>
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item"><label>Fixo Mensal</label><input type="text" class="premissa-input" value="R$ 20.000"></div>
+          <div class="premissa-item"><label>Meta do time (Cash)</label><input type="text" class="premissa-input" value="R$ 5.000.000"></div>
+          <div class="premissa-item"><label>Tamanho do time</label><input type="text" class="premissa-input" value="30+ pessoas"></div>
+          <div class="premissa-item"><label>Número de Níveis</label><input type="text" class="premissa-input" value="5"></div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · Diretor Comercial</div>
+          <div class="niveis-meta">C-level · responde pela operação comercial inteira</div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr><th>Nível</th><th>Meta atingida</th><th>Override %</th><th>$$ Override</th><th>Fixo</th><th>Bônus</th><th>F+C+B</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>70%</td><td>0,5%</td><td>R$ 17.500</td><td>R$ 20.000</td><td>R$ 0</td><td class="col-fcb">R$ 37.500</td></tr>
+              <tr><td>Nível 2</td><td>85%</td><td>0,6%</td><td>R$ 25.500</td><td>R$ 20.000</td><td>R$ 5.000</td><td class="col-fcb">R$ 50.500</td></tr>
+              <tr><td>Nível 3</td><td>100%</td><td>0,7%</td><td>R$ 35.000</td><td>R$ 20.000</td><td>R$ 12.000</td><td class="col-fcb">R$ 67.000</td></tr>
+              <tr><td>Nível 4</td><td>120%</td><td>0,8%</td><td>R$ 48.000</td><td>R$ 20.000</td><td>R$ 25.000</td><td class="col-fcb">R$ 93.000</td></tr>
+              <tr><td>Nível 5</td><td>150%</td><td>1,0%</td><td>R$ 75.000</td><td>R$ 20.000</td><td>R$ 40.000</td><td class="col-fcb">R$ 135.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="anti-card">
+      <div class="anti-title">🚫 Anti-padrões · Head</div>
+      <div class="anti-list">
+        <div class="anti-item"><span class="anti-num">1.</span><div><b>Pagar Head só com fixo</b> — vira "salarista", desconecta da operação, não tem skin in the game.</div></div>
+        <div class="anti-item"><span class="anti-num">2.</span><div><b>Override igual ou maior que comissão do Closer</b> — Head ganha mais que quem vende, gera tensão no time.</div></div>
+        <div class="anti-item"><span class="anti-num">3.</span><div><b>Bônus só atrelado a meta do time</b> — Head pode fazer trabalho impecável mas time não bate por fatores externos.</div></div>
+        <div class="anti-item"><span class="anti-num">4.</span><div><b>Comissão por venda individual</b> — Head começa a vender em vez de gerenciar, abandona o papel.</div></div>
+        <div class="anti-item"><span class="anti-num">5.</span><div><b>Bônus sem teto</b> — se time exceder muito, Head leva valor desproporcional.</div></div>
+        <div class="anti-item"><span class="anti-num">6.</span><div><b>Fixo abaixo do mercado</b> — Head bom não aceita; quem fica não tem opção.</div></div>
+      </div>
+    </div>
+
+    <div class="integ-card">
+      <span class="integ-icon">🔗</span>
+      <div class="integ-body">
+        <b>Integração com COC:</b> a comissão do Head alimenta o <a href="coc.html">Custo Variável do COC</a> — geralmente com peso desproporcional (Head custa caro). <b>Alerta:</b> a soma F+C+B do Head + comissões individuais não pode estourar 15% do Cash Collected.
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.sen-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const sen = btn.dataset.sen;
+    document.querySelectorAll('.sen-tab').forEach(b => b.classList.toggle('active', b.dataset.sen === sen));
+    document.querySelectorAll('.sen-content').forEach(c => c.classList.toggle('active', c.id === `sen-${sen}`));
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('[data-page="comissao-head"]');
+    if (active) active.classList.add('active');
+    const parent = document.querySelector('[data-page="financeiro-parent"]');
+    if (parent) parent.classList.add('active');
+  });
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

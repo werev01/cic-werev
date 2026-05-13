@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comissão · SDR · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .com-intro { padding: 18px 22px; border-radius: 14px; margin-bottom: 22px; background: linear-gradient(135deg, rgba(197,138,48,0.1), rgba(197,138,48,0.04)); border: 1px solid rgba(197,138,48,0.3); }
+    .cic.dark .com-intro { background: linear-gradient(135deg, rgba(197,138,48,0.18), rgba(197,138,48,0.08)); }
+    .com-intro-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 6px; }
+    .com-intro-text { font-size: 12.5px; line-height: 1.6; opacity: 0.85; }
+    .com-intro-text b { color: #c58a30; font-weight: 600; }
+
+    /* DESTAQUE CRÍTICO - CAU REALIZADA */
+    .critico-card { padding: 22px 26px; border-radius: 14px; margin-bottom: 22px; background: linear-gradient(135deg, rgba(8,53,144,0.08), rgba(197,138,48,0.06)); border: 2px solid #c58a30; position: relative; }
+    .cic.dark .critico-card { background: linear-gradient(135deg, rgba(8,53,144,0.2), rgba(197,138,48,0.12)); }
+    .critico-tag { position: absolute; top: -10px; left: 20px; background: #c58a30; color: #FFF; padding: 4px 12px; border-radius: 12px; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; }
+    .critico-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: #c58a30; }
+    .critico-comp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    @media (max-width: 700px) { .critico-comp { grid-template-columns: 1fr; } }
+    .critico-box { padding: 14px 18px; border-radius: 10px; }
+    .critico-box.errado { background: rgba(217,32,32,0.1); border: 1px solid rgba(217,32,32,0.3); }
+    .critico-box.certo { background: rgba(0,160,80,0.1); border: 1px solid rgba(0,160,80,0.3); }
+    .critico-box-titulo { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+    .critico-box.errado .critico-box-titulo { color: #d92020; }
+    .critico-box.certo .critico-box-titulo { color: #00a050; }
+    .critico-box-texto { font-size: 12px; line-height: 1.45; opacity: 0.9; }
+
+    .frase-ouro {
+      padding: 18px 24px;
+      border-left: 4px solid #c58a30;
+      background: rgba(197,138,48,0.07);
+      border-radius: 0 12px 12px 0;
+      margin-bottom: 22px;
+      font-style: italic;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .cic.dark .frase-ouro { background: rgba(197,138,48,0.13); }
+    .frase-ouro::before { content: '"'; font-size: 36px; color: #c58a30; line-height: 0; margin-right: 4px; vertical-align: -8px; font-style: normal; font-weight: 700; }
+    .frase-ouro-autor { display: block; margin-top: 8px; font-style: normal; font-size: 11px; opacity: 0.65; }
+    .frase-ouro-autor b { color: #c58a30; }
+
+    .seniority-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid; }
+    .cic.light .seniority-tabs { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .seniority-tabs { border-color: rgba(226,227,222,0.1); }
+    .sen-tab { background: transparent; border: 0; padding: 11px 22px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; color: inherit; opacity: 0.55; border-bottom: 2px solid transparent; transition: all 0.15s; display:flex; align-items:center; gap:8px; }
+    .sen-tab:hover { opacity: 0.85; }
+    .sen-tab.active { opacity: 1; color: #c58a30; border-bottom-color: #c58a30; font-weight: 600; }
+    .sen-tab-badge { font-size: 9.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; opacity: 0.75; letter-spacing: 0.4px; }
+    .sen-tab.active .sen-tab-badge { background: rgba(197,138,48,0.15); color: #c58a30; opacity: 1; }
+    .sen-content { display: none; }
+    .sen-content.active { display: block; }
+
+    .placeholder-banner {
+      padding: 12px 18px;
+      background: rgba(197,138,48,0.12);
+      border: 1px solid rgba(197,138,48,0.4);
+      border-radius: 10px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .cic.dark .placeholder-banner { background: rgba(197,138,48,0.18); }
+    .placeholder-banner b { color: #c58a30; font-weight: 700; }
+
+    .premissas-card { padding: 20px 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .premissas-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .premissas-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .premissas-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 14px; }
+    .premissas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 700px) { .premissas-grid { grid-template-columns: 1fr; } }
+    .premissa-item label { display: block; font-size: 10.5px; font-weight: 600; opacity: 0.65; margin-bottom: 6px; letter-spacing: 0.4px; text-transform: uppercase; }
+    .premissa-input { width: 100%; padding: 10px 14px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; border: 1px solid; color: inherit; background: transparent; font-variant-numeric: tabular-nums; }
+    .cic.light .premissa-input { border-color: rgba(12,38,59,0.15); background: rgba(12,38,59,0.025); }
+    .cic.dark .premissa-input { border-color: rgba(226,227,222,0.2); background: rgba(226,227,222,0.04); }
+    .premissa-input:focus { outline: 0; border-color: #c58a30; }
+
+    .niveis-card { padding: 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .niveis-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .niveis-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .niveis-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .niveis-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; }
+    .niveis-meta { font-size: 11px; opacity: 0.6; }
+    .niveis-meta b { color: #c58a30; }
+
+    .niveis-table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid; }
+    .cic.light .niveis-table-wrapper { border-color: rgba(12,38,59,0.06); }
+    .cic.dark .niveis-table-wrapper { border-color: rgba(226,227,222,0.08); }
+    .niveis-table { width: 100%; border-collapse: collapse; min-width: 700px; font-variant-numeric: tabular-nums; }
+    .niveis-table thead th { font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; opacity: 0.7; padding: 12px 10px; text-align: right; border-bottom: 2px solid; }
+    .niveis-table thead th:first-child { text-align: left; }
+    .cic.light .niveis-table thead th { border-color: rgba(12,38,59,0.1); background: rgba(12,38,59,0.025); }
+    .cic.dark .niveis-table thead th { border-color: rgba(226,227,222,0.15); background: rgba(226,227,222,0.05); }
+    .niveis-table tbody td { padding: 10px; font-size: 12px; text-align: right; border-bottom: 1px solid; }
+    .niveis-table tbody td:first-child { text-align: left; font-weight: 700; color: #c58a30; }
+    .cic.light .niveis-table tbody td { border-color: rgba(12,38,59,0.05); }
+    .cic.dark .niveis-table tbody td { border-color: rgba(226,227,222,0.07); }
+    .niveis-table tbody tr:hover { background: rgba(197,138,48,0.05); }
+    .niveis-table tbody tr:last-child td { border-bottom: 0; }
+    .niveis-table .col-fcb { font-weight: 700; color: #c58a30; font-size: 13px; }
+
+    .bonus-card { padding: 20px 24px; border-radius: 14px; margin-bottom: 18px; background: linear-gradient(135deg, rgba(0,160,80,0.05), rgba(0,160,80,0.01)); border: 1px solid rgba(0,160,80,0.2); }
+    .cic.dark .bonus-card { background: linear-gradient(135deg, rgba(0,160,80,0.13), rgba(0,160,80,0.05)); border-color: rgba(0,160,80,0.3); }
+    .bonus-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #00a050; margin-bottom: 12px; }
+    .bonus-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    @media (max-width: 700px) { .bonus-grid { grid-template-columns: repeat(2, 1fr); } }
+    .bonus-tier { padding: 12px 14px; border-radius: 8px; background: rgba(255,255,255,0.6); text-align: center; }
+    .cic.dark .bonus-tier { background: rgba(255,255,255,0.05); }
+    .bonus-tier-meta { font-size: 10.5px; font-weight: 600; opacity: 0.7; }
+    .bonus-tier-valor { font-size: 16px; font-weight: 700; color: #00a050; margin-top: 4px; }
+
+    .anti-card { padding: 22px 24px; border-radius: 14px; margin-bottom: 18px; background: linear-gradient(135deg, rgba(217,32,32,0.06), rgba(217,32,32,0.02)); border: 1px solid rgba(217,32,32,0.25); }
+    .cic.dark .anti-card { background: linear-gradient(135deg, rgba(217,32,32,0.13), rgba(217,32,32,0.06)); border-color: rgba(217,32,32,0.4); }
+    .anti-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #d92020; margin-bottom: 14px; }
+    .anti-list { display: flex; flex-direction: column; gap: 9px; }
+    .anti-item { display: flex; gap: 12px; align-items: flex-start; padding: 11px 14px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; }
+    .cic.light .anti-item { background: rgba(217,32,32,0.03); }
+    .cic.dark .anti-item { background: rgba(217,32,32,0.06); }
+    .anti-num { font-size: 13px; font-weight: 700; color: #d92020; flex-shrink: 0; min-width: 18px; }
+    .anti-item b { color: #d92020; font-weight: 600; }
+
+    .integ-card { padding: 16px 20px; border-radius: 12px; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, rgba(197,138,48,0.08), rgba(197,138,48,0.03)); border: 1px solid rgba(197,138,48,0.3); }
+    .cic.dark .integ-card { background: linear-gradient(135deg, rgba(197,138,48,0.18), rgba(197,138,48,0.08)); }
+    .integ-icon { font-size: 24px; }
+    .integ-body { font-size: 12.5px; line-height: 1.45; flex: 1; }
+    .integ-body b { color: #c58a30; }
+    .integ-body a { color: #c58a30; font-weight: 600; text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Financeiro · Comissão · SDR</div>
+        <div class="h-title">Comissão · SDR</div>
+        <div class="h-meta">Estrutura de remuneração do SDR · Fixo + R$/CAU Realizada + Bônus</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <!-- INTRO -->
+    <div class="com-intro">
+      <div class="com-intro-title">▌ O que é a cadeira SDR</div>
+      <div class="com-intro-text"><b>SDR = Sales Development Representative.</b> Faz prospecção ativa, qualificação inicial e <b>agenda reuniões</b> com Closer. <b>Resultado direto que ele gera:</b> CAU realizada — reunião marcada que efetivamente aconteceu (não cancelada, não no-show).</div>
+    </div>
+
+    <!-- CARD CRÍTICO: CAU REALIZADA -->
+    <div class="critico-card">
+      <div class="critico-tag">⚠️ PRINCÍPIO CRÍTICO</div>
+      <div class="critico-title">📞 Comissão por CAU REALIZADA · nunca agendada</div>
+      <div style="font-size:12.5px; line-height:1.55; opacity:0.9;">
+        Esse é o princípio mais importante do comissionamento do SDR. <b>A diferença está no alinhamento de incentivo</b> — CAU realizada alinha o SDR ao resultado real (conversa que aconteceu), não ao output intermediário (marcação no calendário).
+      </div>
+      <div class="critico-comp">
+        <div class="critico-box errado">
+          <div class="critico-box-titulo">❌ Pagar por CAU AGENDADA</div>
+          <div class="critico-box-texto">SDR força marcação, agenda lead frio/desqualificado, no-show explode, Closer perde tempo, conversão cai.</div>
+        </div>
+        <div class="critico-box certo">
+          <div class="critico-box-titulo">✅ Pagar por CAU REALIZADA</div>
+          <div class="critico-box-texto">SDR filtra qualidade, confirma presença, lead chega pronto, conversão sobe.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRASE-OURO -->
+    <div class="frase-ouro">
+      Pagar pelas CAUs que ele agendar? Não. A gente começa a pagar ele pelas CAUs realizadas.
+      <span class="frase-ouro-autor"><b>Matheus</b> · áudio 13/05/2026</span>
+    </div>
+
+    <!-- TABS SENIORIDADE -->
+    <div class="seniority-tabs">
+      <button class="sen-tab active" data-sen="junior">
+        🌱 SDR Júnior <span class="sen-tab-badge">PLACEHOLDER</span>
+      </button>
+      <button class="sen-tab" data-sen="pleno">
+        ⭐ SDR Pleno <span class="sen-tab-badge">PLACEHOLDER</span>
+      </button>
+      <button class="sen-tab" data-sen="senior">
+        💎 SDR Sênior <span class="sen-tab-badge">PLACEHOLDER</span>
+      </button>
+    </div>
+
+    <!-- =============== SDR JÚNIOR =============== -->
+    <div class="sen-content active" id="sen-junior">
+
+      <div class="placeholder-banner">
+        ⚠️ <b>Valores a validar com Matheus:</b> tabela do SDR Júnior usa estrutura padrão do handoff. Confirmar Fixo, R$/CAU e Bônus reais.
+      </div>
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item">
+            <label>Fixo Mensal</label>
+            <input type="text" class="premissa-input" value="R$ 1.800">
+          </div>
+          <div class="premissa-item">
+            <label>Meta CAU/mês básica</label>
+            <input type="text" class="premissa-input" value="40">
+          </div>
+          <div class="premissa-item">
+            <label>Número de Níveis</label>
+            <input type="text" class="premissa-input" value="6">
+          </div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · SDR Júnior</div>
+          <div class="niveis-meta">Comissão = <b>R$/CAU × Nº CAU Realizadas</b></div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr><th>Nível</th><th>CAU Realizadas</th><th>R$/CAU</th><th>$$ Comissão</th><th>Fixo</th><th>Bônus</th><th>F+C+B</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>20</td><td>R$ 50</td><td>R$ 1.000</td><td>R$ 1.800</td><td>R$ 0</td><td class="col-fcb">R$ 2.800</td></tr>
+              <tr><td>Nível 2</td><td>30</td><td>R$ 50</td><td>R$ 1.500</td><td>R$ 1.800</td><td>R$ 300</td><td class="col-fcb">R$ 3.600</td></tr>
+              <tr><td>Nível 3</td><td>40</td><td>R$ 70</td><td>R$ 2.800</td><td>R$ 1.800</td><td>R$ 600</td><td class="col-fcb">R$ 5.200</td></tr>
+              <tr><td>Nível 4</td><td>55</td><td>R$ 70</td><td>R$ 3.850</td><td>R$ 1.800</td><td>R$ 1.000</td><td class="col-fcb">R$ 6.650</td></tr>
+              <tr><td>Nível 5</td><td>70</td><td>R$ 100</td><td>R$ 7.000</td><td>R$ 1.800</td><td>R$ 1.500</td><td class="col-fcb">R$ 10.300</td></tr>
+              <tr><td>Nível 6</td><td>90</td><td>R$ 100</td><td>R$ 9.000</td><td>R$ 1.800</td><td>R$ 2.500</td><td class="col-fcb">R$ 13.300</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bonus-card">
+        <div class="bonus-title">🎯 Bônus extra · por meta de venda do TIME</div>
+        <div style="font-size:11.5px; opacity:0.7; margin-bottom: 12px;">Independente do nível individual do SDR · pago a mais quando o time bate a meta global</div>
+        <div class="bonus-grid">
+          <div class="bonus-tier">
+            <div class="bonus-tier-meta">80% da meta</div>
+            <div class="bonus-tier-valor">R$ 0</div>
+          </div>
+          <div class="bonus-tier">
+            <div class="bonus-tier-meta">100% da meta</div>
+            <div class="bonus-tier-valor">R$ 500</div>
+          </div>
+          <div class="bonus-tier">
+            <div class="bonus-tier-meta">120% da meta</div>
+            <div class="bonus-tier-valor">R$ 1.000</div>
+          </div>
+          <div class="bonus-tier">
+            <div class="bonus-tier-meta">150% da meta</div>
+            <div class="bonus-tier-valor">R$ 2.000</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =============== SDR PLENO =============== -->
+    <div class="sen-content" id="sen-pleno">
+      <div class="placeholder-banner">⚠️ <b>Valores a validar:</b> tabela do SDR Pleno usa proporção escalada (~1.5× do Júnior). Confirmar com Matheus.</div>
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item"><label>Fixo Mensal</label><input type="text" class="premissa-input" value="R$ 2.500"></div>
+          <div class="premissa-item"><label>Meta CAU/mês básica</label><input type="text" class="premissa-input" value="45"></div>
+          <div class="premissa-item"><label>Número de Níveis</label><input type="text" class="premissa-input" value="6"></div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · SDR Pleno (placeholder)</div>
+          <div class="niveis-meta">Estrutura igual ao Júnior · valores escalados</div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr><th>Nível</th><th>CAU Realizadas</th><th>R$/CAU</th><th>$$ Comissão</th><th>Fixo</th><th>Bônus</th><th>F+C+B</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>25</td><td>R$ 70</td><td>R$ 1.750</td><td>R$ 2.500</td><td>R$ 0</td><td class="col-fcb">R$ 4.250</td></tr>
+              <tr><td>Nível 2</td><td>35</td><td>R$ 70</td><td>R$ 2.450</td><td>R$ 2.500</td><td>R$ 500</td><td class="col-fcb">R$ 5.450</td></tr>
+              <tr><td>Nível 3</td><td>45</td><td>R$ 100</td><td>R$ 4.500</td><td>R$ 2.500</td><td>R$ 1.000</td><td class="col-fcb">R$ 8.000</td></tr>
+              <tr><td>Nível 4</td><td>60</td><td>R$ 100</td><td>R$ 6.000</td><td>R$ 2.500</td><td>R$ 1.500</td><td class="col-fcb">R$ 10.000</td></tr>
+              <tr><td>Nível 5</td><td>75</td><td>R$ 130</td><td>R$ 9.750</td><td>R$ 2.500</td><td>R$ 2.500</td><td class="col-fcb">R$ 14.750</td></tr>
+              <tr><td>Nível 6</td><td>100</td><td>R$ 130</td><td>R$ 13.000</td><td>R$ 2.500</td><td>R$ 4.000</td><td class="col-fcb">R$ 19.500</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============== SDR SÊNIOR =============== -->
+    <div class="sen-content" id="sen-senior">
+      <div class="placeholder-banner">⚠️ <b>Valores a validar:</b> tabela do SDR Sênior usa proporção escalada (~2× do Júnior). Confirmar com Matheus.</div>
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item"><label>Fixo Mensal</label><input type="text" class="premissa-input" value="R$ 3.500"></div>
+          <div class="premissa-item"><label>Meta CAU/mês básica</label><input type="text" class="premissa-input" value="50"></div>
+          <div class="premissa-item"><label>Número de Níveis</label><input type="text" class="premissa-input" value="6"></div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · SDR Sênior (placeholder)</div>
+          <div class="niveis-meta">Estrutura igual ao Júnior · valores escalados</div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr><th>Nível</th><th>CAU Realizadas</th><th>R$/CAU</th><th>$$ Comissão</th><th>Fixo</th><th>Bônus</th><th>F+C+B</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>30</td><td>R$ 100</td><td>R$ 3.000</td><td>R$ 3.500</td><td>R$ 0</td><td class="col-fcb">R$ 6.500</td></tr>
+              <tr><td>Nível 2</td><td>40</td><td>R$ 100</td><td>R$ 4.000</td><td>R$ 3.500</td><td>R$ 800</td><td class="col-fcb">R$ 8.300</td></tr>
+              <tr><td>Nível 3</td><td>50</td><td>R$ 140</td><td>R$ 7.000</td><td>R$ 3.500</td><td>R$ 1.500</td><td class="col-fcb">R$ 12.000</td></tr>
+              <tr><td>Nível 4</td><td>65</td><td>R$ 140</td><td>R$ 9.100</td><td>R$ 3.500</td><td>R$ 2.500</td><td class="col-fcb">R$ 15.100</td></tr>
+              <tr><td>Nível 5</td><td>80</td><td>R$ 180</td><td>R$ 14.400</td><td>R$ 3.500</td><td>R$ 4.000</td><td class="col-fcb">R$ 21.900</td></tr>
+              <tr><td>Nível 6</td><td>110</td><td>R$ 180</td><td>R$ 19.800</td><td>R$ 3.500</td><td>R$ 6.000</td><td class="col-fcb">R$ 29.300</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANTI-PADRÕES -->
+    <div class="anti-card">
+      <div class="anti-title">🚫 Anti-padrões · SDR</div>
+      <div class="anti-list">
+        <div class="anti-item"><span class="anti-num">1.</span><div><b>Pagar por CAU agendada</b> — gera lixo no funil, no-show explode.</div></div>
+        <div class="anti-item"><span class="anti-num">2.</span><div><b>Pagar SDR sobre venda fechada</b> — SDR não tem controle do fechamento (é do Closer); desmotiva e é injusto.</div></div>
+        <div class="anti-item"><span class="anti-num">3.</span><div><b>R$/CAU fixo sem progressão</b> — não incentiva volume nem qualidade.</div></div>
+        <div class="anti-item"><span class="anti-num">4.</span><div><b>Fixo abaixo do mercado</b> — SDR bom não fica; alta rotatividade no ponto mais difícil de contratar.</div></div>
+        <div class="anti-item"><span class="anti-num">5.</span><div><b>Bônus só por meta da empresa</b> — SDR pode ter feito tudo certo e ainda assim não bater (porque depende do Closer); precisa de bônus pelas próprias atividades também.</div></div>
+      </div>
+    </div>
+
+    <!-- INTEGRAÇÃO COC -->
+    <div class="integ-card">
+      <span class="integ-icon">🔗</span>
+      <div class="integ-body">
+        <b>Integração com COC:</b> a comissão do SDR alimenta automaticamente o <a href="coc.html">Custo Variável do COC</a>. Fixo entra no Custo Fixo; Comissão (R$/CAU × CAUs) + Bônus entram no Custo Variável.
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.sen-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const sen = btn.dataset.sen;
+    document.querySelectorAll('.sen-tab').forEach(b => b.classList.toggle('active', b.dataset.sen === sen));
+    document.querySelectorAll('.sen-content').forEach(c => c.classList.toggle('active', c.id === `sen-${sen}`));
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('[data-page="comissao-sdr"]');
+    if (active) active.classList.add('active');
+    const parent = document.querySelector('[data-page="financeiro-parent"]');
+    if (parent) parent.classList.add('active');
+  });
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

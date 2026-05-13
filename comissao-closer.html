@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comissão · Closer · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* ===== INTRO ===== */
+    .com-intro { padding: 18px 22px; border-radius: 14px; margin-bottom: 22px; background: linear-gradient(135deg, rgba(0,160,80,0.08), rgba(197,138,48,0.06)); border: 1px solid rgba(0,160,80,0.25); }
+    .cic.dark .com-intro { background: linear-gradient(135deg, rgba(0,160,80,0.18), rgba(197,138,48,0.1)); }
+    .com-intro-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #00a050; margin-bottom: 6px; }
+    .com-intro-text { font-size: 12.5px; line-height: 1.6; opacity: 0.85; }
+    .com-intro-text b { color: #00a050; font-weight: 600; }
+
+    /* ===== FRASE-OURO ===== */
+    .frase-ouro {
+      padding: 18px 24px;
+      border-left: 4px solid #c58a30;
+      background: rgba(197,138,48,0.07);
+      border-radius: 0 12px 12px 0;
+      margin-bottom: 22px;
+      font-style: italic;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .cic.dark .frase-ouro { background: rgba(197,138,48,0.13); }
+    .frase-ouro::before { content: '"'; font-size: 36px; color: #c58a30; line-height: 0; margin-right: 4px; vertical-align: -8px; font-style: normal; font-weight: 700; }
+    .frase-ouro-autor { display: block; margin-top: 8px; font-style: normal; font-size: 11px; opacity: 0.65; }
+    .frase-ouro-autor b { color: #c58a30; }
+
+    /* ===== TABS SENIORIDADE ===== */
+    .seniority-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid; }
+    .cic.light .seniority-tabs { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .seniority-tabs { border-color: rgba(226,227,222,0.1); }
+    .sen-tab { background: transparent; border: 0; padding: 11px 22px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; color: inherit; opacity: 0.55; border-bottom: 2px solid transparent; transition: all 0.15s; display:flex; align-items:center; gap:8px; }
+    .sen-tab:hover { opacity: 0.85; }
+    .sen-tab.active { opacity: 1; color: #00a050; border-bottom-color: #00a050; font-weight: 600; }
+    .sen-tab-badge { font-size: 9.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; opacity: 0.75; letter-spacing: 0.4px; }
+    .sen-tab.active .sen-tab-badge { background: rgba(0,160,80,0.15); color: #00a050; opacity: 1; }
+    .sen-content { display: none; }
+    .sen-content.active { display: block; }
+
+    /* ===== BANNER PLACEHOLDER ===== */
+    .placeholder-banner {
+      padding: 12px 18px;
+      background: rgba(197,138,48,0.12);
+      border: 1px solid rgba(197,138,48,0.4);
+      border-radius: 10px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .cic.dark .placeholder-banner { background: rgba(197,138,48,0.18); }
+    .placeholder-banner b { color: #c58a30; font-weight: 700; }
+
+    /* ===== PREMISSAS ===== */
+    .premissas-card { padding: 20px 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .premissas-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .premissas-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .premissas-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .premissas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 700px) { .premissas-grid { grid-template-columns: 1fr; } }
+    .premissa-item label { display: block; font-size: 10.5px; font-weight: 600; opacity: 0.65; margin-bottom: 6px; letter-spacing: 0.4px; text-transform: uppercase; }
+    .premissa-input { width: 100%; padding: 10px 14px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; border: 1px solid; color: inherit; background: transparent; transition: border 0.15s; font-variant-numeric: tabular-nums; }
+    .cic.light .premissa-input { border-color: rgba(12,38,59,0.15); background: rgba(12,38,59,0.025); }
+    .cic.dark .premissa-input { border-color: rgba(226,227,222,0.2); background: rgba(226,227,222,0.04); }
+    .premissa-input:focus { outline: 0; border-color: #c58a30; }
+
+    /* ===== TABELA DE NÍVEIS ===== */
+    .niveis-card { padding: 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .niveis-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .niveis-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .niveis-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .niveis-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; }
+    .niveis-meta { font-size: 11px; opacity: 0.6; }
+    .niveis-meta b { color: #c58a30; }
+
+    .niveis-table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid; }
+    .cic.light .niveis-table-wrapper { border-color: rgba(12,38,59,0.06); }
+    .cic.dark .niveis-table-wrapper { border-color: rgba(226,227,222,0.08); }
+    .niveis-table { width: 100%; border-collapse: collapse; min-width: 760px; font-variant-numeric: tabular-nums; }
+    .niveis-table thead th { font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; opacity: 0.7; padding: 12px 10px; text-align: right; border-bottom: 2px solid; }
+    .niveis-table thead th:first-child { text-align: left; }
+    .cic.light .niveis-table thead th { border-color: rgba(12,38,59,0.1); background: rgba(12,38,59,0.025); }
+    .cic.dark .niveis-table thead th { border-color: rgba(226,227,222,0.15); background: rgba(226,227,222,0.05); }
+    .niveis-table tbody td { padding: 10px; font-size: 12px; text-align: right; border-bottom: 1px solid; transition: background 0.12s; }
+    .niveis-table tbody td:first-child { text-align: left; font-weight: 700; color: #00a050; }
+    .cic.light .niveis-table tbody td { border-color: rgba(12,38,59,0.05); }
+    .cic.dark .niveis-table tbody td { border-color: rgba(226,227,222,0.07); }
+    .niveis-table tbody tr:hover { background: rgba(0,160,80,0.04); }
+    .cic.dark .niveis-table tbody tr:hover { background: rgba(0,160,80,0.08); }
+    .niveis-table tbody tr:last-child td { border-bottom: 0; }
+    .niveis-table .col-fcb { font-weight: 700; color: #c58a30; font-size: 13px; }
+    .niveis-table .tier-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; }
+    .niveis-table .tier-1 { background: rgba(8,53,144,0.13); color: #083590; }
+    .niveis-table .tier-2 { background: rgba(0,160,80,0.13); color: #00a050; }
+    .niveis-table .tier-3 { background: rgba(197,138,48,0.13); color: #c58a30; }
+    .niveis-table .tier-4 { background: rgba(217,32,32,0.13); color: #d92020; }
+
+    /* ===== BAR CHART ===== */
+    .chart-card { padding: 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .chart-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .chart-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .chart-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 18px; }
+    .chart-area { display: flex; align-items: flex-end; gap: 10px; height: 200px; padding: 10px 0; border-bottom: 1px solid; }
+    .cic.light .chart-area { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .chart-area { border-color: rgba(226,227,222,0.1); }
+    .chart-bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+    .bar-value { font-size: 10px; font-weight: 700; color: #c58a30; }
+    .bar-fill { width: 100%; background: linear-gradient(180deg, #00a050, #006b35); border-radius: 6px 6px 0 0; transition: all 0.3s; min-height: 5px; position: relative; cursor: pointer; }
+    .bar-fill:hover { background: linear-gradient(180deg, #14b766, #008040); }
+    .chart-labels { display: flex; gap: 10px; margin-top: 6px; }
+    .chart-label { flex: 1; text-align: center; font-size: 10px; opacity: 0.7; }
+    .chart-label b { display: block; color: #c58a30; font-weight: 700; }
+
+    /* ===== ANTI-PADRÕES ===== */
+    .anti-card { padding: 22px 24px; border-radius: 14px; margin-bottom: 18px; background: linear-gradient(135deg, rgba(217,32,32,0.06), rgba(217,32,32,0.02)); border: 1px solid rgba(217,32,32,0.25); }
+    .cic.dark .anti-card { background: linear-gradient(135deg, rgba(217,32,32,0.13), rgba(217,32,32,0.06)); border-color: rgba(217,32,32,0.4); }
+    .anti-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #d92020; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .anti-list { display: flex; flex-direction: column; gap: 9px; }
+    .anti-item { display: flex; gap: 12px; align-items: flex-start; padding: 11px 14px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; }
+    .cic.light .anti-item { background: rgba(217,32,32,0.03); }
+    .cic.dark .anti-item { background: rgba(217,32,32,0.06); }
+    .anti-num { font-size: 13px; font-weight: 700; color: #d92020; flex-shrink: 0; min-width: 18px; }
+    .anti-item b { color: #d92020; font-weight: 600; }
+
+    /* ===== INTEGRAÇÃO COC ===== */
+    .integ-card { padding: 16px 20px; border-radius: 12px; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, rgba(197,138,48,0.08), rgba(197,138,48,0.03)); border: 1px solid rgba(197,138,48,0.3); }
+    .cic.dark .integ-card { background: linear-gradient(135deg, rgba(197,138,48,0.18), rgba(197,138,48,0.08)); }
+    .integ-icon { font-size: 24px; }
+    .integ-body { font-size: 12.5px; line-height: 1.45; flex: 1; }
+    .integ-body b { color: #c58a30; }
+    .integ-body a { color: #c58a30; font-weight: 600; text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Financeiro · Comissão · Closer</div>
+        <div class="h-title">Comissão · Closer</div>
+        <div class="h-meta">Estrutura de remuneração do Closer · Fixo + Comissão Progressiva + Bônus</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <!-- INTRO -->
+    <div class="com-intro">
+      <div class="com-intro-title">▌ O que é a cadeira Closer</div>
+      <div class="com-intro-text"><b>Closer = vendedor que fecha a venda.</b> Atende reuniões qualificadas (CAU realizadas pelo SDR), aplica framework de venda (SPIN → NEPQ), conduz objeções e fecha contrato. <b>Resultado direto que ele gera:</b> receita fechada (faturamento bruto).</div>
+    </div>
+
+    <!-- FRASE-OURO -->
+    <div class="frase-ouro">
+      Vou vender um produto de R$ 100k, mas só 2 por mês. Eu vou ter uma demanda de R$ 10 milhões. Eu não posso dar 5% pra essa pessoa, porque senão ele vai ganhar muito com pouco esforço.
+      <span class="frase-ouro-autor"><b>Matheus</b> · sobre a regra de calibração da % do Closer</span>
+    </div>
+
+    <!-- TABS SENIORIDADE -->
+    <div class="seniority-tabs">
+      <button class="sen-tab active" data-sen="junior">
+        🎯 Closer Júnior <span class="sen-tab-badge">DADOS REAIS</span>
+      </button>
+      <button class="sen-tab" data-sen="pleno">
+        ⭐ Closer Pleno <span class="sen-tab-badge">PLACEHOLDER</span>
+      </button>
+      <button class="sen-tab" data-sen="senior">
+        💎 Closer Sênior <span class="sen-tab-badge">PLACEHOLDER</span>
+      </button>
+    </div>
+
+    <!-- =============== CLOSER JÚNIOR =============== -->
+    <div class="sen-content active" id="sen-junior">
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item">
+            <label>Ticket Médio</label>
+            <input type="text" class="premissa-input" value="R$ 25.000" data-sen-input="jr-ticket">
+          </div>
+          <div class="premissa-item">
+            <label>Fixo Mensal</label>
+            <input type="text" class="premissa-input" value="R$ 2.500" data-sen-input="jr-fixo">
+          </div>
+          <div class="premissa-item">
+            <label>Número de Níveis</label>
+            <input type="text" class="premissa-input" value="7" data-sen-input="jr-niveis">
+          </div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · Closer Júnior</div>
+          <div class="niveis-meta">% Comissão escalada em <b>4 tiers</b> · Fixo de cadeira-padrão · Bônus em degraus</div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr>
+                <th>Nível</th>
+                <th>Faturamento</th>
+                <th>Nº Vendas</th>
+                <th>% Comissão</th>
+                <th>$$ Comissão</th>
+                <th>Fixo</th>
+                <th>Bônus</th>
+                <th>F+C+B</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>R$ 160.000</td><td>6</td><td><span class="tier-badge tier-1">0,5%</span></td><td>R$ 800</td><td>R$ 2.500</td><td>R$ 0</td><td class="col-fcb">R$ 3.300</td></tr>
+              <tr><td>Nível 2</td><td>R$ 180.000</td><td>7</td><td><span class="tier-badge tier-1">0,5%</span></td><td>R$ 900</td><td>R$ 2.500</td><td>R$ 600</td><td class="col-fcb">R$ 4.000</td></tr>
+              <tr><td>Nível 3</td><td>R$ 220.000</td><td>9</td><td><span class="tier-badge tier-2">0,7%</span></td><td>R$ 1.540</td><td>R$ 2.500</td><td>R$ 2.000</td><td class="col-fcb">R$ 6.040</td></tr>
+              <tr><td>Nível 4</td><td>R$ 280.000</td><td>11</td><td><span class="tier-badge tier-2">0,7%</span></td><td>R$ 1.960</td><td>R$ 2.500</td><td>R$ 3.000</td><td class="col-fcb">R$ 7.460</td></tr>
+              <tr><td>Nível 5</td><td>R$ 360.000</td><td>14</td><td><span class="tier-badge tier-3">1,0%</span></td><td>R$ 3.600</td><td>R$ 2.500</td><td>R$ 5.000</td><td class="col-fcb">R$ 11.100</td></tr>
+              <tr><td>Nível 6</td><td>R$ 500.000</td><td>20</td><td><span class="tier-badge tier-4">1,5%</span></td><td>R$ 7.500</td><td>R$ 2.500</td><td>R$ 7.000</td><td class="col-fcb">R$ 17.000</td></tr>
+              <tr><td>Nível 7</td><td>R$ 650.000</td><td>26</td><td><span class="tier-badge tier-4">1,5%</span></td><td>R$ 9.750</td><td>R$ 2.500</td><td>R$ 8.000</td><td class="col-fcb">R$ 20.250</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">📈 Visualização · Remuneração total (F+C+B) por nível</div>
+        <div class="chart-area" id="chart-jr">
+          <!-- Bars geradas via JS -->
+        </div>
+        <div class="chart-labels">
+          <div class="chart-label"><b>N1</b>R$ 3,3k</div>
+          <div class="chart-label"><b>N2</b>R$ 4,0k</div>
+          <div class="chart-label"><b>N3</b>R$ 6,0k</div>
+          <div class="chart-label"><b>N4</b>R$ 7,5k</div>
+          <div class="chart-label"><b>N5</b>R$ 11,1k</div>
+          <div class="chart-label"><b>N6</b>R$ 17,0k</div>
+          <div class="chart-label"><b>N7</b>R$ 20,3k</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =============== CLOSER PLENO =============== -->
+    <div class="sen-content" id="sen-pleno">
+
+      <div class="placeholder-banner">
+        ⚠️ <b>Valores a validar:</b> tabela do Closer Pleno usa proporção escalada (~1.6× do Júnior). Confirmar Fixo, % e Bônus reais com Matheus.
+      </div>
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item">
+            <label>Ticket Médio</label>
+            <input type="text" class="premissa-input" value="R$ 25.000">
+          </div>
+          <div class="premissa-item">
+            <label>Fixo Mensal</label>
+            <input type="text" class="premissa-input" value="R$ 4.000">
+          </div>
+          <div class="premissa-item">
+            <label>Número de Níveis</label>
+            <input type="text" class="premissa-input" value="7">
+          </div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · Closer Pleno (placeholder)</div>
+          <div class="niveis-meta">Estrutura igual ao Júnior · valores proporcionais</div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr><th>Nível</th><th>Faturamento</th><th>Nº Vendas</th><th>% Comissão</th><th>$$ Comissão</th><th>Fixo</th><th>Bônus</th><th>F+C+B</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>R$ 200.000</td><td>8</td><td><span class="tier-badge tier-1">0,7%</span></td><td>R$ 1.400</td><td>R$ 4.000</td><td>R$ 0</td><td class="col-fcb">R$ 5.400</td></tr>
+              <tr><td>Nível 2</td><td>R$ 240.000</td><td>10</td><td><span class="tier-badge tier-1">0,7%</span></td><td>R$ 1.680</td><td>R$ 4.000</td><td>R$ 1.000</td><td class="col-fcb">R$ 6.680</td></tr>
+              <tr><td>Nível 3</td><td>R$ 300.000</td><td>12</td><td><span class="tier-badge tier-2">0,9%</span></td><td>R$ 2.700</td><td>R$ 4.000</td><td>R$ 3.000</td><td class="col-fcb">R$ 9.700</td></tr>
+              <tr><td>Nível 4</td><td>R$ 380.000</td><td>15</td><td><span class="tier-badge tier-2">0,9%</span></td><td>R$ 3.420</td><td>R$ 4.000</td><td>R$ 4.500</td><td class="col-fcb">R$ 11.920</td></tr>
+              <tr><td>Nível 5</td><td>R$ 480.000</td><td>19</td><td><span class="tier-badge tier-3">1,2%</span></td><td>R$ 5.760</td><td>R$ 4.000</td><td>R$ 7.500</td><td class="col-fcb">R$ 17.260</td></tr>
+              <tr><td>Nível 6</td><td>R$ 650.000</td><td>26</td><td><span class="tier-badge tier-4">1,7%</span></td><td>R$ 11.050</td><td>R$ 4.000</td><td>R$ 10.500</td><td class="col-fcb">R$ 25.550</td></tr>
+              <tr><td>Nível 7</td><td>R$ 850.000</td><td>34</td><td><span class="tier-badge tier-4">1,7%</span></td><td>R$ 14.450</td><td>R$ 4.000</td><td>R$ 12.000</td><td class="col-fcb">R$ 30.450</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =============== CLOSER SÊNIOR =============== -->
+    <div class="sen-content" id="sen-senior">
+
+      <div class="placeholder-banner">
+        ⚠️ <b>Valores a validar:</b> tabela do Closer Sênior usa proporção escalada (~2.5× do Júnior). Confirmar Fixo, % e Bônus reais com Matheus.
+      </div>
+
+      <div class="premissas-card">
+        <div class="premissas-title">⚙️ Premissas</div>
+        <div class="premissas-grid">
+          <div class="premissa-item">
+            <label>Ticket Médio</label>
+            <input type="text" class="premissa-input" value="R$ 25.000">
+          </div>
+          <div class="premissa-item">
+            <label>Fixo Mensal</label>
+            <input type="text" class="premissa-input" value="R$ 6.500">
+          </div>
+          <div class="premissa-item">
+            <label>Número de Níveis</label>
+            <input type="text" class="premissa-input" value="7">
+          </div>
+        </div>
+      </div>
+
+      <div class="niveis-card">
+        <div class="niveis-header">
+          <div class="niveis-title">📊 Tabela de Níveis · Closer Sênior (placeholder)</div>
+          <div class="niveis-meta">Estrutura igual ao Júnior · valores proporcionais</div>
+        </div>
+        <div class="niveis-table-wrapper">
+          <table class="niveis-table">
+            <thead>
+              <tr><th>Nível</th><th>Faturamento</th><th>Nº Vendas</th><th>% Comissão</th><th>$$ Comissão</th><th>Fixo</th><th>Bônus</th><th>F+C+B</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nível 1</td><td>R$ 280.000</td><td>11</td><td><span class="tier-badge tier-1">1,0%</span></td><td>R$ 2.800</td><td>R$ 6.500</td><td>R$ 0</td><td class="col-fcb">R$ 9.300</td></tr>
+              <tr><td>Nível 2</td><td>R$ 340.000</td><td>14</td><td><span class="tier-badge tier-1">1,0%</span></td><td>R$ 3.400</td><td>R$ 6.500</td><td>R$ 1.500</td><td class="col-fcb">R$ 11.400</td></tr>
+              <tr><td>Nível 3</td><td>R$ 420.000</td><td>17</td><td><span class="tier-badge tier-2">1,3%</span></td><td>R$ 5.460</td><td>R$ 6.500</td><td>R$ 4.000</td><td class="col-fcb">R$ 15.960</td></tr>
+              <tr><td>Nível 4</td><td>R$ 540.000</td><td>22</td><td><span class="tier-badge tier-2">1,3%</span></td><td>R$ 7.020</td><td>R$ 6.500</td><td>R$ 6.000</td><td class="col-fcb">R$ 19.520</td></tr>
+              <tr><td>Nível 5</td><td>R$ 700.000</td><td>28</td><td><span class="tier-badge tier-3">1,6%</span></td><td>R$ 11.200</td><td>R$ 6.500</td><td>R$ 10.000</td><td class="col-fcb">R$ 27.700</td></tr>
+              <tr><td>Nível 6</td><td>R$ 950.000</td><td>38</td><td><span class="tier-badge tier-4">2,2%</span></td><td>R$ 20.900</td><td>R$ 6.500</td><td>R$ 14.000</td><td class="col-fcb">R$ 41.400</td></tr>
+              <tr><td>Nível 7</td><td>R$ 1.200.000</td><td>48</td><td><span class="tier-badge tier-4">2,2%</span></td><td>R$ 26.400</td><td>R$ 6.500</td><td>R$ 16.000</td><td class="col-fcb">R$ 48.900</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ANTI-PADRÕES -->
+    <div class="anti-card">
+      <div class="anti-title">🚫 Anti-padrões · Closer</div>
+      <div class="anti-list">
+        <div class="anti-item"><span class="anti-num">1.</span><div><b>Dar % alto em produto caro com baixa demanda</b> — vendedor ganha muito com pouco esforço, perde fome.</div></div>
+        <div class="anti-item"><span class="anti-num">2.</span><div><b>Comissão linear</b> (mesma % em todos os patamares) — não incentiva escala. Closer que dobra a performance precisa ganhar <b>mais que o dobro</b>.</div></div>
+        <div class="anti-item"><span class="anti-num">3.</span><div><b>Bônus sobre Faturamento bruto sem clawback</b> — se cliente cancela, vendedor leva dinheiro de venda que não virou cash.</div></div>
+        <div class="anti-item"><span class="anti-num">4.</span><div><b>Fixo abaixo do mercado</b> — Closer bom não aceita; você atrai só quem está sem alternativa.</div></div>
+        <div class="anti-item"><span class="anti-num">5.</span><div><b>Comissão sem cap</b> — se uma venda for muito grande pra média, vendedor ganha algo desproporcional.</div></div>
+      </div>
+    </div>
+
+    <!-- INTEGRAÇÃO COC -->
+    <div class="integ-card">
+      <span class="integ-icon">🔗</span>
+      <div class="integ-body">
+        <b>Integração com COC:</b> os valores de comissão pagos ao Closer alimentam automaticamente o <a href="coc.html">Custo Variável do COC</a>. O Fixo entra no Custo Fixo; Comissão + Bônus entram no Custo Variável.
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// Bar chart Closer Júnior
+const dadosJunior = [
+  { lvl: 1, fcb: 3300 }, { lvl: 2, fcb: 4000 }, { lvl: 3, fcb: 6040 },
+  { lvl: 4, fcb: 7460 }, { lvl: 5, fcb: 11100 }, { lvl: 6, fcb: 17000 }, { lvl: 7, fcb: 20250 }
+];
+const maxFcb = Math.max(...dadosJunior.map(d => d.fcb));
+const chartArea = document.getElementById('chart-jr');
+chartArea.innerHTML = dadosJunior.map(d => {
+  const altura = (d.fcb / maxFcb) * 180;
+  return `<div class="chart-bar">
+    <div class="bar-value">R$${(d.fcb/1000).toFixed(1)}k</div>
+    <div class="bar-fill" style="height:${altura}px;" title="Nível ${d.lvl}: R$ ${d.fcb.toLocaleString('pt-BR')}"></div>
+  </div>`;
+}).join('');
+
+// Tabs senioridade
+document.querySelectorAll('.sen-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const sen = btn.dataset.sen;
+    document.querySelectorAll('.sen-tab').forEach(b => b.classList.toggle('active', b.dataset.sen === sen));
+    document.querySelectorAll('.sen-content').forEach(c => c.classList.toggle('active', c.id === `sen-${sen}`));
+  });
+});
+
+// Sidebar mount
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('[data-page="comissao-closer"]');
+    if (active) active.classList.add('active');
+    const parent = document.querySelector('[data-page="financeiro-parent"]');
+    if (parent) parent.classList.add('active');
+  });
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>
