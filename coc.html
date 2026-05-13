@@ -1,0 +1,2964 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COC · Custo Operacional Comercial · CIC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* ===== INTRO ===== */
+    .coc-intro { padding: 18px 22px; border-radius: 14px; margin-bottom: 22px; background: linear-gradient(135deg, rgba(8,53,144,0.08), rgba(197,138,48,0.06)); border: 1px solid rgba(197,138,48,0.25); }
+    .cic.dark .coc-intro { background: linear-gradient(135deg, rgba(8,53,144,0.18), rgba(197,138,48,0.1)); }
+    .coc-intro-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 6px; }
+    .coc-intro-text { font-size: 12.5px; line-height: 1.6; opacity: 0.85; }
+    .coc-intro-text b { color: #c58a30; font-weight: 600; }
+
+    /* ===== TOOLBAR (seletor mês + botões) ===== */
+    .coc-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+    .mes-selector { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 10px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; color: inherit; border: 1px solid; transition: all 0.15s; }
+    .cic.light .mes-selector { border-color: rgba(12,38,59,0.15); }
+    .cic.dark .mes-selector { border-color: rgba(226,227,222,0.2); }
+    .mes-selector:hover { border-color: #c58a30; background: rgba(197,138,48,0.08); }
+    .mes-selector b { color: #c58a30; font-weight: 700; }
+    .toolbar-acoes { display: flex; gap: 8px; }
+    .btn-acao { padding: 8px 14px; border-radius: 8px; font-family: inherit; font-size: 11.5px; font-weight: 500; cursor: pointer; background: transparent; color: inherit; border: 1px solid; transition: all 0.15s; }
+    .cic.light .btn-acao { border-color: rgba(12,38,59,0.15); }
+    .cic.dark .btn-acao { border-color: rgba(226,227,222,0.2); }
+    .btn-acao:hover { background: rgba(197,138,48,0.1); border-color: #c58a30; }
+    .btn-acao.primary { background: #c58a30; color: #FFF; border-color: #c58a30; }
+    .btn-acao.primary:hover { background: #b07728; }
+
+    /* ===== KPI CARDS ===== */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+    @media (max-width: 900px) { .kpi-grid { grid-template-columns: 1fr; } }
+    .kpi-card { padding: 22px 24px; border-radius: 14px; position: relative; overflow: hidden; }
+    .cic.light .kpi-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .kpi-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .kpi-card.destaque { border: 2px solid #c58a30; background: linear-gradient(135deg, rgba(197,138,48,0.08), rgba(197,138,48,0.03)); }
+    .cic.dark .kpi-card.destaque { background: linear-gradient(135deg, rgba(197,138,48,0.18), rgba(197,138,48,0.08)); }
+    .kpi-label { font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; opacity: 0.6; margin-bottom: 6px; }
+    .kpi-valor { font-size: 28px; font-weight: 700; letter-spacing: -0.8px; line-height: 1; margin-bottom: 6px; }
+    .kpi-valor .unit { font-size: 14px; font-weight: 500; opacity: 0.7; }
+    .kpi-meta { font-size: 11px; opacity: 0.65; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .kpi-trend { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 3px; }
+    .kpi-trend.up { background: rgba(0,160,80,0.13); color: #00a050; }
+    .kpi-trend.down { background: rgba(217,32,32,0.13); color: #d92020; }
+    .kpi-trend.neutral { background: rgba(12,38,59,0.08); opacity: 0.7; }
+    .cic.dark .kpi-trend.neutral { background: rgba(226,227,222,0.1); }
+
+    /* ===== TRACKER DE CENÁRIO ===== */
+    .tracker-card { padding: 20px 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .tracker-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .tracker-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .tracker-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; }
+    .tracker-title { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; }
+    .tracker-sub { font-size: 11px; opacity: 0.6; margin-top: 3px; }
+    .tracker-atual { font-size: 14px; font-weight: 600; }
+    .tracker-atual b { color: #c58a30; font-size: 18px; }
+    .tracker-bar-wrapper { margin-bottom: 6px; padding: 4px 0 28px; position: relative; }
+    .tracker-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; height: 28px; border-radius: 8px; overflow: hidden; }
+    .tracker-zone { display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 700; color: #FFF; letter-spacing: 0.6px; text-transform: uppercase; }
+    .tracker-zone.z1 { background: #d92020; }
+    .tracker-zone.z2 { background: #e87b1a; }
+    .tracker-zone.z3 { background: #c58a30; }
+    .tracker-zone.z4 { background: #4d8d4f; }
+    .tracker-zone.z5 { background: #00a050; }
+    .tracker-marker { position: absolute; top: -4px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+    .tracker-marker-pin { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 10px solid #0c263b; }
+    .cic.dark .tracker-marker-pin { border-top-color: #FFF; }
+    .tracker-marker-label { position: absolute; bottom: -42px; font-size: 10px; font-weight: 700; color: #c58a30; white-space: nowrap; transform: translateX(-50%); left: 50%; }
+    .tracker-zones-labels { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; font-size: 9.5px; opacity: 0.6; margin-top: 4px; font-weight: 600; }
+    .tracker-zones-labels > div { text-align: center; letter-spacing: 0.3px; }
+
+    /* ===== CARDS CUSTO FIXO E VARIÁVEL ===== */
+    .custo-card { border-radius: 14px; margin-bottom: 14px; overflow: hidden; }
+    .cic.light .custo-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .custo-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .custo-header { padding: 18px 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; user-select: none; transition: background 0.15s; }
+    .custo-header:hover { background: rgba(197,138,48,0.04); }
+    .custo-header-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+    .custo-header-icon { font-size: 22px; flex-shrink: 0; }
+    .custo-header-info { flex: 1; min-width: 0; }
+    .custo-header-titulo { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #c58a30; }
+    .custo-header-sub { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+    .custo-header-valor { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .custo-header-rs { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; }
+    .custo-header-pcts { display: flex; flex-direction: column; align-items: flex-end; font-size: 10.5px; }
+    .custo-header-pct { opacity: 0.7; line-height: 1.3; }
+    .custo-header-pct b { color: #c58a30; font-weight: 600; }
+    .custo-arrow { font-size: 16px; opacity: 0.5; transition: transform 0.2s; flex-shrink: 0; }
+    .custo-card.aberto .custo-arrow { transform: rotate(180deg); }
+    .custo-body { display: none; padding: 0 22px 22px; }
+    .custo-card.aberto .custo-body { display: block; }
+
+    .custo-grupo { padding-top: 16px; border-top: 1px solid; margin-top: 4px; }
+    .cic.light .custo-grupo { border-color: rgba(12,38,59,0.06); }
+    .cic.dark .custo-grupo { border-color: rgba(226,227,222,0.08); }
+    .custo-grupo:first-child { padding-top: 0; border-top: 0; }
+    .custo-grupo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .custo-grupo-titulo { font-size: 11px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; opacity: 0.75; }
+    .custo-grupo-total { font-size: 13px; font-weight: 700; color: #c58a30; }
+
+    .item-linha { display: grid; grid-template-columns: 1fr auto auto auto; gap: 16px; padding: 8px 12px; border-radius: 6px; align-items: center; font-size: 12.5px; }
+    .cic.light .item-linha:hover { background: rgba(12,38,59,0.03); }
+    .cic.dark .item-linha:hover { background: rgba(226,227,222,0.04); }
+    .item-nome { font-weight: 500; }
+    .item-valor { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; min-width: 100px; }
+    .item-pct { font-size: 10.5px; opacity: 0.65; font-variant-numeric: tabular-nums; text-align: right; min-width: 50px; }
+    .item-pct b { color: #c58a30; font-weight: 600; }
+
+    /* ===== FOOTER COC ===== */
+    .coc-footer {
+      padding: 20px 24px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #c58a30, #d49a40);
+      color: #FFF;
+    }
+    .footer-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .footer-row.total { padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.25); margin-bottom: 14px; }
+    .footer-label { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; opacity: 0.9; }
+    .footer-valor { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .footer-coc { font-size: 30px; font-weight: 700; letter-spacing: -0.8px; }
+    .footer-coc small { font-size: 14px; font-weight: 500; opacity: 0.85; margin-left: 10px; }
+
+    /* ===== INSIGHTS ===== */
+    .insights-card { padding: 22px 24px; border-radius: 14px; margin-bottom: 18px; }
+    .cic.light .insights-card { background: #FFF; border: 1px solid rgba(12,38,59,0.07); }
+    .cic.dark .insights-card { background: rgba(226,227,222,0.06); border: 1px solid rgba(226,227,222,0.08); }
+    .insights-header { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: #c58a30; margin-bottom: 14px; }
+    .insights-list { display: flex; flex-direction: column; gap: 10px; }
+    .insight-item { padding: 12px 16px; border-radius: 10px; display: flex; gap: 12px; align-items: flex-start; font-size: 12.5px; line-height: 1.5; }
+    .cic.light .insight-item { background: rgba(12,38,59,0.03); }
+    .cic.dark .insight-item { background: rgba(226,227,222,0.04); }
+    .insight-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+    .insight-text b { color: #c58a30; font-weight: 600; }
+
+    /* ===== HISTÓRICO DRAWER ===== */
+    .historico-drawer {
+      position: fixed; top: 0; right: -480px; width: 460px; max-width: 95vw; height: 100vh;
+      background: #FFF; box-shadow: -8px 0 32px rgba(0,0,0,0.18);
+      transition: right 0.3s ease; z-index: 100; overflow-y: auto;
+    }
+    .cic.dark .historico-drawer { background: #0c263b; }
+    .historico-drawer.aberto { right: 0; }
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 99; }
+    .drawer-overlay.aberto { opacity: 1; pointer-events: auto; }
+    .drawer-header { padding: 20px 24px; border-bottom: 1px solid; display: flex; justify-content: space-between; align-items: center; }
+    .cic.light .drawer-header { border-color: rgba(12,38,59,0.08); }
+    .cic.dark .drawer-header { border-color: rgba(226,227,222,0.1); }
+    .drawer-title { font-size: 14px; font-weight: 700; }
+    .drawer-close { background: transparent; border: 0; cursor: pointer; font-size: 20px; opacity: 0.6; color: inherit; }
+    .drawer-content { padding: 18px 24px; }
+    .hist-tabela { width: 100%; border-collapse: collapse; }
+    .hist-tabela th, .hist-tabela td { padding: 8px 6px; text-align: left; font-size: 11.5px; border-bottom: 1px solid; }
+    .cic.light .hist-tabela th, .cic.light .hist-tabela td { border-color: rgba(12,38,59,0.05); }
+    .cic.dark .hist-tabela th, .cic.dark .hist-tabela td { border-color: rgba(226,227,222,0.07); }
+    .hist-tabela th { font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; opacity: 0.6; padding-bottom: 10px; }
+    .hist-tabela td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .hist-tabela tr.atual { background: rgba(197,138,48,0.1); cursor: pointer; }
+    .hist-tabela tr:hover { background: rgba(197,138,48,0.06); cursor: pointer; }
+    .coc-cell { font-weight: 700; }
+    .coc-cell.bom { color: #00a050; }
+    .coc-cell.medio { color: #c58a30; }
+    .coc-cell.ruim { color: #d92020; }
+
+    /* ===== Dropdown mês ===== */
+    .mes-dropdown {
+      position: absolute; top: 100%; left: 0; margin-top: 4px;
+      max-height: 380px; overflow-y: auto;
+      background: #FFF; border: 1px solid rgba(12,38,59,0.1);
+      border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 200px; z-index: 50; display: none;
+    }
+    .cic.dark .mes-dropdown { background: #0c263b; border-color: rgba(226,227,222,0.15); }
+    .mes-dropdown.aberto { display: block; }
+    .mes-dropdown-item { padding: 8px 14px; font-size: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .mes-dropdown-item:hover { background: rgba(197,138,48,0.1); }
+    .mes-dropdown-item.atual { background: rgba(197,138,48,0.15); font-weight: 600; color: #c58a30; }
+    .mes-dropdown-item small { opacity: 0.55; font-size: 10.5px; }
+
+    .mes-selector-wrapper { position: relative; }
+  </style>
+</head>
+<body>
+<div class="cic light" id="cic">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <div class="main-toolbar">
+      <div>
+        <div class="crumb">Financeiro · COC</div>
+        <div class="h-title">COC · Custo Operacional Comercial</div>
+        <div class="h-meta">Visão financeira da operação comercial · 21 meses mapeados</div>
+      </div>
+      <div class="toggle">
+        <button class="active" data-theme="light">Claro</button>
+        <button data-theme="dark">Escuro</button>
+      </div>
+    </div>
+
+    <div class="coc-intro">
+      <div class="coc-intro-title">▌ O que é COC</div>
+      <div class="coc-intro-text"><b>COC (Custo Operacional Comercial)</b> mede quanto custa rodar a operação comercial em relação ao que ela gera. É a soma de <b>Custo Fixo</b> (salários do time + ferramentas) + <b>Custo Variável</b> (comissões) sobre o <b>Cash Collected</b>. <b>Não inclui</b> fees de consultoria — só o custo estrutural da empresa.</div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="coc-toolbar">
+      <div class="mes-selector-wrapper">
+        <button class="mes-selector" onclick="toggleDropdown(event)">
+          📅 Mês: <b id="mes-atual-label">—</b>
+          <span style="opacity:0.5;">▾</span>
+        </button>
+        <div class="mes-dropdown" id="mes-dropdown"></div>
+      </div>
+      <div class="toolbar-acoes">
+        <button class="btn-acao" onclick="abrirHistorico()">📊 Ver histórico (21 meses)</button>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+    <!-- TRACKER DE CENÁRIO -->
+    <div class="tracker-card">
+      <div class="tracker-header">
+        <div>
+          <div class="tracker-title">▌ Tracker de cenário</div>
+          <div class="tracker-sub">Onde o COC% sobre Cash Collected está posicionado</div>
+        </div>
+        <div class="tracker-atual">COC atual: <b id="tracker-coc-valor">—</b></div>
+      </div>
+      <div class="tracker-bar-wrapper">
+        <div class="tracker-bar">
+          <div class="tracker-zone z5">TOP</div>
+          <div class="tracker-zone z4">IDEAL</div>
+          <div class="tracker-zone z3">EQUILÍBRIO</div>
+          <div class="tracker-zone z2">ARRISCADO</div>
+          <div class="tracker-zone z1">CRÍTICO</div>
+        </div>
+        <div class="tracker-marker" id="tracker-marker">
+          <div class="tracker-marker-pin"></div>
+          <div class="tracker-marker-label" id="tracker-marker-label">8,5%</div>
+        </div>
+      </div>
+      <div class="tracker-zones-labels">
+        <div>0-5%</div>
+        <div>5-10%</div>
+        <div>10-15%</div>
+        <div>15-25%</div>
+        <div>25%+</div>
+      </div>
+    </div>
+
+    <!-- CUSTO FIXO -->
+    <div class="custo-card aberto" id="card-fixo">
+      <div class="custo-header" onclick="toggleCard('card-fixo')">
+        <div class="custo-header-left">
+          <span class="custo-header-icon">📊</span>
+          <div class="custo-header-info">
+            <div class="custo-header-titulo">Custo Fixo</div>
+            <div class="custo-header-sub">Salários + Ferramentas (não variam com vendas)</div>
+          </div>
+        </div>
+        <div class="custo-header-valor">
+          <div class="custo-header-rs" id="fixo-total-rs">—</div>
+          <div class="custo-header-pcts">
+            <div class="custo-header-pct"><b id="fixo-pct-cc">—</b> CC</div>
+            <div class="custo-header-pct"><b id="fixo-pct-fatu">—</b> Fatu</div>
+          </div>
+          <span class="custo-arrow">▾</span>
+        </div>
+      </div>
+      <div class="custo-body">
+        <div class="custo-grupo">
+          <div class="custo-grupo-header">
+            <div class="custo-grupo-titulo">👥 Time Comercial</div>
+            <div class="custo-grupo-total" id="time-fixo-total">—</div>
+          </div>
+          <div id="time-fixo-itens"></div>
+        </div>
+        <div class="custo-grupo">
+          <div class="custo-grupo-header">
+            <div class="custo-grupo-titulo">🔧 Ferramentas</div>
+            <div class="custo-grupo-total" id="fer-total">—</div>
+          </div>
+          <div id="fer-itens"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTO VARIÁVEL -->
+    <div class="custo-card aberto" id="card-variavel">
+      <div class="custo-header" onclick="toggleCard('card-variavel')">
+        <div class="custo-header-left">
+          <span class="custo-header-icon">📈</span>
+          <div class="custo-header-info">
+            <div class="custo-header-titulo">Custo Variável</div>
+            <div class="custo-header-sub">Comissões pagas (variam com vendas realizadas)</div>
+          </div>
+        </div>
+        <div class="custo-header-valor">
+          <div class="custo-header-rs" id="var-total-rs">—</div>
+          <div class="custo-header-pcts">
+            <div class="custo-header-pct"><b id="var-pct-cc">—</b> CC</div>
+            <div class="custo-header-pct"><b id="var-pct-fatu">—</b> Fatu</div>
+          </div>
+          <span class="custo-arrow">▾</span>
+        </div>
+      </div>
+      <div class="custo-body">
+        <div class="custo-grupo">
+          <div class="custo-grupo-header">
+            <div class="custo-grupo-titulo">👥 Time Comercial Variável</div>
+            <div class="custo-grupo-total" id="time-var-total">—</div>
+          </div>
+          <div id="time-var-itens"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER COC -->
+    <div class="coc-footer">
+      <div class="footer-row total">
+        <div class="footer-label">Total Fixo + Variável</div>
+        <div class="footer-valor" id="footer-total">—</div>
+      </div>
+      <div class="footer-row">
+        <div class="footer-label">COC =</div>
+        <div class="footer-coc">
+          <span id="footer-coc-cc">—</span>
+          <small>de Cash · <span id="footer-coc-fatu">—</span> de Faturamento</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="insights-card">
+      <div class="insights-header">💡 Insights automáticos</div>
+      <div class="insights-list" id="insights-list"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- HISTÓRICO DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="fecharHistorico()"></div>
+<aside class="historico-drawer" id="historico-drawer">
+  <div class="drawer-header">
+    <div class="drawer-title">📊 Histórico · 21 meses</div>
+    <button class="drawer-close" onclick="fecharHistorico()">✕</button>
+  </div>
+  <div class="drawer-content">
+    <table class="hist-tabela" id="hist-tabela"></table>
+  </div>
+</aside>
+
+<script>
+const COC_DATA = [
+  {
+    "key": "ago-2024",
+    "label": "Ago/2024",
+    "faturamento": 680121.0,
+    "cash_collected": 505588.0,
+    "pct_cash_fatu": 0.7433794869,
+    "custo_fixo": 14317,
+    "custo_fixo_pct_cc": 0.02831752336,
+    "custo_fixo_pct_fatu": 0.02105066598,
+    "time_fixo": {
+      "total": 12500,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 8000.0,
+          "pct_cc": 0.01582316036,
+          "pct_fatu": 0.01176261283
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500,
+          "pct_cc": 0.004944737612,
+          "pct_fatu": 0.003675816509
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.00395579009,
+          "pct_fatu": 0.002940653207
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.00791158018,
+          "pct_fatu": 0.005881306415
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 1817,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 900.0,
+          "pct_cc": 0.00178010554,
+          "pct_fatu": 0.001323293943
+        },
+        {
+          "nome": "Voiper",
+          "valor": 450.0,
+          "pct_cc": 0.0008900527702,
+          "pct_fatu": 0.0006616469716
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 467,
+          "pct_cc": 0.000923676986,
+          "pct_fatu": 0.0006866425239
+        }
+      ]
+    },
+    "custo_variavel": 15792.55,
+    "cv_pct_cc": 0.03123600639,
+    "cv_pct_fatu": 0.0232202064,
+    "time_variavel": {
+      "total": 15792.55,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 4148.11,
+          "pct_cc": 0.008204526215,
+          "pct_fatu": 0.006099076488
+        },
+        {
+          "nome": "Closer",
+          "valor": 12892.55,
+          "pct_cc": 0.02550011076,
+          "pct_fatu": 0.01895625925
+        },
+        {
+          "nome": "SDR",
+          "valor": 2900.0,
+          "pct_cc": 0.00573589563,
+          "pct_fatu": 0.004263947151
+        }
+      ]
+    },
+    "total_fv": 30109.55,
+    "coc_cc": 0.05955352975,
+    "coc_fatu": 0.04427087239,
+    "ordem": 1
+  },
+  {
+    "key": "set-2024",
+    "label": "Set/2024",
+    "faturamento": 507500.0,
+    "cash_collected": 458002.0,
+    "pct_cash_fatu": 0.9024669951,
+    "custo_fixo": 17240.15,
+    "custo_fixo_pct_cc": 0.03764208453,
+    "custo_fixo_pct_fatu": 0.03397073892,
+    "time_fixo": {
+      "total": 15083.15,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 8000.0,
+          "pct_cc": 0.01746717263,
+          "pct_fatu": 0.0157635468
+        },
+        {
+          "nome": "Closer",
+          "valor": 3749.95,
+          "pct_cc": 0.008187628002,
+          "pct_fatu": 0.007389064039
+        },
+        {
+          "nome": "SDR",
+          "valor": 3333.2,
+          "pct_cc": 0.007277697477,
+          "pct_fatu": 0.006567881773
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.008733586316,
+          "pct_fatu": 0.007881773399
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.002089510526,
+          "pct_fatu": 0.001885714286
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.00109169829,
+          "pct_fatu": 0.0009852216749
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.001528377605,
+          "pct_fatu": 0.001379310345
+        }
+      ]
+    },
+    "custo_variavel": 10395.02,
+    "cv_pct_cc": 0.02269645111,
+    "cv_pct_fatu": 0.02048279803,
+    "time_variavel": {
+      "total": 10395.02,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 4580.02,
+          "pct_cc": 0.01,
+          "pct_fatu": 0.009024669951
+        },
+        {
+          "nome": "Closer",
+          "valor": 9110.02,
+          "pct_cc": 0.0198907865,
+          "pct_fatu": 0.01795077833
+        },
+        {
+          "nome": "SDR",
+          "valor": 1285.0,
+          "pct_cc": 0.002805664604,
+          "pct_fatu": 0.002532019704
+        }
+      ]
+    },
+    "total_fv": 27635.17,
+    "coc_cc": 0.06033853564,
+    "coc_fatu": 0.05445353695,
+    "ordem": 2
+  },
+  {
+    "key": "out-2024",
+    "label": "Out/2024",
+    "faturamento": 390000.0,
+    "cash_collected": 351753.88,
+    "pct_cash_fatu": 0.9019330256,
+    "custo_fixo": 18357.06,
+    "custo_fixo_pct_cc": 0.05218722818,
+    "custo_fixo_pct_fatu": 0.04706938462,
+    "time_fixo": {
+      "total": 16200.06,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 8000.0,
+          "pct_cc": 0.02274317486,
+          "pct_fatu": 0.02051282051
+        },
+        {
+          "nome": "Closer",
+          "valor": 5000.0,
+          "pct_cc": 0.01421448429,
+          "pct_fatu": 0.01282051282
+        },
+        {
+          "nome": "SDR",
+          "valor": 3200.06,
+          "pct_cc": 0.009097440517,
+          "pct_fatu": 0.008205282051
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.01137158743,
+          "pct_fatu": 0.01025641026
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.002720652292,
+          "pct_fatu": 0.002453846154
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.001421448429,
+          "pct_fatu": 0.001282051282
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.0019900278,
+          "pct_fatu": 0.001794871795
+        }
+      ]
+    },
+    "custo_variavel": 4045.27,
+    "cv_pct_cc": 0.01150028537,
+    "cv_pct_fatu": 0.01037248718,
+    "time_variavel": {
+      "total": 4045.27,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 3517.54,
+          "pct_cc": 0.01000000341,
+          "pct_fatu": 0.009019333333
+        },
+        {
+          "nome": "Closer",
+          "valor": 2495.27,
+          "pct_cc": 0.007093795241,
+          "pct_fatu": 0.006398128205
+        },
+        {
+          "nome": "SDR",
+          "valor": 1550.0,
+          "pct_cc": 0.004406490129,
+          "pct_fatu": 0.003974358974
+        }
+      ]
+    },
+    "total_fv": 22402.33,
+    "coc_cc": 0.06368751355,
+    "coc_fatu": 0.05744187179,
+    "ordem": 3
+  },
+  {
+    "key": "nov-2024",
+    "label": "Nov/2024",
+    "faturamento": 580000.0,
+    "cash_collected": 420783.0,
+    "pct_cash_fatu": 0.725487931,
+    "custo_fixo": 19157,
+    "custo_fixo_pct_cc": 0.04552702937,
+    "custo_fixo_pct_fatu": 0.03302931034,
+    "time_fixo": {
+      "total": 17000,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 8000.0,
+          "pct_cc": 0.01901217492,
+          "pct_fatu": 0.01379310345
+        },
+        {
+          "nome": "Closer",
+          "valor": 5000.0,
+          "pct_cc": 0.01188260933,
+          "pct_fatu": 0.008620689655
+        },
+        {
+          "nome": "SDR",
+          "valor": 4000.0,
+          "pct_cc": 0.009506087461,
+          "pct_fatu": 0.006896551724
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.009506087461,
+          "pct_fatu": 0.006896551724
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.002274331425,
+          "pct_fatu": 0.00165
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.001188260933,
+          "pct_fatu": 0.0008620689655
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.001663565306,
+          "pct_fatu": 0.001206896552
+        }
+      ]
+    },
+    "custo_variavel": 11745.23,
+    "cv_pct_cc": 0.02791279591,
+    "cv_pct_fatu": 0.02025039655,
+    "time_variavel": {
+      "total": 11745.23,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 4207.83,
+          "pct_cc": 0.01,
+          "pct_fatu": 0.00725487931
+        },
+        {
+          "nome": "Closer",
+          "valor": 8675.23,
+          "pct_cc": 0.02061687378,
+          "pct_fatu": 0.0149572931
+        },
+        {
+          "nome": "SDR",
+          "valor": 3070.0,
+          "pct_cc": 0.007295922126,
+          "pct_fatu": 0.005293103448
+        }
+      ]
+    },
+    "total_fv": 30902.23,
+    "coc_cc": 0.07343982528,
+    "coc_fatu": 0.0532797069,
+    "ordem": 4
+  },
+  {
+    "key": "dez-2024",
+    "label": "Dez/2024",
+    "faturamento": 150000.0,
+    "cash_collected": 34749.0,
+    "pct_cash_fatu": 0.23166,
+    "custo_fixo": 19157,
+    "custo_fixo_pct_cc": 0.5512964402,
+    "custo_fixo_pct_fatu": 0.1277133333,
+    "time_fixo": {
+      "total": 17000,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 8000.0,
+          "pct_cc": 0.2302224524,
+          "pct_fatu": 0.05333333333
+        },
+        {
+          "nome": "Closer",
+          "valor": 5000.0,
+          "pct_cc": 0.1438890328,
+          "pct_fatu": 0.03333333333
+        },
+        {
+          "nome": "SDR",
+          "valor": 4000.0,
+          "pct_cc": 0.1151112262,
+          "pct_fatu": 0.02666666667
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.1151112262,
+          "pct_fatu": 0.02666666667
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.02754036087,
+          "pct_fatu": 0.00638
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.01438890328,
+          "pct_fatu": 0.003333333333
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.02014446459,
+          "pct_fatu": 0.004666666667
+        }
+      ]
+    },
+    "custo_variavel": 904.25,
+    "cv_pct_cc": 0.02602233158,
+    "cv_pct_fatu": 0.006028333333,
+    "time_variavel": {
+      "total": 904.25,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 347.49,
+          "pct_cc": 0.01,
+          "pct_fatu": 0.0023166
+        },
+        {
+          "nome": "Closer",
+          "valor": 604.25,
+          "pct_cc": 0.01738898961,
+          "pct_fatu": 0.004028333333
+        },
+        {
+          "nome": "SDR",
+          "valor": 300.0,
+          "pct_cc": 0.008633341967,
+          "pct_fatu": 0.002
+        }
+      ]
+    },
+    "total_fv": 20061.25,
+    "coc_cc": 0.5773187718,
+    "coc_fatu": 0.1337416667,
+    "ordem": 5
+  },
+  {
+    "key": "jan-2025",
+    "label": "Jan/2025",
+    "faturamento": 506241.16,
+    "cash_collected": 332107.31,
+    "pct_cash_fatu": 0.6560258949,
+    "custo_fixo": 19157,
+    "custo_fixo_pct_cc": 0.05768316271,
+    "custo_fixo_pct_fatu": 0.03784164843,
+    "time_fixo": {
+      "total": 17000,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 8000.0,
+          "pct_cc": 0.02408859956,
+          "pct_fatu": 0.01580274508
+        },
+        {
+          "nome": "Closer",
+          "valor": 5000.0,
+          "pct_cc": 0.01505537472,
+          "pct_fatu": 0.009876715674
+        },
+        {
+          "nome": "SDR",
+          "valor": 4000.0,
+          "pct_cc": 0.01204429978,
+          "pct_fatu": 0.00790137254
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.01204429978,
+          "pct_fatu": 0.00790137254
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.002881598722,
+          "pct_fatu": 0.00189040338
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.001505537472,
+          "pct_fatu": 0.0009876715674
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.002107752461,
+          "pct_fatu": 0.001382740194
+        }
+      ]
+    },
+    "custo_variavel": 8995.18,
+    "cv_pct_cc": 0.02708516112,
+    "cv_pct_fatu": 0.01776856706,
+    "time_variavel": {
+      "total": 8995.18,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 3321.07,
+          "pct_cc": 0.009999990666,
+          "pct_fatu": 0.006560252825
+        },
+        {
+          "nome": "Closer",
+          "valor": 7975.18,
+          "pct_cc": 0.02401386468,
+          "pct_fatu": 0.01575371706
+        },
+        {
+          "nome": "SDR",
+          "valor": 1020.0,
+          "pct_cc": 0.003071296443,
+          "pct_fatu": 0.002014849998
+        }
+      ]
+    },
+    "total_fv": 28152.18,
+    "coc_cc": 0.08476832383,
+    "coc_fatu": 0.05561021549,
+    "ordem": 6
+  },
+  {
+    "key": "fev-2025",
+    "label": "Fev/2025",
+    "faturamento": 191000.0,
+    "cash_collected": 131333.12,
+    "pct_cash_fatu": 0.6876079581,
+    "custo_fixo": 19157,
+    "custo_fixo_pct_cc": 0.1458657192,
+    "custo_fixo_pct_fatu": 0.1002984293,
+    "time_fixo": {
+      "total": 17000,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 8000.0,
+          "pct_cc": 0.06091380453,
+          "pct_fatu": 0.04188481675
+        },
+        {
+          "nome": "Closer",
+          "valor": 5000.0,
+          "pct_cc": 0.03807112783,
+          "pct_fatu": 0.02617801047
+        },
+        {
+          "nome": "SDR",
+          "valor": 4000.0,
+          "pct_cc": 0.03045690227,
+          "pct_fatu": 0.02094240838
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.03045690227,
+          "pct_fatu": 0.02094240838
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.007286813867,
+          "pct_fatu": 0.005010471204
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.003807112783,
+          "pct_fatu": 0.002617801047
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.005329957896,
+          "pct_fatu": 0.003664921466
+        }
+      ]
+    },
+    "custo_variavel": 2156.67,
+    "cv_pct_cc": 0.01642137185,
+    "cv_pct_fatu": 0.01129146597,
+    "time_variavel": {
+      "total": 2156.67,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 1313.33,
+          "pct_cc": 0.009999990863,
+          "pct_fatu": 0.006876073298
+        },
+        {
+          "nome": "Closer",
+          "valor": 1156.67,
+          "pct_cc": 0.008807146286,
+          "pct_fatu": 0.006055863874
+        },
+        {
+          "nome": "SDR",
+          "valor": 1000.0,
+          "pct_cc": 0.007614225566,
+          "pct_fatu": 0.005235602094
+        }
+      ]
+    },
+    "total_fv": 21313.67,
+    "coc_cc": 0.162287091,
+    "coc_fatu": 0.1115898953,
+    "ordem": 7
+  },
+  {
+    "key": "mar-2025",
+    "label": "Mar/2025",
+    "faturamento": 363000.0,
+    "cash_collected": null,
+    "pct_cash_fatu": 0,
+    "custo_fixo": 21157,
+    "custo_fixo_pct_cc": null,
+    "custo_fixo_pct_fatu": 0.05828374656,
+    "time_fixo": {
+      "total": 19000,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 12000.0,
+          "pct_cc": null,
+          "pct_fatu": 0.03305785124
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": 0.006887052342
+        },
+        {
+          "nome": "SDR",
+          "valor": 4500.0,
+          "pct_cc": null,
+          "pct_fatu": 0.01239669421
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": null,
+          "pct_fatu": 0.01101928375
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": null,
+          "pct_fatu": 0.002636363636
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": null,
+          "pct_fatu": 0.001377410468
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": null,
+          "pct_fatu": 0.001928374656
+        }
+      ]
+    },
+    "custo_variavel": 9457.85,
+    "cv_pct_cc": null,
+    "cv_pct_fatu": 0.0260546832,
+    "time_variavel": {
+      "total": 9457.85,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 8164.99,
+          "pct_cc": null,
+          "pct_fatu": 0.0224930854
+        },
+        {
+          "nome": "Closer",
+          "valor": 7332.85,
+          "pct_cc": null,
+          "pct_fatu": 0.02020068871
+        },
+        {
+          "nome": "SDR",
+          "valor": 2125.0,
+          "pct_cc": null,
+          "pct_fatu": 0.00585399449
+        }
+      ]
+    },
+    "total_fv": 30614.85,
+    "coc_cc": null,
+    "coc_fatu": 0.08433842975,
+    "ordem": 8
+  },
+  {
+    "key": "abr-2025",
+    "label": "Abr/2025",
+    "faturamento": 363000.0,
+    "cash_collected": 233285.43,
+    "pct_cash_fatu": 0.6426595868,
+    "custo_fixo": 21157,
+    "custo_fixo_pct_cc": 0.0906914761,
+    "custo_fixo_pct_fatu": 0.05828374656,
+    "time_fixo": {
+      "total": 19000,
+      "cargos": [
+        {
+          "nome": "Head",
+          "valor": 12000.0,
+          "pct_cc": 0.05143913188,
+          "pct_fatu": 0.03305785124
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.01071648581,
+          "pct_fatu": 0.006887052342
+        },
+        {
+          "nome": "SDR",
+          "valor": 4500.0,
+          "pct_cc": 0.01928967446,
+          "pct_fatu": 0.01239669421
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.01714637729,
+          "pct_fatu": 0.01101928375
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.004102270768,
+          "pct_fatu": 0.002636363636
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.002143297162,
+          "pct_fatu": 0.001377410468
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.003000616026,
+          "pct_fatu": 0.001928374656
+        }
+      ]
+    },
+    "custo_variavel": 9457.85,
+    "cv_pct_cc": 0.04054196612,
+    "cv_pct_fatu": 0.0260546832,
+    "time_variavel": {
+      "total": 9457.85,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 8164.99,
+          "pct_cc": 0.03499999979,
+          "pct_fatu": 0.0224930854
+        },
+        {
+          "nome": "Closer",
+          "valor": 7332.85,
+          "pct_cc": 0.03143295319,
+          "pct_fatu": 0.02020068871
+        },
+        {
+          "nome": "SDR",
+          "valor": 2125.0,
+          "pct_cc": 0.009109012937,
+          "pct_fatu": 0.00585399449
+        }
+      ]
+    },
+    "total_fv": 30614.85,
+    "coc_cc": 0.1312334422,
+    "coc_fatu": 0.08433842975,
+    "ordem": 9
+  },
+  {
+    "key": "mai-2025",
+    "label": "Mai/2025",
+    "faturamento": 357000.0,
+    "cash_collected": 213183.0,
+    "pct_cash_fatu": 0.5971512605,
+    "custo_fixo": 10657,
+    "custo_fixo_pct_cc": 0.04998991477,
+    "custo_fixo_pct_fatu": 0.02985154062,
+    "time_fixo": {
+      "total": 8500,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 4000.0,
+          "pct_cc": 0.01876322221,
+          "pct_fatu": 0.01120448179
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.01172701388,
+          "pct_fatu": 0.00700280112
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.009381611104,
+          "pct_fatu": 0.005602240896
+        },
+        {
+          "nome": "Infra",
+          "valor": 0.0,
+          "pct_cc": 0,
+          "pct_fatu": 0
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.004489100913,
+          "pct_fatu": 0.002680672269
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.002345402776,
+          "pct_fatu": 0.001400560224
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.003283563886,
+          "pct_fatu": 0.001960784314
+        }
+      ]
+    },
+    "custo_variavel": 9306.83,
+    "cv_pct_cc": 0.04365652984,
+    "cv_pct_fatu": 0.02606955182,
+    "time_variavel": {
+      "total": 9306.83,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 5329.6,
+          "pct_cc": 0.02500011727,
+          "pct_fatu": 0.01492885154
+        },
+        {
+          "nome": "Closer",
+          "valor": 7131.83,
+          "pct_cc": 0.03345402776,
+          "pct_fatu": 0.01997711485
+        },
+        {
+          "nome": "SDR",
+          "valor": 2175.0,
+          "pct_cc": 0.01020250208,
+          "pct_fatu": 0.006092436975
+        },
+        {
+          "nome": "SS",
+          "valor": 0.0,
+          "pct_cc": 0,
+          "pct_fatu": 0
+        }
+      ]
+    },
+    "total_fv": 19963.83,
+    "coc_cc": 0.0936464446,
+    "coc_fatu": 0.05592109244,
+    "ordem": 10
+  },
+  {
+    "key": "jun-2025",
+    "label": "Jun/2025",
+    "faturamento": 348000.0,
+    "cash_collected": 265232.0,
+    "pct_cash_fatu": 0.7621609195,
+    "custo_fixo": 9700.0,
+    "custo_fixo_pct_cc": 0.03657175605,
+    "custo_fixo_pct_fatu": 0.02787356322,
+    "time_fixo": {
+      "total": 9700,
+      "cargos": [
+        {
+          "nome": "Supervior",
+          "valor": 4000.0,
+          "pct_cc": 0.01508113651,
+          "pct_fatu": 0.01149425287
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.009425710322,
+          "pct_fatu": 0.007183908046
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.007540568257,
+          "pct_fatu": 0.005747126437
+        },
+        {
+          "nome": "SDR",
+          "valor": 1200.0,
+          "pct_cc": 0.004524340954,
+          "pct_fatu": 0.003448275862
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.01508113651,
+          "pct_fatu": 0.01149425287
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.003608161911,
+          "pct_fatu": 0.00275
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.001885142064,
+          "pct_fatu": 0.001436781609
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.00263919889,
+          "pct_fatu": 0.002011494253
+        }
+      ]
+    },
+    "custo_variavel": 8762,
+    "cv_pct_cc": 0.03303522953,
+    "cv_pct_fatu": 0.02517816092,
+    "time_variavel": {
+      "total": 8762,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 6630.0,
+          "pct_cc": 0.02499698377,
+          "pct_fatu": 0.01905172414
+        },
+        {
+          "nome": "Closer",
+          "valor": 5562.0,
+          "pct_cc": 0.02097032032,
+          "pct_fatu": 0.01598275862
+        },
+        {
+          "nome": "SDR",
+          "valor": 3200.0,
+          "pct_cc": 0.01206490921,
+          "pct_fatu": 0.009195402299
+        }
+      ]
+    },
+    "total_fv": 18462,
+    "coc_cc": 0.06960698558,
+    "coc_fatu": 0.05305172414,
+    "ordem": 11
+  },
+  {
+    "key": "jul-2025",
+    "label": "Jul/2025",
+    "faturamento": 718500.0,
+    "cash_collected": 678033.03,
+    "pct_cash_fatu": 0.9436785386,
+    "custo_fixo": 11000.0,
+    "custo_fixo_pct_cc": 0.01622339844,
+    "custo_fixo_pct_fatu": 0.01530967293,
+    "time_fixo": {
+      "total": 17500,
+      "cargos": [
+        {
+          "nome": "Supervior",
+          "valor": 4000.0,
+          "pct_cc": 0.005899417614,
+          "pct_fatu": 0.005567153793
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.003687136009,
+          "pct_fatu": 0.00347947112
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.003687136009,
+          "pct_fatu": 0.00347947112
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.002949708807,
+          "pct_fatu": 0.002783576896
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.003687136009,
+          "pct_fatu": 0.00347947112
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.005899417614,
+          "pct_fatu": 0.005567153793
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.001411435664,
+          "pct_fatu": 0.001331941545
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.0007374272017,
+          "pct_fatu": 0.0006958942241
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.001032398082,
+          "pct_fatu": 0.0009742519137
+        }
+      ]
+    },
+    "custo_variavel": 18902.5,
+    "cv_pct_cc": 0.02787843536,
+    "cv_pct_fatu": 0.02630828114,
+    "time_variavel": {
+      "total": 18902.5,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 20340.98,
+          "pct_cc": 0.02999998392,
+          "pct_fatu": 0.02831034099
+        },
+        {
+          "nome": "Closer",
+          "valor": 12500.0,
+          "pct_cc": 0.01843568004,
+          "pct_fatu": 0.0173973556
+        },
+        {
+          "nome": "Closer",
+          "valor": 1602.5,
+          "pct_cc": 0.002363454182,
+          "pct_fatu": 0.002230340988
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.003687136009,
+          "pct_fatu": 0.00347947112
+        },
+        {
+          "nome": "SS",
+          "valor": 2300.0,
+          "pct_cc": 0.003392165128,
+          "pct_fatu": 0.003201113431
+        }
+      ]
+    },
+    "total_fv": 29902.5,
+    "coc_cc": 0.0441018338,
+    "coc_fatu": 0.04161795407,
+    "ordem": 12
+  },
+  {
+    "key": "ago-2025",
+    "label": "Ago/2025",
+    "faturamento": 845600.0,
+    "cash_collected": 693666.16,
+    "pct_cash_fatu": 0.8203242195,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": 0.02522827407,
+    "custo_fixo_pct_fatu": 0.02069536424,
+    "time_fixo": {
+      "total": 17500,
+      "cargos": [
+        {
+          "nome": "Supervior",
+          "valor": 4000.0,
+          "pct_cc": 0.005766462645,
+          "pct_fatu": 0.004730368969
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.003604039153,
+          "pct_fatu": 0.002956480605
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.002883231323,
+          "pct_fatu": 0.002365184484
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.003604039153,
+          "pct_fatu": 0.002956480605
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.005766462645,
+          "pct_fatu": 0.004730368969
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.001379626188,
+          "pct_fatu": 0.001131740776
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.0007208078307,
+          "pct_fatu": 0.0005912961211
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.001009130963,
+          "pct_fatu": 0.0008278145695
+        }
+      ]
+    },
+    "custo_variavel": 29992,
+    "cv_pct_cc": 0.04323693692,
+    "cv_pct_fatu": 0.03546830653,
+    "time_variavel": {
+      "total": 29992,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 16702.0,
+          "pct_cc": 0.02407786478,
+          "pct_fatu": 0.01975165563
+        },
+        {
+          "nome": "Closer",
+          "valor": 14900.0,
+          "pct_cc": 0.02148007335,
+          "pct_fatu": 0.01762062441
+        },
+        {
+          "nome": "Closer",
+          "valor": 6342.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 4550.0,
+          "pct_cc": 0.006559351259,
+          "pct_fatu": 0.005380794702
+        },
+        {
+          "nome": "SDR",
+          "valor": 4200.0,
+          "pct_cc": 0.006054785778,
+          "pct_fatu": 0.004966887417
+        }
+      ]
+    },
+    "total_fv": 47492,
+    "coc_cc": 0.06846521099,
+    "coc_fatu": 0.05616367077,
+    "ordem": 13
+  },
+  {
+    "key": "set-2025",
+    "label": "Set/2025",
+    "faturamento": 845600.0,
+    "cash_collected": 666246.66,
+    "pct_cash_fatu": 0.7878981315,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": 0.02626654819,
+    "custo_fixo_pct_fatu": 0.02069536424,
+    "time_fixo": {
+      "total": 17500,
+      "cargos": [
+        {
+          "nome": "Supervior",
+          "valor": 4000.0,
+          "pct_cc": 0.006003782443,
+          "pct_fatu": 0.004730368969
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.003752364027,
+          "pct_fatu": 0.002956480605
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.003001891221,
+          "pct_fatu": 0.002365184484
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.003752364027,
+          "pct_fatu": 0.002956480605
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.006003782443,
+          "pct_fatu": 0.004730368969
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.001436404949,
+          "pct_fatu": 0.001131740776
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.0007504728054,
+          "pct_fatu": 0.0005912961211
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.001050661928,
+          "pct_fatu": 0.0008278145695
+        }
+      ]
+    },
+    "custo_variavel": 28182,
+    "cv_pct_cc": 0.0422996492,
+    "cv_pct_fatu": 0.03332781457,
+    "time_variavel": {
+      "total": 28182,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 16665.0,
+          "pct_cc": 0.0250132586,
+          "pct_fatu": 0.01970789972
+        },
+        {
+          "nome": "Closer",
+          "valor": 14121.5,
+          "pct_cc": 0.02119560344,
+          "pct_fatu": 0.01669997635
+        },
+        {
+          "nome": "Closer",
+          "valor": 6310.5,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 4500.0,
+          "pct_cc": 0.006754255248,
+          "pct_fatu": 0.00532166509
+        },
+        {
+          "nome": "SDR",
+          "valor": 3250.0,
+          "pct_cc": 0.004878073235,
+          "pct_fatu": 0.003843424787
+        }
+      ]
+    },
+    "total_fv": 45682,
+    "coc_cc": 0.06856619739,
+    "coc_fatu": 0.05402317881,
+    "ordem": 14
+  },
+  {
+    "key": "out-2025",
+    "label": "Out/2025",
+    "faturamento": 668500.0,
+    "cash_collected": 451198.66,
+    "pct_cash_fatu": 0.6749418998,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": 0.03878557618,
+    "custo_fixo_pct_fatu": 0.02617801047,
+    "time_fixo": {
+      "total": 19500,
+      "cargos": [
+        {
+          "nome": "Supervior",
+          "valor": 4000.0,
+          "pct_cc": 0.008865274556,
+          "pct_fatu": 0.005983545251
+        },
+        {
+          "nome": "Closer",
+          "valor": 3000.0,
+          "pct_cc": 0.006648955917,
+          "pct_fatu": 0.004487658938
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.005540796597,
+          "pct_fatu": 0.003739715782
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.005540796597,
+          "pct_fatu": 0.003739715782
+        },
+        {
+          "nome": "SS",
+          "valor": 1000.0,
+          "pct_cc": 0.002216318639,
+          "pct_fatu": 0.001495886313
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.008865274556,
+          "pct_fatu": 0.005983545251
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.002121016937,
+          "pct_fatu": 0.001431563201
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.001108159319,
+          "pct_fatu": 0.0007479431563
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.001551423047,
+          "pct_fatu": 0.001047120419
+        }
+      ]
+    },
+    "custo_variavel": 16406.99,
+    "cv_pct_cc": 0.03636311775,
+    "cv_pct_fatu": 0.02454299177,
+    "time_variavel": {
+      "total": 16406.99,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 13535.96,
+          "pct_cc": 0.03000000044,
+          "pct_fatu": 0.02024825729
+        },
+        {
+          "nome": "Closer",
+          "valor": 7411.99,
+          "pct_cc": 0.01642733159,
+          "pct_fatu": 0.01108749439
+        },
+        {
+          "nome": "Closer",
+          "valor": 4470.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 2300.0,
+          "pct_cc": 0.005097532869,
+          "pct_fatu": 0.003440538519
+        },
+        {
+          "nome": "SDR",
+          "valor": 2225.0,
+          "pct_cc": 0.004931308972,
+          "pct_fatu": 0.003328347046
+        }
+      ]
+    },
+    "total_fv": 33906.99,
+    "coc_cc": 0.07514869393,
+    "coc_fatu": 0.05072100224,
+    "ordem": 15
+  },
+  {
+    "key": "nov-2025",
+    "label": "Nov/2025",
+    "faturamento": 2000000.0,
+    "cash_collected": 600000.0,
+    "pct_cash_fatu": 0.3,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": 0.02916666667,
+    "custo_fixo_pct_fatu": 0.00875,
+    "time_fixo": {
+      "total": 11500,
+      "cargos": [
+        {
+          "nome": "Closer",
+          "valor": 3000.0,
+          "pct_cc": 0.005,
+          "pct_fatu": 0.0015
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.004166666667,
+          "pct_fatu": 0.00125
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.004166666667,
+          "pct_fatu": 0.00125
+        },
+        {
+          "nome": "SS",
+          "valor": 1000.0,
+          "pct_cc": 0.001666666667,
+          "pct_fatu": 0.0005
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.001595,
+          "pct_fatu": 0.0004785
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.0008333333333,
+          "pct_fatu": 0.00025
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.001166666667,
+          "pct_fatu": 0.00035
+        }
+      ]
+    },
+    "custo_variavel": 0,
+    "cv_pct_cc": 0,
+    "cv_pct_fatu": 0,
+    "time_variavel": {
+      "total": 0,
+      "cargos": []
+    },
+    "total_fv": 17500,
+    "coc_cc": 0.02916666667,
+    "coc_fatu": 0.00875,
+    "ordem": 16
+  },
+  {
+    "key": "dez-2025",
+    "label": "Dez/2025",
+    "faturamento": 500000.0,
+    "cash_collected": 125000.0,
+    "pct_cash_fatu": 0.25,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": null,
+    "custo_fixo_pct_fatu": null,
+    "time_fixo": {
+      "total": 19500,
+      "cargos": [
+        {
+          "nome": "Supervior",
+          "valor": 4000.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "Closer",
+          "valor": 3000.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SS",
+          "valor": 1000.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        }
+      ]
+    },
+    "custo_variavel": 0,
+    "cv_pct_cc": null,
+    "cv_pct_fatu": null,
+    "time_variavel": {
+      "total": 0,
+      "cargos": []
+    },
+    "total_fv": 17500,
+    "coc_cc": null,
+    "coc_fatu": null,
+    "ordem": 17
+  },
+  {
+    "key": "jan-2026",
+    "label": "Jan/2026",
+    "faturamento": 666000.0,
+    "cash_collected": 416912.42,
+    "pct_cash_fatu": 0.6259946246,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": 0.04197524267,
+    "custo_fixo_pct_fatu": 0.02627627628,
+    "time_fixo": {
+      "total": 20500,
+      "cargos": [
+        {
+          "nome": "Supervior",
+          "valor": 4000.0,
+          "pct_cc": 0.009594341181,
+          "pct_fatu": 0.006006006006
+        },
+        {
+          "nome": "Closer",
+          "valor": 3000.0,
+          "pct_cc": 0.007195755886,
+          "pct_fatu": 0.004504504505
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": null,
+          "pct_fatu": null
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.005996463238,
+          "pct_fatu": 0.003753753754
+        },
+        {
+          "nome": "SDR",
+          "valor": 2500.0,
+          "pct_cc": 0.005996463238,
+          "pct_fatu": 0.003753753754
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.00479717059,
+          "pct_fatu": 0.003003003003
+        },
+        {
+          "nome": "Infra",
+          "valor": 4000.0,
+          "pct_cc": 0.009594341181,
+          "pct_fatu": 0.006006006006
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.002295446128,
+          "pct_fatu": 0.001436936937
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.001199292648,
+          "pct_fatu": 0.0007507507508
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.001679009707,
+          "pct_fatu": 0.001051051051
+        }
+      ]
+    },
+    "custo_variavel": 30109,
+    "cv_pct_cc": 0.07221900465,
+    "cv_pct_fatu": 0.04520870871,
+    "time_variavel": {
+      "total": 15871.62,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 12507.38,
+          "pct_cc": 0.03000001775,
+          "pct_fatu": 0.01877984985
+        },
+        {
+          "nome": "Closer",
+          "valor": 7400.79,
+          "pct_cc": 0.01775142607,
+          "pct_fatu": 0.0111122973
+        },
+        {
+          "nome": "Closer",
+          "valor": 4195.83,
+          "pct_cc": 0.01006405614,
+          "pct_fatu": 0.006300045045
+        },
+        {
+          "nome": "SDR",
+          "valor": 2225.0,
+          "pct_cc": 0.005336852282,
+          "pct_fatu": 0.003340840841
+        },
+        {
+          "nome": "SDR",
+          "valor": 2050.0,
+          "pct_cc": 0.004917099855,
+          "pct_fatu": 0.003078078078
+        },
+        {
+          "nome": "SDR",
+          "valor": 1730.0,
+          "pct_cc": 0.004149552561,
+          "pct_fatu": 0.002597597598
+        }
+      ]
+    },
+    "total_fv": 47609,
+    "coc_cc": 0.1141942473,
+    "coc_fatu": 0.07148498498,
+    "ordem": 18
+  },
+  {
+    "key": "fev-2026",
+    "label": "Fev/2026",
+    "faturamento": 1502837.0,
+    "cash_collected": 1118475.0,
+    "pct_cash_fatu": 0.7442423896,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": 0.01564630412,
+    "custo_fixo_pct_fatu": 0.01164464277,
+    "time_fixo": {
+      "total": 25333.33,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 7000.0,
+          "pct_cc": 0.006258521648,
+          "pct_fatu": 0.004657857106
+        },
+        {
+          "nome": "Closer",
+          "valor": 3000.0,
+          "pct_cc": 0.002682223563,
+          "pct_fatu": 0.001996224474
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.002235186303,
+          "pct_fatu": 0.001663520395
+        },
+        {
+          "nome": "Seller",
+          "valor": 2500.0,
+          "pct_cc": 0.002235186303,
+          "pct_fatu": 0.001663520395
+        },
+        {
+          "nome": "Seller",
+          "valor": 1333.33,
+          "pct_cc": 0.001192096381,
+          "pct_fatu": 0.0008872086594
+        },
+        {
+          "nome": "Gestor de Pré-Vendas",
+          "valor": 3000.0,
+          "pct_cc": 0.002682223563,
+          "pct_fatu": 0.001996224474
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.001788149042,
+          "pct_fatu": 0.001330816316
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.001788149042,
+          "pct_fatu": 0.001330816316
+        },
+        {
+          "nome": "SS",
+          "valor": 2000.0,
+          "pct_cc": 0.001788149042,
+          "pct_fatu": 0.001330816316
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.0008556293167,
+          "pct_fatu": 0.0006367956072
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.0004470372606,
+          "pct_fatu": 0.000332704079
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.0006258521648,
+          "pct_fatu": 0.0004657857106
+        }
+      ]
+    },
+    "custo_variavel": 62519.56,
+    "cv_pct_cc": 0.05589714567,
+    "cv_pct_fatu": 0.04160102526,
+    "time_variavel": {
+      "total": 45638.09,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 22542.56,
+          "pct_cc": 0.02015472854,
+          "pct_fatu": 0.01500000333
+        },
+        {
+          "nome": "Closer",
+          "valor": 17542.0,
+          "pct_cc": 0.01568385525,
+          "pct_fatu": 0.01167258991
+        },
+        {
+          "nome": "Closer",
+          "valor": 14075.0,
+          "pct_cc": 0.01258409888,
+          "pct_fatu": 0.009365619824
+        },
+        {
+          "nome": "Seller",
+          "valor": 5026.0,
+          "pct_cc": 0.004493618543,
+          "pct_fatu": 0.003344341402
+        },
+        {
+          "nome": "Seller",
+          "valor": 1335.09,
+          "pct_cc": 0.001193669952,
+          "pct_fatu": 0.0008883797777
+        },
+        {
+          "nome": "Gestor de Pré-Vendas",
+          "valor": 5760.0,
+          "pct_cc": 0.005149869242,
+          "pct_fatu": 0.00383275099
+        },
+        {
+          "nome": "SDR",
+          "valor": 1900.0,
+          "pct_cc": 0.00169874159,
+          "pct_fatu": 0.0012642755
+        },
+        {
+          "nome": "SDR",
+          "valor": 700.0,
+          "pct_cc": 0.0006258521648,
+          "pct_fatu": 0.0004657857106
+        },
+        {
+          "nome": "SDR",
+          "valor": 500.0,
+          "pct_cc": 0.0004470372606,
+          "pct_fatu": 0.000332704079
+        }
+      ]
+    },
+    "total_fv": 80019.56,
+    "coc_cc": 0.07154344979,
+    "coc_fatu": 0.05324566803,
+    "ordem": 19
+  },
+  {
+    "key": "mar-2026",
+    "label": "Mar/2026",
+    "faturamento": 2092433.0,
+    "cash_collected": 1393372.0,
+    "pct_cash_fatu": 0.6659099718,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": 0.01255946007,
+    "custo_fixo_pct_fatu": 0.008363469702,
+    "time_fixo": {
+      "total": 26500,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 7000.0,
+          "pct_cc": 0.005023784029,
+          "pct_fatu": 0.003345387881
+        },
+        {
+          "nome": "Closer",
+          "valor": 3000.0,
+          "pct_cc": 0.002153050298,
+          "pct_fatu": 0.001433737663
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.001794208582,
+          "pct_fatu": 0.001194781386
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.001794208582,
+          "pct_fatu": 0.001194781386
+        },
+        {
+          "nome": "Seller",
+          "valor": 2500.0,
+          "pct_cc": 0.001794208582,
+          "pct_fatu": 0.001194781386
+        },
+        {
+          "nome": "Gestor de Pré-Vendas",
+          "valor": 3000.0,
+          "pct_cc": 0.002153050298,
+          "pct_fatu": 0.001433737663
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.001435366865,
+          "pct_fatu": 0.0009558251089
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.001435366865,
+          "pct_fatu": 0.0009558251089
+        },
+        {
+          "nome": "SS",
+          "valor": 2000.0,
+          "pct_cc": 0.001435366865,
+          "pct_fatu": 0.0009558251089
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.0006868230451,
+          "pct_fatu": 0.0004573623146
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.0003588417164,
+          "pct_fatu": 0.0002389562772
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.0005023784029,
+          "pct_fatu": 0.0003345387881
+        }
+      ]
+    },
+    "custo_variavel": 115698,
+    "cv_pct_cc": 0.0830345378,
+    "cv_pct_fatu": 0.05529352672,
+    "time_variavel": {
+      "total": 115698,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 51380.0,
+          "pct_cc": 0.03687457477,
+          "pct_fatu": 0.02455514705
+        },
+        {
+          "nome": "Closer",
+          "valor": 30400.0,
+          "pct_cc": 0.02181757635,
+          "pct_fatu": 0.01452854165
+        },
+        {
+          "nome": "Closer",
+          "valor": 15792.0,
+          "pct_cc": 0.01133365677,
+          "pct_fatu": 0.00754719506
+        },
+        {
+          "nome": "Closer",
+          "valor": 2028.0,
+          "pct_cc": 0.001455462002,
+          "pct_fatu": 0.0009692066604
+        },
+        {
+          "nome": "Seller",
+          "valor": 8028.0,
+          "pct_cc": 0.005761562598,
+          "pct_fatu": 0.003836681987
+        },
+        {
+          "nome": "Gestor de Pré-Vendas",
+          "valor": 3100.0,
+          "pct_cc": 0.002224818641,
+          "pct_fatu": 0.001481528919
+        },
+        {
+          "nome": "SDR",
+          "valor": 2280.0,
+          "pct_cc": 0.001636318227,
+          "pct_fatu": 0.001089640624
+        },
+        {
+          "nome": "SDR",
+          "valor": 2690.0,
+          "pct_cc": 0.001930568434,
+          "pct_fatu": 0.001285584771
+        },
+        {
+          "nome": "SS",
+          "valor": 0.0,
+          "pct_cc": 0,
+          "pct_fatu": 0
+        }
+      ]
+    },
+    "total_fv": 133198,
+    "coc_cc": 0.09559399787,
+    "coc_fatu": 0.06365699642,
+    "ordem": 20
+  },
+  {
+    "key": "abr-2026",
+    "label": "Abr/2026",
+    "faturamento": 1810901.0,
+    "cash_collected": 1025739.0,
+    "pct_cash_fatu": 0.5664246693,
+    "custo_fixo": 17500.0,
+    "custo_fixo_pct_cc": 0.01706087026,
+    "custo_fixo_pct_fatu": 0.009663697795,
+    "time_fixo": {
+      "total": 26950,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 7000.0,
+          "pct_cc": 0.006824348104,
+          "pct_fatu": 0.003865479118
+        },
+        {
+          "nome": "Supervisor de Closer",
+          "valor": 4000.0,
+          "pct_cc": 0.003899627488,
+          "pct_fatu": 0.00220884521
+        },
+        {
+          "nome": "Closer",
+          "valor": 3000.0,
+          "pct_cc": 0.002924720616,
+          "pct_fatu": 0.001656633908
+        },
+        {
+          "nome": "Closer",
+          "valor": 2500.0,
+          "pct_cc": 0.00243726718,
+          "pct_fatu": 0.001380528256
+        },
+        {
+          "nome": "Closer",
+          "valor": 1250.0,
+          "pct_cc": 0.00121863359,
+          "pct_fatu": 0.0006902641282
+        },
+        {
+          "nome": "Gestor de Pré-Vendas",
+          "valor": 3200.0,
+          "pct_cc": 0.00311970199,
+          "pct_fatu": 0.001767076168
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.001949813744,
+          "pct_fatu": 0.001104422605
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.001949813744,
+          "pct_fatu": 0.001104422605
+        },
+        {
+          "nome": "SDR",
+          "valor": 2000.0,
+          "pct_cc": 0.001949813744,
+          "pct_fatu": 0.001104422605
+        },
+        {
+          "nome": "SS",
+          "valor": 2000.0,
+          "pct_cc": 0.001949813744,
+          "pct_fatu": 0.001104422605
+        },
+        {
+          "nome": "BDR",
+          "valor": 2500.0,
+          "pct_cc": 0.00243726718,
+          "pct_fatu": 0.001380528256
+        }
+      ]
+    },
+    "ferramentas": {
+      "total": 2157,
+      "itens": [
+        {
+          "nome": "CRM",
+          "valor": 957.0,
+          "pct_cc": 0.0009329858765,
+          "pct_fatu": 0.0005284662165
+        },
+        {
+          "nome": "Voiper",
+          "valor": 500.0,
+          "pct_cc": 0.000487453436,
+          "pct_fatu": 0.0002761056513
+        },
+        {
+          "nome": "Whatsapp",
+          "valor": 700.0,
+          "pct_cc": 0.0006824348104,
+          "pct_fatu": 0.0003865479118
+        }
+      ]
+    },
+    "custo_variavel": 69990.27,
+    "cv_pct_cc": 0.0682339952,
+    "cv_pct_fatu": 0.03864941816,
+    "time_variavel": {
+      "total": 69990.27,
+      "cargos": [
+        {
+          "nome": "Supervisor",
+          "valor": 13218.27,
+          "pct_cc": 0.01288658226,
+          "pct_fatu": 0.007299278094
+        },
+        {
+          "nome": "Supervisor de Closer",
+          "valor": 12994.0,
+          "pct_cc": 0.0126679399,
+          "pct_fatu": 0.007175433665
+        },
+        {
+          "nome": "Closer",
+          "valor": 4960.0,
+          "pct_cc": 0.004835538085,
+          "pct_fatu": 0.002738968061
+        },
+        {
+          "nome": "Closer",
+          "valor": 20383.0,
+          "pct_cc": 0.01987152677,
+          "pct_fatu": 0.01125572298
+        },
+        {
+          "nome": "Closer",
+          "valor": 0.0,
+          "pct_cc": 0,
+          "pct_fatu": 0
+        },
+        {
+          "nome": "Seller",
+          "valor": 0.0,
+          "pct_cc": 0,
+          "pct_fatu": 0
+        },
+        {
+          "nome": "Gestor de Pré-Vendas",
+          "valor": 8650.0,
+          "pct_cc": 0.008432944443,
+          "pct_fatu": 0.004776627767
+        },
+        {
+          "nome": "SDR",
+          "valor": 3800.0,
+          "pct_cc": 0.003704646114,
+          "pct_fatu": 0.00209840295
+        },
+        {
+          "nome": "SDR",
+          "valor": 5260.0,
+          "pct_cc": 0.005128010147,
+          "pct_fatu": 0.002904631451
+        },
+        {
+          "nome": "SDR",
+          "valor": 725.0,
+          "pct_cc": 0.0007068074822,
+          "pct_fatu": 0.0004003531943
+        },
+        {
+          "nome": "SS",
+          "valor": 325.0,
+          "pct_cc": 0.0003168447334,
+          "pct_fatu": 0.0001794686733
+        },
+        {
+          "nome": "BDR",
+          "valor": 500.0,
+          "pct_cc": 0.000487453436,
+          "pct_fatu": 0.0002761056513
+        }
+      ]
+    },
+    "total_fv": 87490.27,
+    "coc_cc": 0.08529486546,
+    "coc_fatu": 0.04831311596,
+    "ordem": 21
+  }
+];
+
+let mesAtualIdx = COC_DATA.length - 1; // Abre no último mês (Abril/2026)
+
+function fmtRS(v, casas) {
+  if (v == null || isNaN(v)) return '—';
+  if (v >= 1000000) return 'R$ ' + (v/1000000).toFixed(casas != null ? casas : 2) + 'M';
+  if (v >= 1000) return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+  return 'R$ ' + v.toFixed(2);
+}
+
+function fmtPct(v) {
+  if (v == null || isNaN(v)) return '—';
+  return (v * 100).toFixed(1).replace('.', ',') + '%';
+}
+
+function pctClass(coc) {
+  if (coc == null || coc === 0) return 'medio';
+  const c = coc * 100;
+  if (c <= 10) return 'bom';
+  if (c <= 15) return 'medio';
+  return 'ruim';
+}
+
+function calcTrend(atual, anterior) {
+  if (atual == null || anterior == null || anterior === 0) return null;
+  return ((atual - anterior) / anterior) * 100;
+}
+
+function renderKpis() {
+  const m = COC_DATA[mesAtualIdx];
+  const anterior = mesAtualIdx > 0 ? COC_DATA[mesAtualIdx - 1] : null;
+
+  const trendFat = anterior ? calcTrend(m.faturamento, anterior.faturamento) : null;
+  const trendCC = anterior ? calcTrend(m.cash_collected, anterior.cash_collected) : null;
+  const trendCOC = anterior ? calcTrend(m.coc_cc, anterior.coc_cc) : null;
+
+  const renderTrend = (v, lowerBetter) => {
+    if (v == null) return '<span class="kpi-trend neutral">—</span>';
+    const arrow = v > 0 ? '↑' : '↓';
+    const cls = lowerBetter ? (v < 0 ? 'up' : 'down') : (v > 0 ? 'up' : 'down');
+    return `<span class="kpi-trend ${cls}">${arrow} ${Math.abs(v).toFixed(1)}%</span>`;
+  };
+
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">💵 Faturamento Bruto</div>
+      <div class="kpi-valor">${fmtRS(m.faturamento)}</div>
+      <div class="kpi-meta">vs mês anterior ${renderTrend(trendFat, false)}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">💰 Cash Collected</div>
+      <div class="kpi-valor">${fmtRS(m.cash_collected)}</div>
+      <div class="kpi-meta">${fmtPct(m.pct_cash_fatu)} do faturamento ${renderTrend(trendCC, false)}</div>
+    </div>
+    <div class="kpi-card destaque">
+      <div class="kpi-label">🎯 COC sobre Cash</div>
+      <div class="kpi-valor">${fmtPct(m.coc_cc)}</div>
+      <div class="kpi-meta">vs mês anterior ${renderTrend(trendCOC, true)}</div>
+    </div>
+  `;
+}
+
+function renderTracker() {
+  const m = COC_DATA[mesAtualIdx];
+  if (m.coc_cc == null || m.coc_cc === 0) {
+    document.getElementById('tracker-marker').style.display = 'none';
+    document.getElementById('tracker-coc-valor').textContent = '—';
+    return;
+  }
+  document.getElementById('tracker-marker').style.display = '';
+
+  const cocPct = m.coc_cc * 100;
+  // Zonas: 0-5 / 5-10 / 10-15 / 15-25 / 25+
+  // Mapeamento: clamp em 30% pra não sair da tela
+  let posicao;
+  if (cocPct <= 5) posicao = (cocPct / 5) * 20; // 0-20%
+  else if (cocPct <= 10) posicao = 20 + ((cocPct - 5) / 5) * 20; // 20-40%
+  else if (cocPct <= 15) posicao = 40 + ((cocPct - 10) / 5) * 20; // 40-60%
+  else if (cocPct <= 25) posicao = 60 + ((cocPct - 15) / 10) * 20; // 60-80%
+  else posicao = 80 + Math.min((cocPct - 25) / 10, 1) * 20; // 80-100%
+
+  // INVERTER porque a barra é TOP→CRÍTICO (esquerda→direita)
+  // 0-5% = TOP (esquerda) ... 25%+ = CRÍTICO (direita)... espera, é o oposto na minha barra
+  // Re-checar: a ordem na barra é z5(TOP)/z4(IDEAL)/z3(EQUI)/z2(ARRIS)/z1(CRÍT)
+  // TOP fica em 0-5% mas tá na ESQUERDA. Então valor BAIXO → posição BAIXA (esquerda). OK.
+
+  document.getElementById('tracker-marker').style.left = posicao + '%';
+  document.getElementById('tracker-marker-label').textContent = fmtPct(m.coc_cc);
+  document.getElementById('tracker-coc-valor').textContent = fmtPct(m.coc_cc);
+}
+
+function renderItem(item) {
+  return `
+    <div class="item-linha">
+      <div class="item-nome">${item.nome}</div>
+      <div class="item-valor">${fmtRS(item.valor)}</div>
+      <div class="item-pct"><b>${fmtPct(item.pct_cc)}</b> CC</div>
+      <div class="item-pct"><b>${fmtPct(item.pct_fatu)}</b> Fatu</div>
+    </div>
+  `;
+}
+
+function renderCustos() {
+  const m = COC_DATA[mesAtualIdx];
+
+  // CUSTO FIXO
+  document.getElementById('fixo-total-rs').textContent = fmtRS(m.custo_fixo);
+  document.getElementById('fixo-pct-cc').textContent = fmtPct(m.custo_fixo_pct_cc);
+  document.getElementById('fixo-pct-fatu').textContent = fmtPct(m.custo_fixo_pct_fatu);
+
+  // Time fixo
+  document.getElementById('time-fixo-total').textContent = fmtRS(m.time_fixo.total);
+  document.getElementById('time-fixo-itens').innerHTML =
+    m.time_fixo.cargos.length > 0
+      ? m.time_fixo.cargos.map(renderItem).join('')
+      : '<div style="opacity:0.5; font-size:12px; padding:8px;">Sem dados</div>';
+
+  // Ferramentas
+  document.getElementById('fer-total').textContent = fmtRS(m.ferramentas.total);
+  document.getElementById('fer-itens').innerHTML =
+    m.ferramentas.itens.length > 0
+      ? m.ferramentas.itens.map(renderItem).join('')
+      : '<div style="opacity:0.5; font-size:12px; padding:8px;">Sem dados</div>';
+
+  // CUSTO VARIÁVEL
+  document.getElementById('var-total-rs').textContent = fmtRS(m.custo_variavel);
+  document.getElementById('var-pct-cc').textContent = fmtPct(m.cv_pct_cc);
+  document.getElementById('var-pct-fatu').textContent = fmtPct(m.cv_pct_fatu);
+  document.getElementById('time-var-total').textContent = fmtRS(m.time_variavel.total);
+  document.getElementById('time-var-itens').innerHTML =
+    m.time_variavel.cargos.length > 0
+      ? m.time_variavel.cargos.map(renderItem).join('')
+      : '<div style="opacity:0.5; font-size:12px; padding:8px;">Sem dados</div>';
+}
+
+function renderFooter() {
+  const m = COC_DATA[mesAtualIdx];
+  document.getElementById('footer-total').textContent = fmtRS(m.total_fv);
+  document.getElementById('footer-coc-cc').textContent = fmtPct(m.coc_cc);
+  document.getElementById('footer-coc-fatu').textContent = fmtPct(m.coc_fatu);
+}
+
+function renderInsights() {
+  const m = COC_DATA[mesAtualIdx];
+  const anterior = mesAtualIdx > 0 ? COC_DATA[mesAtualIdx - 1] : null;
+  const insights = [];
+
+  // Insight 1: Tendência do COC
+  if (anterior && anterior.coc_cc && m.coc_cc) {
+    const diff = (m.coc_cc - anterior.coc_cc) * 100;
+    if (Math.abs(diff) > 1) {
+      if (diff < 0) {
+        insights.push({
+          icon: '✅',
+          text: `COC <b>melhorou</b> ${Math.abs(diff).toFixed(1)} pontos vs ${anterior.label} (${fmtPct(anterior.coc_cc)} → <b>${fmtPct(m.coc_cc)}</b>)`
+        });
+      } else {
+        insights.push({
+          icon: '⚠️',
+          text: `COC <b>subiu</b> ${diff.toFixed(1)} pontos vs ${anterior.label} (${fmtPct(anterior.coc_cc)} → <b>${fmtPct(m.coc_cc)}</b>)`
+        });
+      }
+    }
+  }
+
+  // Insight 2: Zona de cenário
+  if (m.coc_cc != null) {
+    const cocPct = m.coc_cc * 100;
+    if (cocPct <= 5) insights.push({ icon: '🏆', text: `Operação em zona <b>TOP</b> (COC ≤ 5%) — eficiência operacional máxima` });
+    else if (cocPct <= 10) insights.push({ icon: '🟢', text: `Operação em zona <b>IDEAL</b> (5-10%) — saudável e sustentável` });
+    else if (cocPct <= 15) insights.push({ icon: '🟡', text: `Operação em zona de <b>EQUILÍBRIO</b> (10-15%) — atenção pra não escalar custos` });
+    else if (cocPct <= 25) insights.push({ icon: '🟠', text: `Operação em zona <b>ARRISCADA</b> (15-25%) — revisar comissionamento e fixos` });
+    else if (cocPct > 25) insights.push({ icon: '🔴', text: `Operação em zona <b>CRÍTICA</b> (>25%) — ação urgente necessária` });
+  }
+
+  // Insight 3: Custo Fixo vs Faturamento
+  if (m.custo_fixo_pct_fatu != null) {
+    const fatPct = m.custo_fixo_pct_fatu * 100;
+    if (fatPct < 2) {
+      insights.push({ icon: '💪', text: `Custo Fixo é <b>${fatPct.toFixed(1)}% do faturamento</b> — estrutura muito enxuta (referência saudável: <5%)` });
+    } else if (fatPct < 5) {
+      insights.push({ icon: '✓', text: `Custo Fixo em <b>${fatPct.toFixed(1)}% do faturamento</b> — dentro da margem saudável` });
+    } else {
+      insights.push({ icon: '⚠️', text: `Custo Fixo em <b>${fatPct.toFixed(1)}% do faturamento</b> — atenção: pesado em estrutura fixa` });
+    }
+  }
+
+  // Insight 4: Proporção Fixo × Variável
+  if (m.custo_fixo && m.custo_variavel) {
+    const total = m.custo_fixo + m.custo_variavel;
+    const pctVar = (m.custo_variavel / total) * 100;
+    if (pctVar > 70) {
+      insights.push({ icon: '📈', text: `<b>${pctVar.toFixed(0)}% do custo é variável</b> — operação leve, sensível a oscilações de vendas` });
+    } else if (pctVar > 40) {
+      insights.push({ icon: '⚖️', text: `Equilíbrio entre fixo (${(100-pctVar).toFixed(0)}%) e variável (<b>${pctVar.toFixed(0)}%</b>) — exposição balanceada` });
+    } else {
+      insights.push({ icon: '🏗️', text: `Operação pesada em fixo (${(100-pctVar).toFixed(0)}% do custo) — atenção em meses ruins` });
+    }
+  }
+
+  // Insight 5: Cash/Faturamento
+  if (m.pct_cash_fatu != null) {
+    const cashPct = m.pct_cash_fatu * 100;
+    if (cashPct >= 80) {
+      insights.push({ icon: '💎', text: `Cash Collected representa <b>${cashPct.toFixed(0)}% do faturamento</b> — recebimento excepcional` });
+    } else if (cashPct >= 60) {
+      insights.push({ icon: '👍', text: `Cash em <b>${cashPct.toFixed(0)}% do faturamento</b> — boa conversão receita → caixa` });
+    } else if (cashPct >= 40) {
+      insights.push({ icon: '⏳', text: `Cash em <b>${cashPct.toFixed(0)}%</b> do faturamento — parcelamento alto, atenção ao fluxo` });
+    } else {
+      insights.push({ icon: '⚠️', text: `Cash em apenas <b>${cashPct.toFixed(0)}%</b> do faturamento — risco de fluxo de caixa` });
+    }
+  }
+
+  document.getElementById('insights-list').innerHTML = insights.map(i =>
+    `<div class="insight-item"><div class="insight-icon">${i.icon}</div><div class="insight-text">${i.text}</div></div>`
+  ).join('');
+}
+
+function renderDropdown() {
+  const dd = document.getElementById('mes-dropdown');
+  dd.innerHTML = COC_DATA.slice().reverse().map((m, revIdx) => {
+    const idx = COC_DATA.length - 1 - revIdx;
+    const isAtual = idx === mesAtualIdx;
+    const cocPct = m.coc_cc != null && m.coc_cc !== 0 ? (m.coc_cc * 100).toFixed(1) + '%' : '—';
+    return `<div class="mes-dropdown-item ${isAtual ? 'atual' : ''}" onclick="selecionarMes(${idx})">
+      <span>${m.label}</span>
+      <small>COC ${cocPct}</small>
+    </div>`;
+  }).join('');
+}
+
+function selecionarMes(idx) {
+  mesAtualIdx = idx;
+  fecharDropdown();
+  renderTudo();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderTudo() {
+  const m = COC_DATA[mesAtualIdx];
+  document.getElementById('mes-atual-label').textContent = m.label;
+  renderKpis();
+  renderTracker();
+  renderCustos();
+  renderFooter();
+  renderInsights();
+  renderDropdown();
+}
+
+function toggleCard(id) {
+  document.getElementById(id).classList.toggle('aberto');
+}
+
+function toggleDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('mes-dropdown').classList.toggle('aberto');
+}
+function fecharDropdown() {
+  document.getElementById('mes-dropdown').classList.remove('aberto');
+}
+document.addEventListener('click', fecharDropdown);
+
+function abrirHistorico() {
+  // Render tabela
+  const tbody = COC_DATA.slice().reverse().map((m, revIdx) => {
+    const idx = COC_DATA.length - 1 - revIdx;
+    const isAtual = idx === mesAtualIdx;
+    const coc = m.coc_cc != null && m.coc_cc !== 0 ? fmtPct(m.coc_cc) : '—';
+    const cls = pctClass(m.coc_cc);
+    return `<tr class="${isAtual ? 'atual' : ''}" onclick="selecionarMes(${idx}); fecharHistorico();">
+      <td><b>${m.label}</b></td>
+      <td class="num">${fmtRS(m.faturamento, 1)}</td>
+      <td class="num">${fmtRS(m.cash_collected, 1)}</td>
+      <td class="num coc-cell ${cls}">${coc}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('hist-tabela').innerHTML = `
+    <thead>
+      <tr><th>Mês</th><th class="num">Faturamento</th><th class="num">Cash Coll.</th><th class="num">COC %CC</th></tr>
+    </thead>
+    <tbody>${tbody}</tbody>
+  `;
+  document.getElementById('historico-drawer').classList.add('aberto');
+  document.getElementById('drawer-overlay').classList.add('aberto');
+}
+function fecharHistorico() {
+  document.getElementById('historico-drawer').classList.remove('aberto');
+  document.getElementById('drawer-overlay').classList.remove('aberto');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderTudo();
+
+  fetch('sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-mount').outerHTML = html;
+    const active = document.querySelector('[data-page="coc"]');
+    if (active) active.classList.add('active');
+    const parent = document.querySelector('[data-page="financeiro-parent"]');
+    if (parent) parent.classList.add('active');
+  });
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>
